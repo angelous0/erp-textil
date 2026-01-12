@@ -41,8 +41,8 @@ class MuestraBase(Base):
     
     id_muestra_base = Column(Integer, primary_key=True, autoincrement=True)
     id_tipo = Column(Integer, ForeignKey('tipo_producto.id_tipo'), nullable=False)
-    id_entalle = Column(Integer, ForeignKey('entalle.id_entalle'), nullable=False)
-    id_tela = Column(Integer, ForeignKey('tela.id_tela'), nullable=False)
+    id_entalle = Column(Integer, ForeignKey('entalle_desarrollo.id_entalle'), nullable=False)
+    id_tela = Column(Integer, ForeignKey('tela_desarrollo.id_tela'), nullable=False)
     consumo_estimado = Column(Numeric(10, 2))
     costo_estimado = Column(Numeric(10, 2))
     archivo_costo = Column(String(500))
