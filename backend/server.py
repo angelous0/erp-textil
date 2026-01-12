@@ -170,7 +170,7 @@ def get_muestras_base(db: Session = Depends(get_db)):
         joinedload(MuestraBaseModel.tipo_producto),
         joinedload(MuestraBaseModel.entalle),
         joinedload(MuestraBaseModel.tela),
-        joinedload(MuestraBaseModel.bases).joinedload(BaseModel.tizados)
+        joinedload(MuestraBaseModel.bases).joinedload(BaseDBModel.tizados)
     ).all()
     return muestras
 
@@ -180,7 +180,7 @@ def get_muestra_base(id_muestra_base: int, db: Session = Depends(get_db)):
         joinedload(MuestraBaseModel.tipo_producto),
         joinedload(MuestraBaseModel.entalle),
         joinedload(MuestraBaseModel.tela),
-        joinedload(MuestraBaseModel.bases).joinedload(BaseModel.tizados)
+        joinedload(MuestraBaseModel.bases).joinedload(BaseDBModel.tizados)
     ).filter(MuestraBaseModel.id_muestra_base == id_muestra_base).first()
     if not muestra:
         raise HTTPException(status_code=404, detail="Muestra base no encontrada")
