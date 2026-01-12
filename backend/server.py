@@ -362,8 +362,9 @@ logger = logging.getLogger(__name__)
 
 @app.on_event("startup")
 def startup():
-    Base.metadata.create_all(bind=engine)
-    logger.info("Database tables created")
+    # Las tablas son creadas manualmente por el usuario
+    # Base.metadata.create_all(bind=engine)
+    logger.info("Sistema iniciado - conexión a base de datos establecida")
 
 @app.on_event("shutdown")
 def shutdown():
