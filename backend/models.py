@@ -73,4 +73,4 @@ class Tizado(Base):
     archivo_tizado = Column(String(500))
     curva = Column(Text)
     
-    base = relationship('Base', back_populates='tizados')
+    base = relationship('BaseModel', back_populates='tizados')
