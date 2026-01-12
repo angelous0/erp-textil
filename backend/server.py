@@ -233,29 +233,29 @@ def delete_muestra_base(id_muestra_base: int, db: Session = Depends(get_db)):
 # BASE Endpoints
 @api_router.get("/bases", response_model=List[BaseSchema])
 def get_bases(db: Session = Depends(get_db)):
-    bases = db.query(BaseModel).options(joinedload(BaseModel.tizados)).all()
+    bases = db.query(BaseDBModel).options(joinedload(BaseModel.tizados)).all()
     return bases
 
 @api_router.get("/bases/{id_base}", response_model=BaseSchema)
 def get_base(id_base: int, db: Session = Depends(get_db)):
-    base = db.query(BaseModel).options(joinedload(BaseModel.tizados)).filter(BaseModel.id_base == id_base).first()
+    base = db.query(BaseDBModel).options(joinedload(BaseModel.tizados)).filter(BaseModel.id_base == id_base).first()
     if not base:
         raise HTTPException(status_code=404, detail="Base no encontrada")
     return base
 
 @api_router.post("/bases", response_model=BaseSchema)
 def create_base(base: BaseCreate, db: Session = Depends(get_db)):
-    db_base = BaseModel(**base.model_dump())
+    db_base = BaseDBModel(**base.model_dump())
     db.add(db_base)
     db.commit()
     db.refresh(db_base)
     
-    base_result = db.query(BaseModel).options(joinedload(BaseModel.tizados)).filter(BaseModel.id_base == db_base.id_base).first()
+    base_result = db.query(BaseDBModel).options(joinedload(BaseModel.tizados)).filter(BaseModel.id_base == db_base.id_base).first()
     return base_result
 
 @api_router.put("/bases/{id_base}", response_model=BaseSchema)
 def update_base(id_base: int, base: BaseUpdate, db: Session = Depends(get_db)):
-    db_base = db.query(BaseModel).filter(BaseModel.id_base == id_base).first()
+    db_base = db.query(BaseDBModel).filter(BaseModel.id_base == id_base).first()
     if not db_base:
         raise HTTPException(status_code=404, detail="Base no encontrada")
     
@@ -264,12 +264,12 @@ def update_base(id_base: int, base: BaseUpdate, db: Session = Depends(get_db)):
     
     db.commit()
     
-    base_result = db.query(BaseModel).options(joinedload(BaseModel.tizados)).filter(BaseModel.id_base == id_base).first()
+    base_result = db.query(BaseDBModel).options(joinedload(BaseModel.tizados)).filter(BaseModel.id_base == id_base).first()
     return base_result
 
 @api_router.delete("/bases/{id_base}")
 def delete_base(id_base: int, db: Session = Depends(get_db)):
-    db_base = db.query(BaseModel).filter(BaseModel.id_base == id_base).first()
+    db_base = db.query(BaseDBModel).filter(BaseModel.id_base == id_base).first()
     if not db_base:
         raise HTTPException(status_code=404, detail="Base no encontrada")
     
