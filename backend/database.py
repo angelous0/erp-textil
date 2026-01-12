@@ -7,20 +7,20 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# PostgreSQL connection
+# MariaDB connection
 PG_HOST = os.environ.get('PG_HOST')
 PG_PORT = os.environ.get('PG_PORT')
 PG_USER = os.environ.get('PG_USER')
 PG_PASSWORD = os.environ.get('PG_PASSWORD')
 PG_DB = os.environ.get('PG_DB')
 
-DATABASE_URL = f"postgresql://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DB}"
+DATABASE_URL = f"mysql+pymysql://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DB}"
 
 engine = create_engine(
     DATABASE_URL,
     echo=False,
     pool_pre_ping=True,
-    connect_args={"sslmode": "disable"}
+    pool_recycle=3600
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
