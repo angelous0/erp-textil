@@ -1,5 +1,5 @@
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
 import os
 from dotenv import load_dotenv
 from pathlib import Path
@@ -14,21 +14,21 @@ PG_USER = os.environ.get('PG_USER')
 PG_PASSWORD = os.environ.get('PG_PASSWORD')
 PG_DB = os.environ.get('PG_DB')
 
-DATABASE_URL = f"postgresql+asyncpg://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DB}"
+DATABASE_URL = f"postgresql://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DB}"
 
-engine = create_async_engine(
-    DATABASE_URL, 
-    echo=False, 
+engine = create_engine(
+    DATABASE_URL,
+    echo=False,
     pool_pre_ping=True,
-    connect_args={"ssl": False}
+    connect_args={"sslmode": "disable"}
 )
-AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-async def get_db():
-    async with AsyncSessionLocal() as session:
-        try:
-            yield session
-        finally:
-            await session.close()
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
