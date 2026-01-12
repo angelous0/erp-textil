@@ -1,0 +1,151 @@
+{
+  "identity": {
+    "name": "E1",
+    "role": "The Anti-AI Designer",
+    "mission": "Create a textile ERP that feels like a Swiss cockpit—precise, industrial, and beautiful.",
+    "principles": [
+      "Fusion over Imitation: Mix Industrial Precision with Atelier Elegance.",
+      "Content is King: Data is the art. The grid is the canvas.",
+      "Zoom In: Focus on the texture of the data (typography, spacing).",
+      "Negative Space: Use whitespace to separate complex data sets.",
+      "Contrast: High contrast for readability in factory environments."
+    ]
+  },
+  "typography": {
+    "fonts": {
+      "heading": {
+        "family": "Chivo",
+        "url": "https://fonts.googleapis.com/css2?family=Chivo:wght@300;400;700;900&display=swap",
+        "usage": "Page titles, Widget headers, KPI values",
+        "weights": ["Light (300)", "Bold (700)", "Black (900)"]
+      },
+      "body": {
+        "family": "Inter",
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap",
+        "usage": "General UI text, labels, form inputs",
+        "weights": ["Regular (400)", "Medium (500)"]
+      },
+      "mono": {
+        "family": "JetBrains Mono",
+        "url": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap",
+        "usage": "SKUs, Measurements, Prices, Grid Data",
+        "weights": ["Regular (400)"]
+      }
+    },
+    "rules": [
+      "Headings > 32px must use tracking-tight.",
+      "Overlines (e.g., 'STATUS') must be Uppercase + tracking-widest + text-xs.",
+      "Data cells must use tabular-nums for alignment."
+    ]
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "name": "Industrial Slate",
+        "hex": "#0F172A",
+        "tailwind": "bg-slate-900 text-white"
+      },
+      "accent": {
+        "name": "Royal Blue",
+        "hex": "#2563EB",
+        "tailwind": "bg-blue-600 hover:bg-blue-700"
+      },
+      "background": {
+        "default": "#F8FAFC",
+        "paper": "#FFFFFF",
+        "subtle": "#F1F5F9"
+      },
+      "status": {
+        "success": "#10B981",
+        "warning": "#F59E0B",
+        "error": "#EF4444",
+        "info": "#3B82F6"
+      }
+    },
+    "usage": {
+      "dashboard_bg": "bg-slate-50",
+      "card_bg": "bg-white",
+      "sidebar_bg": "bg-slate-900",
+      "sidebar_text": "text-slate-300",
+      "sidebar_active": "bg-blue-600 text-white"
+    }
+  },
+  "layout": {
+    "grid_system": {
+      "dashboard": "Bento Grid (Mode B: Control Room)",
+      "specs": "grid-cols-1 md:grid-cols-4 gap-4",
+      "widgets": {
+        "kpi": "col-span-1",
+        "chart_main": "col-span-2 row-span-2",
+        "list_feed": "col-span-1 row-span-2"
+      }
+    },
+    "spacing": {
+      "container_padding": "p-6 md:p-8",
+      "card_padding": "p-6",
+      "section_gap": "gap-8"
+    },
+    "surfaces": {
+      "card": "border border-slate-200 shadow-sm rounded-lg bg-white",
+      "glass_header": "bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50"
+    }
+  },
+  "components": {
+    "data_grid": {
+      "name": "ExcelGrid",
+      "description": "A high-density, editable table wrapper around Shadcn Table.",
+      "features": [
+        "Sticky Header",
+        "Resizable Columns",
+        "Inline Edit (Click to Edit)",
+        "Zebra Striping (Optional)",
+        "Density Toggle (Compact/Normal)"
+      ]
+    },
+    "form_view": {
+      "name": "EntityForm",
+      "description": "A comprehensive CRUD form.",
+      "layout": "Sheet (Side Drawer) for quick edits, Full Page for creation.",
+      "style": "Two-column grid for fields, distinct sections for related data."
+    },
+    "status_badge": {
+      "name": "StatusBadge",
+      "style": "rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset"
+    }
+  },
+  "visual_enhancers": {
+    "textures": "Use subtle noise texture on the Sidebar to give it a 'fabric' feel.",
+    "shadows": "shadow-sm for cards, shadow-xl for floating drawers.",
+    "borders": "1px solid slate-200. Use 'divide-y' for lists."
+  },
+  "assets": {
+    "images": [
+      {
+        "category": "textures",
+        "url": "https://images.pexels.com/photos/5412315/pexels-photo-5412315.jpeg",
+        "description": "Close up of fabric texture, use for 'Material' card backgrounds or empty states."
+      },
+      {
+        "category": "textures",
+        "url": "https://images.pexels.com/photos/7641148/pexels-photo-7641148.jpeg",
+        "description": "Fabric rolls, use for 'Inventory' or 'Production' headers."
+      }
+    ],
+    "icons": "Lucide React (default). Use thin strokes (1.5px) for elegance."
+  },
+  "universal_guidelines": [
+    "Do not use gradients for text.",
+    "Do not center align the app container.",
+    "Use 'sonner' for toasts.",
+    "All interactive elements must have data-testid.",
+    "Use 'transition-all' sparingly; prefer specific transitions.",
+    "Inputs and Buttons must have distinct focus states (ring-2 ring-blue-500)."
+  ],
+  "instructions_to_main_agent": [
+    "1. Install 'lucide-react' and 'recharts' if not present.",
+    "2. Create a 'Layout' component that handles the Sidebar and Header structure.",
+    "3. Implement the 'ExcelGrid' using TanStack Table (headless) + Shadcn UI Table (visuals).",
+    "4. Ensure the 'Form' view handles file uploads gracefully (use a drag-and-drop zone).",
+    "5. Use the provided images for the 'Sample Development' module empty states."
+  ]
+}
