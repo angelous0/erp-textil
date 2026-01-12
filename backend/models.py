@@ -51,7 +51,7 @@ class MuestraBase(Base):
     tipo_producto = relationship('TipoProducto', back_populates='muestras_base')
     entalle = relationship('Entalle', back_populates='muestras_base')
     tela = relationship('Tela', back_populates='muestras_base')
-    bases = relationship('Base', back_populates='muestra_base', cascade='all, delete-orphan')
+    bases = relationship('BaseModel', back_populates='muestra_base', cascade='all, delete-orphan')
 
 class BaseModel(Base):
     __tablename__ = 'base'
