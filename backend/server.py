@@ -11,7 +11,7 @@ import uuid
 
 from database import get_db, engine, Base
 from models import Tela as TelaModel, Entalle as EntalleModel, TipoProducto as TipoProductoModel
-from models import MuestraBase as MuestraBaseModel, Base as BaseModel, Tizado as TizadoModel
+from models import MuestraBase as MuestraBaseModel, BaseModel as BaseDBModel, Tizado as TizadoModel
 from schemas import (
     Tela, TelaCreate, TelaUpdate,
     Entalle, EntalleCreate, EntalleUpdate,
