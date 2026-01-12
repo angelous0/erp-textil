@@ -4,8 +4,8 @@ from database import Base
 import enum
 
 class ColorEnum(str, enum.Enum):
-    AZUL = "Azul"
-    NEGRO = "Negro"
+    Azul = "Azul"
+    Negro = "Negro"
 
 class Tela(Base):
     __tablename__ = 'tela_desarrollo'
