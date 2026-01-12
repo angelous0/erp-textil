@@ -53,7 +53,7 @@ class MuestraBase(Base):
     tela = relationship('Tela', back_populates='muestras_base')
     bases = relationship('Base', back_populates='muestra_base', cascade='all, delete-orphan')
 
-class Base(Base):
+class BaseModel(Base):
     __tablename__ = 'base'
     
     id_base = Column(Integer, primary_key=True, autoincrement=True)
