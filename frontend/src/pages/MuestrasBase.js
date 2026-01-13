@@ -219,15 +219,12 @@ const MuestrasBase = () => {
       cell: ({ row }) => {
         const archivo = row.original.archivo_costo;
         return archivo ? (
-          <a
-            href={`${API}/files/${archivo}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            download={archivo}
-            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs hover:font-semibold transition-all"
+          <button
+            onClick={() => handleDownloadFile(archivo)}
+            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs hover:font-semibold transition-all cursor-pointer"
           >
             📄 Descargar
-          </a>
+          </button>
         ) : '-';
       },
     },
