@@ -82,14 +82,13 @@ const Bases = () => {
   };
 
   const handleDelete = async (id) => {
-    // if (window.confirm('¿Estás seguro de eliminar esta base?'{ // removed confirm
     try {
       await axios.delete(`${API}/bases/${id}`);
       toast.success('Base eliminada');
       fetchBases();
     } catch (error) {
-      toast.error('Error al eliminar base');
-    }
+      const errorMsg = error.response?.data?.detail || 'Error al eliminar base';
+      toast.error(errorMsg);
     }
   };
 
