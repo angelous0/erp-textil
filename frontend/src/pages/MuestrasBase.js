@@ -200,10 +200,10 @@ const MuestrasBase = () => {
             href={`${API}/files/${archivo}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs"
-            download
+            download={archivo}
+            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs hover:font-semibold transition-all"
           >
-            📄 Ver
+            📄 Descargar
           </a>
         ) : '-';
       },
