@@ -50,10 +50,17 @@ const Tizados = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!formData.id_base) {
+      toast.error('Por favor selecciona una base');
+      return;
+    }
+    
     try {
       const submitData = {
-        ...formData,
         id_base: parseInt(formData.id_base),
+        archivo_tizado: formData.archivo_tizado || null,
+        curva: formData.curva || null,
       };
 
       if (editingTizado) {
@@ -66,8 +73,9 @@ const Tizados = () => {
       fetchTizados();
       handleCloseDialog();
     } catch (error) {
-      toast.error('Error al guardar tizado');
-      console.error(error);
+      const errorMsg = error.response?.data?.detail || 'Error al guardar tizado';
+      toast.error(errorMsg);
+      console.error('Error completo:', error);
     }
   };
 
