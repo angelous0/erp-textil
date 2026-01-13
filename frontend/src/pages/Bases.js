@@ -51,10 +51,18 @@ const Bases = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!formData.id_muestra_base) {
+      toast.error('Por favor selecciona una muestra base');
+      return;
+    }
+    
     try {
       const submitData = {
-        ...formData,
         id_muestra_base: parseInt(formData.id_muestra_base),
+        patron: formData.patron || null,
+        fichas: formData.fichas || null,
+        aprobado: formData.aprobado,
       };
 
       if (editingBase) {
@@ -67,8 +75,9 @@ const Bases = () => {
       fetchBases();
       handleCloseDialog();
     } catch (error) {
-      toast.error('Error al guardar base');
-      console.error(error);
+      const errorMsg = error.response?.data?.detail || 'Error al guardar base';
+      toast.error(errorMsg);
+      console.error('Error completo:', error);
     }
   };
 
