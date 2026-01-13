@@ -48,14 +48,12 @@ const Entalles = () => {
   };
 
   const handleDelete = async (id) => {
-    // if (window.confirm('¿Estás seguro de eliminar este entalle?'{ // removed confirm
     try {
       await axios.delete(`${API}/entalles/${id}`);
       toast.success('Entalle eliminado');
       fetchEntalles();
     } catch (error) {
       toast.error('Error al eliminar entalle');
-    }
     }
   };
 
