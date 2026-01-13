@@ -191,6 +191,24 @@ const MuestrasBase = () => {
       cell: ({ row }) => <span className="font-mono">{row.original.costo_estimado}</span>,
     },
     {
+      accessorKey: 'archivo_costo',
+      header: 'Archivo',
+      cell: ({ row }) => {
+        const archivo = row.original.archivo_costo;
+        return archivo ? (
+          <a
+            href={`${API}/files/${archivo}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs"
+            download
+          >
+            📄 Ver
+          </a>
+        ) : '-';
+      },
+    },
+    {
       accessorKey: 'aprobado',
       header: 'Estado',
       cell: ({ row }) => {
