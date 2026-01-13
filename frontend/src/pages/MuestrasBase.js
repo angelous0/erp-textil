@@ -112,14 +112,14 @@ const MuestrasBase = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('¿Estás seguro de eliminar esta muestra base?')) {
-      try {
-        await axios.delete(`${API}/muestras-base/${id}`);
-        toast.success('Muestra base eliminada');
-        fetchMuestras();
-      } catch (error) {
-        toast.error('Error al eliminar muestra base');
-      }
+    try {
+      await axios.delete(`${API}/muestras-base/${id}`);
+      toast.success('Muestra base eliminada');
+      fetchMuestras();
+    } catch (error) {
+      const errorMsg = error.response?.data?.detail || 'Error al eliminar muestra base';
+      toast.error(errorMsg);
+      console.error('Error completo:', error);
     }
   };
 
