@@ -157,15 +157,12 @@ const Bases = () => {
       header: 'Patrón',
       cell: ({ row }) => (
         row.original.patron ? (
-          <a
-            href={`${API}/files/${row.original.patron}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            download={row.original.patron}
-            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs hover:font-semibold transition-all"
+          <button
+            onClick={() => handleDownloadFile(row.original.patron)}
+            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs hover:font-semibold transition-all cursor-pointer"
           >
             📄 Descargar
-          </a>
+          </button>
         ) : '-'
       ),
     },
@@ -174,15 +171,12 @@ const Bases = () => {
       header: 'Fichas',
       cell: ({ row }) => (
         row.original.fichas ? (
-          <a
-            href={`${API}/files/${row.original.fichas}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            download={row.original.fichas}
-            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs hover:font-semibold transition-all"
+          <button
+            onClick={() => handleDownloadFile(row.original.fichas)}
+            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs hover:font-semibold transition-all cursor-pointer"
           >
             📄 Descargar
-          </a>
+          </button>
         ) : '-'
       ),
     },
