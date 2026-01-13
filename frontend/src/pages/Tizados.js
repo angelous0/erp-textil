@@ -25,6 +25,29 @@ const Tizados = () => {
     curva: '',
   });
 
+  const handleDownloadFile = async (filename) => {
+    try {
+      const response = await fetch(`${API}/files/${filename}`);
+      if (!response.ok) {
+        toast.error('Error al descargar el archivo');
+        return;
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast.success('Archivo descargado');
+    } catch (error) {
+      console.error('Error al descargar:', error);
+      toast.error('Error al descargar el archivo');
+    }
+  };
+
   useEffect(() => {
     fetchTizados();
     fetchBases();
