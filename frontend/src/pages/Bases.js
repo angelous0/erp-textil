@@ -138,10 +138,10 @@ const Bases = () => {
             href={`${API}/files/${row.original.patron}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs"
-            download
+            download={row.original.patron}
+            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs hover:font-semibold transition-all"
           >
-            📄 Ver
+            📄 Descargar
           </a>
         ) : '-'
       ),
@@ -155,10 +155,10 @@ const Bases = () => {
             href={`${API}/files/${row.original.fichas}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs"
-            download
+            download={row.original.fichas}
+            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs hover:font-semibold transition-all"
           >
-            📄 Ver
+            📄 Descargar
           </a>
         ) : '-'
       ),
