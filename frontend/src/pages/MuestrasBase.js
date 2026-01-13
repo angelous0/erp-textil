@@ -77,6 +77,13 @@ const MuestrasBase = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validación manual
+    if (!formData.id_tipo || !formData.id_entalle || !formData.id_tela) {
+      toast.error('Por favor completa todos los campos requeridos');
+      return;
+    }
+    
     try {
       const submitData = {
         ...formData,
@@ -95,8 +102,9 @@ const MuestrasBase = () => {
       fetchMuestras();
       handleCloseDialog();
     } catch (error) {
-      toast.error('Error al guardar muestra base');
-      console.error(error);
+      const errorMsg = error.response?.data?.detail || 'Error al guardar muestra base';
+      toast.error(errorMsg);
+      console.error('Error completo:', error);
     }
   };
 
