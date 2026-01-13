@@ -80,14 +80,12 @@ const Tizados = () => {
   };
 
   const handleDelete = async (id) => {
-    // if (window.confirm('¿Estás seguro de eliminar este tizado?'{ // removed confirm
     try {
       await axios.delete(`${API}/tizados/${id}`);
       toast.success('Tizado eliminado');
       fetchTizados();
     } catch (error) {
       toast.error('Error al eliminar tizado');
-    }
     }
   };
 
