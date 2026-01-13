@@ -56,14 +56,14 @@ const Telas = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('¿Estás seguro de eliminar esta tela?')) {
-      try {
-        await axios.delete(`${API}/telas/${id}`);
-        toast.success('Tela eliminada');
-        fetchTelas();
-      } catch (error) {
-        toast.error('Error al eliminar tela');
-      }
+    // if (window.confirm('¿Estás seguro de eliminar esta tela?'{ // removed confirm
+    try {
+      await axios.delete(`${API}/telas/${id}`);
+      toast.success('Tela eliminada');
+      fetchTelas();
+    } catch (error) {
+      toast.error('Error al eliminar tela');
+    }
     }
   };
 

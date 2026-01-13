@@ -48,14 +48,14 @@ const TiposProducto = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('¿Estás seguro de eliminar este tipo de producto?')) {
-      try {
-        await axios.delete(`${API}/tipos-producto/${id}`);
-        toast.success('Tipo de producto eliminado');
-        fetchTipos();
-      } catch (error) {
-        toast.error('Error al eliminar tipo de producto');
-      }
+    // if (window.confirm('¿Estás seguro de eliminar este tipo de producto?'{ // removed confirm
+    try {
+      await axios.delete(`${API}/tipos-producto/${id}`);
+      toast.success('Tipo de producto eliminado');
+      fetchTipos();
+    } catch (error) {
+      toast.error('Error al eliminar tipo de producto');
+    }
     }
   };
 
