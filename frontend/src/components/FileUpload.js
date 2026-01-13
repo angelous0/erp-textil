@@ -36,7 +36,6 @@ const FileUpload = ({ value, onChange, accept = '*', multiple = false }) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept,
     multiple,
   });
 
