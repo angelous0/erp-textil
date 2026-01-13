@@ -152,15 +152,12 @@ const Tizados = () => {
       header: 'Archivo Tizado',
       cell: ({ row }) => (
         row.original.archivo_tizado ? (
-          <a
-            href={`${API}/files/${row.original.archivo_tizado}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            download={row.original.archivo_tizado}
-            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs hover:font-semibold transition-all"
+          <button
+            onClick={() => handleDownloadFile(row.original.archivo_tizado)}
+            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs hover:font-semibold transition-all cursor-pointer"
           >
             📄 Descargar
-          </a>
+          </button>
         ) : '-'
       ),
     },
