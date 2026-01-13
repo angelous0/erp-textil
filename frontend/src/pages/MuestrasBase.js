@@ -86,10 +86,13 @@ const MuestrasBase = () => {
     
     try {
       const submitData = {
-        ...formData,
         id_tipo: parseInt(formData.id_tipo),
         id_entalle: parseInt(formData.id_entalle),
         id_tela: parseInt(formData.id_tela),
+        consumo_estimado: formData.consumo_estimado ? parseFloat(formData.consumo_estimado) : null,
+        costo_estimado: formData.costo_estimado ? parseFloat(formData.costo_estimado) : null,
+        archivo_costo: formData.archivo_costo || null,
+        aprobado: formData.aprobado,
       };
 
       if (editingMuestra) {
