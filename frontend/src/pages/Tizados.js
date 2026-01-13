@@ -123,7 +123,15 @@ const Tizados = () => {
       header: 'Archivo Tizado',
       cell: ({ row }) => (
         row.original.archivo_tizado ? (
-          <span className="text-blue-600 font-mono text-xs">{row.original.archivo_tizado}</span>
+          <a
+            href={`${API}/files/${row.original.archivo_tizado}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs"
+            download
+          >
+            📄 Ver
+          </a>
         ) : '-'
       ),
     },
