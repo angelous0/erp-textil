@@ -126,7 +126,15 @@ const Bases = () => {
       header: 'Patrón',
       cell: ({ row }) => (
         row.original.patron ? (
-          <span className="text-blue-600 font-mono text-xs">{row.original.patron}</span>
+          <a
+            href={`${API}/files/${row.original.patron}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs"
+            download
+          >
+            📄 Ver
+          </a>
         ) : '-'
       ),
     },
@@ -135,7 +143,15 @@ const Bases = () => {
       header: 'Fichas',
       cell: ({ row }) => (
         row.original.fichas ? (
-          <span className="text-blue-600 font-mono text-xs">{row.original.fichas}</span>
+          <a
+            href={`${API}/files/${row.original.fichas}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs"
+            download
+          >
+            📄 Ver
+          </a>
         ) : '-'
       ),
     },
