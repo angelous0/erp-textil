@@ -133,10 +133,10 @@ const Tizados = () => {
             href={`${API}/files/${row.original.archivo_tizado}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs"
-            download
+            download={row.original.archivo_tizado}
+            className="text-blue-600 hover:text-blue-800 underline font-mono text-xs hover:font-semibold transition-all"
           >
-            📄 Ver
+            📄 Descargar
           </a>
         ) : '-'
       ),
