@@ -54,10 +54,10 @@ class MuestraBase(Base):
     bases = relationship('BaseModel', back_populates='muestra_base', cascade='all, delete-orphan')
 
 class BaseModel(Base):
-    __tablename__ = 'base'
+    __tablename__ = 'x_base'
     
     id_base = Column(Integer, primary_key=True, autoincrement=True)
-    id_muestra_base = Column(Integer, ForeignKey('muestra_base.id_muestra_base'), nullable=False)
+    id_muestra_base = Column(Integer, ForeignKey('x_muestra_base.id_muestra_base'), nullable=False)
     patron = Column(String(500))
     aprobado = Column(Boolean, default=False)
     
