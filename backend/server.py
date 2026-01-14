@@ -257,7 +257,10 @@ def create_base(base: BaseCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_base)
     
-    base_result = db.query(BaseDBModel).options(joinedload(BaseDBModel.tizados)).filter(BaseDBModel.id_base == db_base.id_base).first()
+    base_result = db.query(BaseDBModel).options(
+        joinedload(BaseDBModel.tizados),
+        joinedload(BaseDBModel.fichas)
+    ).filter(BaseDBModel.id_base == db_base.id_base).first()
     return base_result
 
 @api_router.put("/bases/{id_base}", response_model=BaseSchema)
