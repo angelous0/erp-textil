@@ -21,7 +21,7 @@ class Tela(Base):
     muestras_base = relationship('MuestraBase', back_populates='tela')
 
 class Entalle(Base):
-    __tablename__ = 'entalle_desarrollo'
+    __tablename__ = 'x_entalle_desarrollo'
     
     id_entalle = Column(Integer, primary_key=True, autoincrement=True)
     nombre_entalle = Column(String(255), nullable=False)
