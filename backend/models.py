@@ -59,11 +59,21 @@ class BaseModel(Base):
     id_base = Column(Integer, primary_key=True, autoincrement=True)
     id_muestra_base = Column(Integer, ForeignKey('muestra_base.id_muestra_base'), nullable=False)
     patron = Column(String(500))
-    fichas = Column(Text)
     aprobado = Column(Boolean, default=False)
     
     muestra_base = relationship('MuestraBase', back_populates='bases')
     tizados = relationship('Tizado', back_populates='base', cascade='all, delete-orphan')
+    fichas = relationship('Ficha', back_populates='base', cascade='all, delete-orphan')
+
+class Ficha(Base):
+    __tablename__ = 'ficha'
+    
+    id_ficha = Column(Integer, primary_key=True, autoincrement=True)
+    id_base = Column(Integer, ForeignKey('base.id_base'), nullable=False)
+    nombre_ficha = Column(String(255))
+    archivo = Column(String(500))
+    
+    base = relationship('BaseModel', back_populates='fichas')
 
 class Tizado(Base):
     __tablename__ = 'tizado'
