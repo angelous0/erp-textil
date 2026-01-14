@@ -76,10 +76,10 @@ class Ficha(Base):
     base = relationship('BaseModel', back_populates='fichas')
 
 class Tizado(Base):
-    __tablename__ = 'tizado'
+    __tablename__ = 'x_tizado'
     
     id_tizado = Column(Integer, primary_key=True, autoincrement=True)
-    id_base = Column(Integer, ForeignKey('base.id_base'), nullable=False)
+    id_base = Column(Integer, ForeignKey('x_base.id_base'), nullable=False)
     archivo_tizado = Column(String(500))
     curva = Column(Text)
     
