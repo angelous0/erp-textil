@@ -67,9 +67,24 @@ class Tizado(TizadoBase):
     id_tizado: int
     id_base: int
 
+class FichaBase(BaseModel):
+    nombre_ficha: Optional[str] = None
+    archivo: Optional[str] = None
+
+class FichaCreate(FichaBase):
+    id_base: int
+
+class FichaUpdate(BaseModel):
+    nombre_ficha: Optional[str] = None
+    archivo: Optional[str] = None
+
+class Ficha(FichaBase):
+    model_config = ConfigDict(from_attributes=True)
+    id_ficha: int
+    id_base: int
+
 class BaseBase(BaseModel):
     patron: Optional[str] = None
-    fichas: Optional[str] = None
     aprobado: Optional[bool] = False
 
 class BaseCreate(BaseBase):
@@ -77,7 +92,6 @@ class BaseCreate(BaseBase):
 
 class BaseUpdate(BaseModel):
     patron: Optional[str] = None
-    fichas: Optional[str] = None
     aprobado: Optional[bool] = None
 
 class BaseSchema(BaseBase):
@@ -85,6 +99,7 @@ class BaseSchema(BaseBase):
     id_base: int
     id_muestra_base: int
     tizados: List[Tizado] = []
+    fichas: List[Ficha] = []
 
 class MuestraBaseBase(BaseModel):
     id_tipo: int
