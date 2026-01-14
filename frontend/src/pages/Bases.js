@@ -288,6 +288,70 @@ const Bases = () => {
         searchPlaceholder="Buscar bases..."
       />
 
+      {/* Dialog para ver fichas */}
+      <Dialog open={fichasDialogOpen} onOpenChange={setFichasDialogOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-2xl">
+              Fichas Técnicas
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            {fichasViewing.length > 0 ? (
+              <div className="border border-slate-200 rounded-lg overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-slate-50 border-b border-slate-200">
+                    <tr>
+                      <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                        #
+                      </th>
+                      <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                        Nombre de Ficha
+                      </th>
+                      <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                        Archivo
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-slate-100">
+                    {fichasViewing.map((ficha, index) => (
+                      <tr key={ficha.id_ficha} className="hover:bg-slate-50 transition-colors">
+                        <td className="py-3 px-4 text-sm font-mono text-slate-600">
+                          {index + 1}
+                        </td>
+                        <td className="py-3 px-4 text-sm text-slate-900">
+                          {ficha.nombre_ficha || <span className="text-slate-400 italic">Sin nombre</span>}
+                        </td>
+                        <td className="py-3 px-4">
+                          {ficha.archivo ? (
+                            <button
+                              onClick={() => handleDownloadFile(ficha.archivo)}
+                              className="text-blue-600 hover:text-blue-800 underline font-mono text-xs hover:font-semibold transition-all cursor-pointer"
+                            >
+                              📄 Descargar
+                            </button>
+                          ) : (
+                            <span className="text-slate-400 text-xs">Sin archivo</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-center text-slate-500 py-8">No hay fichas disponibles</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setFichasDialogOpen(false)}>
+              Cerrar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog principal para crear/editar base */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
