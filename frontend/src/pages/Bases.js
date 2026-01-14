@@ -29,6 +29,11 @@ const Bases = () => {
   const [fichasDialogOpen, setFichasDialogOpen] = useState(false);
   const [fichasViewing, setFichasViewing] = useState([]);
 
+  const handleViewFichas = (fichasData) => {
+    setFichasViewing(fichasData);
+    setFichasDialogOpen(true);
+  };
+
   const handleDownloadFile = async (filename) => {
     try {
       const response = await fetch(`${API}/files/${filename}`);
