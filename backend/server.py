@@ -11,14 +11,15 @@ import uuid
 
 from database import get_db, engine, Base
 from models import Tela as TelaModel, Entalle as EntalleModel, TipoProducto as TipoProductoModel
-from models import MuestraBase as MuestraBaseModel, BaseModel as BaseDBModel, Tizado as TizadoModel
+from models import MuestraBase as MuestraBaseModel, BaseModel as BaseDBModel, Tizado as TizadoModel, Ficha as FichaModel
 from schemas import (
     Tela, TelaCreate, TelaUpdate,
     Entalle, EntalleCreate, EntalleUpdate,
     TipoProducto, TipoProductoCreate, TipoProductoUpdate,
     MuestraBase, MuestraBaseCreate, MuestraBaseUpdate,
     BaseSchema, BaseCreate, BaseUpdate,
-    Tizado, TizadoCreate, TizadoUpdate
+    Tizado, TizadoCreate, TizadoUpdate,
+    Ficha, FichaCreate, FichaUpdate
 )
 
 app = FastAPI()
