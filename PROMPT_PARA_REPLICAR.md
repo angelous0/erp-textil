@@ -186,7 +186,7 @@ CORS_ORIGINS=*
 
 **Frontend .env:**
 ```
-REACT_APP_BACKEND_URL=https://TU-DOMINIO.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://sample-manager-3.preview.emergentagent.com
 ```
 
 **Backend database.py:**
