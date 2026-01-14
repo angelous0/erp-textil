@@ -8,7 +8,7 @@ class ColorEnum(str, enum.Enum):
     Negro = "Negro"
 
 class Tela(Base):
-    __tablename__ = 'tela_desarrollo'
+    __tablename__ = 'x_tela_desarrollo'
     
     id_tela = Column(Integer, primary_key=True, autoincrement=True)
     nombre_tela = Column(String(255), nullable=False)
