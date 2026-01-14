@@ -242,7 +242,10 @@ def get_bases(db: Session = Depends(get_db)):
 
 @api_router.get("/bases/{id_base}", response_model=BaseSchema)
 def get_base(id_base: int, db: Session = Depends(get_db)):
-    base = db.query(BaseDBModel).options(joinedload(BaseDBModel.tizados)).filter(BaseDBModel.id_base == id_base).first()
+    base = db.query(BaseDBModel).options(
+        joinedload(BaseDBModel.tizados),
+        joinedload(BaseDBModel.fichas)
+    ).filter(BaseDBModel.id_base == id_base).first()
     if not base:
         raise HTTPException(status_code=404, detail="Base no encontrada")
     return base
