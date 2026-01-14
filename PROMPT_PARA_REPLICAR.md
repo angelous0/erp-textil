@@ -26,7 +26,7 @@ Database: [TU_DB_NAME]
 
 #### MODELO DE DATOS
 
-**1. TELA (tela_desarrollo)**
+**1. TELA (x_tela_desarrollo)**
 - id_tela (PK, autoincrement)
 - nombre_tela (varchar 255, NOT NULL)
 - gramaje (decimal 10,2)
@@ -35,39 +35,39 @@ Database: [TU_DB_NAME]
 - ancho_estandar (decimal 10,2)
 - color (ENUM: 'Azul', 'Negro')
 
-**2. ENTALLE (entalle_desarrollo)**
+**2. ENTALLE (x_entalle_desarrollo)**
 - id_entalle (PK, autoincrement)
 - nombre_entalle (varchar 255, NOT NULL)
 
-**3. TIPO_PRODUCTO (tipo_producto)**
+**3. TIPO_PRODUCTO (tipo_producto)** ← Sin prefijo (ya existía)
 - id_tipo (PK, autoincrement)
 - nombre_tipo (varchar 255, NOT NULL)
 
-**4. MUESTRA_BASE (muestra_base)**
+**4. MUESTRA_BASE (x_muestra_base)**
 - id_muestra_base (PK, autoincrement)
 - id_tipo (FK → tipo_producto.id_tipo, NOT NULL)
-- id_entalle (FK → entalle_desarrollo.id_entalle, NOT NULL)
-- id_tela (FK → tela_desarrollo.id_tela, NOT NULL)
+- id_entalle (FK → x_entalle_desarrollo.id_entalle, NOT NULL)
+- id_tela (FK → x_tela_desarrollo.id_tela, NOT NULL)
 - consumo_estimado (decimal 10,2)
 - costo_estimado (decimal 10,2)
 - archivo_costo (varchar 500)
 - aprobado (boolean, default FALSE)
 
-**5. BASE (base)**
+**5. BASE (x_base)**
 - id_base (PK, autoincrement)
-- id_muestra_base (FK → muestra_base.id_muestra_base, NOT NULL, ON DELETE CASCADE)
+- id_muestra_base (FK → x_muestra_base.id_muestra_base, NOT NULL, ON DELETE CASCADE)
 - patron (varchar 500)
 - aprobado (boolean, default FALSE)
 
-**6. FICHA (ficha)** - Relación Many-to-One con Base
+**6. FICHA (x_ficha)** - Relación Many-to-One con Base
 - id_ficha (PK, autoincrement)
-- id_base (FK → base.id_base, NOT NULL, ON DELETE CASCADE)
+- id_base (FK → x_base.id_base, NOT NULL, ON DELETE CASCADE)
 - nombre_ficha (varchar 255)
 - archivo (varchar 500)
 
-**7. TIZADO (tizado)**
+**7. TIZADO (x_tizado)**
 - id_tizado (PK, autoincrement)
-- id_base (FK → base.id_base, NOT NULL, ON DELETE CASCADE)
+- id_base (FK → x_base.id_base, NOT NULL, ON DELETE CASCADE)
 - archivo_tizado (varchar 500)
 - curva (TEXT)
 
