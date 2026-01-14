@@ -274,7 +274,10 @@ def update_base(id_base: int, base: BaseUpdate, db: Session = Depends(get_db)):
     
     db.commit()
     
-    base_result = db.query(BaseDBModel).options(joinedload(BaseDBModel.tizados)).filter(BaseDBModel.id_base == id_base).first()
+    base_result = db.query(BaseDBModel).options(
+        joinedload(BaseDBModel.tizados),
+        joinedload(BaseDBModel.fichas)
+    ).filter(BaseDBModel.id_base == id_base).first()
     return base_result
 
 @api_router.delete("/bases/{id_base}")
