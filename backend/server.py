@@ -233,12 +233,12 @@ def delete_muestra_base(id_muestra_base: int, db: Session = Depends(get_db)):
 # BASE Endpoints
 @api_router.get("/bases", response_model=List[BaseSchema])
 def get_bases(db: Session = Depends(get_db)):
-    bases = db.query(BaseDBModel).options(joinedload(BaseModel.tizados)).all()
+    bases = db.query(BaseDBModel).options(joinedload(BaseDBModel.tizados)).all()
     return bases
 
 @api_router.get("/bases/{id_base}", response_model=BaseSchema)
 def get_base(id_base: int, db: Session = Depends(get_db)):
-    base = db.query(BaseDBModel).options(joinedload(BaseModel.tizados)).filter(BaseModel.id_base == id_base).first()
+    base = db.query(BaseDBModel).options(joinedload(BaseDBModel.tizados)).filter(BaseDBModel.id_base == id_base).first()
     if not base:
         raise HTTPException(status_code=404, detail="Base no encontrada")
     return base
