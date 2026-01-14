@@ -269,7 +269,7 @@ def update_base(id_base: int, base: BaseUpdate, db: Session = Depends(get_db)):
 
 @api_router.delete("/bases/{id_base}")
 def delete_base(id_base: int, db: Session = Depends(get_db)):
-    db_base = db.query(BaseDBModel).filter(BaseModel.id_base == id_base).first()
+    db_base = db.query(BaseDBModel).filter(BaseDBModel.id_base == id_base).first()
     if not db_base:
         raise HTTPException(status_code=404, detail="Base no encontrada")
     
