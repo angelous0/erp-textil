@@ -224,9 +224,12 @@ const Bases = () => {
       cell: ({ row }) => {
         const fichasCount = row.original.fichas?.length || 0;
         return fichasCount > 0 ? (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+          <button
+            onClick={() => handleViewFichas(row.original.fichas)}
+            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer transition-colors"
+          >
             {fichasCount} ficha{fichasCount > 1 ? 's' : ''}
-          </span>
+          </button>
         ) : '-';
       },
     },
