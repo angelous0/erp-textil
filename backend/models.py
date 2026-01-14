@@ -66,10 +66,10 @@ class BaseModel(Base):
     fichas = relationship('Ficha', back_populates='base', cascade='all, delete-orphan')
 
 class Ficha(Base):
-    __tablename__ = 'ficha'
+    __tablename__ = 'x_ficha'
     
     id_ficha = Column(Integer, primary_key=True, autoincrement=True)
-    id_base = Column(Integer, ForeignKey('base.id_base'), nullable=False)
+    id_base = Column(Integer, ForeignKey('x_base.id_base'), nullable=False)
     nombre_ficha = Column(String(255))
     archivo = Column(String(500))
     
