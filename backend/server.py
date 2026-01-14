@@ -334,6 +334,48 @@ def delete_tizado(id_tizado: int, db: Session = Depends(get_db)):
     db.commit()
     return {"message": "Tizado eliminado"}
 
+# FICHA Endpoints
+@api_router.get("/fichas", response_model=List[Ficha])
+def get_fichas(db: Session = Depends(get_db)):
+    fichas = db.query(FichaModel).all()
+    return fichas
+
+@api_router.get("/fichas/base/{id_base}", response_model=List[Ficha])
+def get_fichas_by_base(id_base: int, db: Session = Depends(get_db)):
+    fichas = db.query(FichaModel).filter(FichaModel.id_base == id_base).all()
+    return fichas
+
+@api_router.post("/fichas", response_model=Ficha)
+def create_ficha(ficha: FichaCreate, db: Session = Depends(get_db)):
+    db_ficha = FichaModel(**ficha.model_dump())
+    db.add(db_ficha)
+    db.commit()
+    db.refresh(db_ficha)
+    return db_ficha
+
+@api_router.put("/fichas/{id_ficha}", response_model=Ficha)
+def update_ficha(id_ficha: int, ficha: FichaUpdate, db: Session = Depends(get_db)):
+    db_ficha = db.query(FichaModel).filter(FichaModel.id_ficha == id_ficha).first()
+    if not db_ficha:
+        raise HTTPException(status_code=404, detail="Ficha no encontrada")
+    
+    for key, value in ficha.model_dump(exclude_unset=True).items():
+        setattr(db_ficha, key, value)
+    
+    db.commit()
+    db.refresh(db_ficha)
+    return db_ficha
+
+@api_router.delete("/fichas/{id_ficha}")
+def delete_ficha(id_ficha: int, db: Session = Depends(get_db)):
+    db_ficha = db.query(FichaModel).filter(FichaModel.id_ficha == id_ficha).first()
+    if not db_ficha:
+        raise HTTPException(status_code=404, detail="Ficha no encontrada")
+    
+    db.delete(db_ficha)
+    db.commit()
+    return {"message": "Ficha eliminada"}
+
 # FILE UPLOAD Endpoint
 @api_router.post("/upload")
 def upload_file(file: UploadFile = File(...)):
