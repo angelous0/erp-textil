@@ -234,7 +234,10 @@ def delete_muestra_base(id_muestra_base: int, db: Session = Depends(get_db)):
 # BASE Endpoints
 @api_router.get("/bases", response_model=List[BaseSchema])
 def get_bases(db: Session = Depends(get_db)):
-    bases = db.query(BaseDBModel).options(joinedload(BaseDBModel.tizados)).all()
+    bases = db.query(BaseDBModel).options(
+        joinedload(BaseDBModel.tizados),
+        joinedload(BaseDBModel.fichas)
+    ).all()
     return bases
 
 @api_router.get("/bases/{id_base}", response_model=BaseSchema)
