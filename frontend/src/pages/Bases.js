@@ -26,6 +26,8 @@ const Bases = () => {
     aprobado: false,
   });
   const [fichas, setFichas] = useState([]);
+  const [fichasDialogOpen, setFichasDialogOpen] = useState(false);
+  const [fichasViewing, setFichasViewing] = useState([]);
 
   const handleDownloadFile = async (filename) => {
     try {
