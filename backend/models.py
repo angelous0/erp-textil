@@ -37,12 +37,12 @@ class TipoProducto(Base):
     muestras_base = relationship('MuestraBase', back_populates='tipo_producto')
 
 class MuestraBase(Base):
-    __tablename__ = 'muestra_base'
+    __tablename__ = 'x_muestra_base'
     
     id_muestra_base = Column(Integer, primary_key=True, autoincrement=True)
     id_tipo = Column(Integer, ForeignKey('tipo_producto.id_tipo'), nullable=False)
-    id_entalle = Column(Integer, ForeignKey('entalle_desarrollo.id_entalle'), nullable=False)
-    id_tela = Column(Integer, ForeignKey('tela_desarrollo.id_tela'), nullable=False)
+    id_entalle = Column(Integer, ForeignKey('x_entalle_desarrollo.id_entalle'), nullable=False)
+    id_tela = Column(Integer, ForeignKey('x_tela_desarrollo.id_tela'), nullable=False)
     consumo_estimado = Column(Numeric(10, 2))
     costo_estimado = Column(Numeric(10, 2))
     archivo_costo = Column(String(500))
