@@ -10,7 +10,7 @@ import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Switch } from '../components/ui/switch';
 import { Separator } from '../components/ui/separator';
-import { Edit, Trash2, CheckCircle, XCircle, Plus } from 'lucide-react';
+import { Edit, Trash2, CheckCircle, XCircle, Eye, Plus } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -31,6 +31,9 @@ const MuestrasBase = () => {
     archivo_costo: '',
     aprobado: false,
   });
+
+  const [baseViewDialogOpen, setBaseViewDialogOpen] = useState(false);
+  const [viewingBase, setViewingBase] = useState(null);
 
   const handleDownloadFile = async (filename) => {
     try {
@@ -53,6 +56,11 @@ const MuestrasBase = () => {
       console.error('Error al descargar:', error);
       toast.error('Error al descargar el archivo');
     }
+  };
+
+  const handleViewBase = (base) => {
+    setViewingBase(base);
+    setBaseViewDialogOpen(true);
   };
 
   useEffect(() => {
@@ -101,7 +109,6 @@ const MuestrasBase = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validación manual
     if (!formData.id_tipo || !formData.id_entalle || !formData.id_tela) {
       toast.error('Por favor completa todos los campos requeridos');
       return;
@@ -283,8 +290,151 @@ const MuestrasBase = () => {
         searchPlaceholder="Buscar muestras base..."
       />
 
+      {/* Dialog para ver detalles de una Base */}
+      <Dialog open={baseViewDialogOpen} onOpenChange={setBaseViewDialogOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-2xl">
+              Detalles de Base #{viewingBase?.id_base}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium text-slate-700">ID Muestra Base</Label>
+                <p className="text-slate-900 font-mono">{viewingBase?.id_muestra_base}</p>
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-slate-700">Estado</Label>
+                <p>
+                  {viewingBase?.aprobado ? (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <CheckCircle size={12} className="mr-1" />
+                      Aprobado
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                      <XCircle size={12} className="mr-1" />
+                      Pendiente
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+            
+            <Separator />
+
+            <div>
+              <Label className="text-sm font-medium text-slate-700 mb-2 block">Patrón</Label>
+              {viewingBase?.patron ? (
+                <button
+                  onClick={() => handleDownloadFile(viewingBase.patron)}
+                  className="text-blue-600 hover:text-blue-800 underline text-sm"
+                >
+                  📄 Descargar Patrón
+                </button>
+              ) : (
+                <p className="text-slate-400 text-sm">Sin patrón</p>
+              )}
+            </div>
+
+            <Separator />
+
+            <div>
+              <Label className="text-sm font-medium text-slate-700 mb-2 block">
+                Fichas Técnicas ({viewingBase?.fichas?.length || 0})
+              </Label>
+              {viewingBase?.fichas && viewingBase.fichas.length > 0 ? (
+                <div className="border border-slate-200 rounded-lg overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-slate-50 border-b border-slate-200">
+                      <tr>
+                        <th className="text-left py-2 px-3 text-xs font-semibold text-slate-700">#</th>
+                        <th className="text-left py-2 px-3 text-xs font-semibold text-slate-700">Nombre</th>
+                        <th className="text-left py-2 px-3 text-xs font-semibold text-slate-700">Archivo</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {viewingBase.fichas.map((ficha, idx) => (
+                        <tr key={ficha.id_ficha} className="hover:bg-slate-50">
+                          <td className="py-2 px-3 font-mono text-slate-600">{idx + 1}</td>
+                          <td className="py-2 px-3">{ficha.nombre_ficha || <span className="text-slate-400 italic">Sin nombre</span>}</td>
+                          <td className="py-2 px-3">
+                            {ficha.archivo ? (
+                              <button
+                                onClick={() => handleDownloadFile(ficha.archivo)}
+                                className="text-blue-600 hover:text-blue-800 underline text-xs"
+                              >
+                                📄 Descargar
+                              </button>
+                            ) : (
+                              <span className="text-slate-400 text-xs">Sin archivo</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-slate-400 text-sm">Sin fichas técnicas</p>
+              )}
+            </div>
+
+            <Separator />
+
+            <div>
+              <Label className="text-sm font-medium text-slate-700 mb-2 block">
+                Tizados ({viewingBase?.tizados?.length || 0})
+              </Label>
+              {viewingBase?.tizados && viewingBase.tizados.length > 0 ? (
+                <div className="border border-slate-200 rounded-lg overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-slate-50 border-b border-slate-200">
+                      <tr>
+                        <th className="text-left py-2 px-3 text-xs font-semibold text-slate-700">ID</th>
+                        <th className="text-left py-2 px-3 text-xs font-semibold text-slate-700">Curva</th>
+                        <th className="text-left py-2 px-3 text-xs font-semibold text-slate-700">Archivo</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {viewingBase.tizados.map((tizado) => (
+                        <tr key={tizado.id_tizado} className="hover:bg-slate-50">
+                          <td className="py-2 px-3 font-mono text-slate-600">{tizado.id_tizado}</td>
+                          <td className="py-2 px-3 text-xs">{tizado.curva || '-'}</td>
+                          <td className="py-2 px-3">
+                            {tizado.archivo_tizado ? (
+                              <button
+                                onClick={() => handleDownloadFile(tizado.archivo_tizado)}
+                                className="text-blue-600 hover:text-blue-800 underline text-xs"
+                              >
+                                📄 Descargar
+                              </button>
+                            ) : (
+                              <span className="text-slate-400 text-xs">Sin archivo</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-slate-400 text-sm">Sin tizados</p>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setBaseViewDialogOpen(false)}>
+              Cerrar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog principal para crear/editar Muestra Base */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-heading text-2xl">
               {editingMuestra ? 'Editar Muestra Base' : 'Nueva Muestra Base'}
@@ -397,6 +547,99 @@ const MuestrasBase = () => {
                   accept=".pdf,.xlsx,.xls,.doc,.docx"
                 />
               </div>
+
+              {editingMuestra && editingMuestra.bases && editingMuestra.bases.length > 0 && (
+                <>
+                  <Separator />
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-base font-semibold">
+                        Bases Relacionadas ({editingMuestra.bases.length})
+                      </Label>
+                    </div>
+                    <div className="border border-slate-200 rounded-lg overflow-hidden">
+                      <table className="w-full text-sm excel-grid">
+                        <thead className="bg-slate-50 border-b border-slate-200">
+                          <tr>
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">ID Base</th>
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">Patrón</th>
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">Fichas</th>
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">Tizados</th>
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">Estado</th>
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">Acciones</th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-slate-100">
+                          {editingMuestra.bases.map((base) => (
+                            <tr key={base.id_base} className="hover:bg-slate-50 transition-colors">
+                              <td className="py-3 px-4 font-mono text-slate-600">{base.id_base}</td>
+                              <td className="py-3 px-4">
+                                {base.patron ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDownloadFile(base.patron)}
+                                    className="text-blue-600 hover:text-blue-800 underline text-xs"
+                                  >
+                                    📄 Ver
+                                  </button>
+                                ) : (
+                                  <span className="text-slate-400 text-xs">-</span>
+                                )}
+                              </td>
+                              <td className="py-3 px-4">
+                                {base.fichas && base.fichas.length > 0 ? (
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {base.fichas.length} ficha{base.fichas.length > 1 ? 's' : ''}
+                                  </span>
+                                ) : (
+                                  <span className="text-slate-400 text-xs">-</span>
+                                )}
+                              </td>
+                              <td className="py-3 px-4">
+                                {base.tizados && base.tizados.length > 0 ? (
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                    {base.tizados.length} tizado{base.tizados.length > 1 ? 's' : ''}
+                                  </span>
+                                ) : (
+                                  <span className="text-slate-400 text-xs">-</span>
+                                )}
+                              </td>
+                              <td className="py-3 px-4">
+                                {base.aprobado ? (
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <CheckCircle size={10} className="mr-1" />
+                                    Aprobado
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                                    <XCircle size={10} className="mr-1" />
+                                    Pendiente
+                                  </span>
+                                )}
+                              </td>
+                              <td className="py-3 px-4">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleViewBase(base)}
+                                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                >
+                                  <Eye size={14} className="mr-1" />
+                                  Ver
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <p className="text-xs text-slate-500 italic">
+                      Haz clic en "Ver" para ver los detalles completos de cada base, incluyendo fichas y tizados.
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={handleCloseDialog}>
