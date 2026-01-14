@@ -223,13 +223,14 @@ yarn add @tanstack/react-table react-dropzone
 ### PUNTOS CRÍTICOS A NO OLVIDAR
 1. ✅ Usar **MariaDB** (mysql+pymysql), NO PostgreSQL
 2. ✅ Prefijo `/api` en todos los endpoints del backend
-3. ✅ Las tablas "tela" y "entalle" YA EXISTEN con estructura diferente, usar "tela_desarrollo" y "entalle_desarrollo"
-4. ✅ Descarga de archivos con fetch + blob (NO usar <a> con href directo)
-5. ✅ Eliminar sin window.confirm (directo con toast)
-6. ✅ Fichas es Many-to-One (tabla separada, no columna TEXT)
-7. ✅ Mostrar bases relacionadas dentro del formulario de Muestra Base
-8. ✅ Modal clickeable en contador de fichas para ver tabla
-9. ✅ Diseño minimalista profesional (NO colores vibrantes ni gradientes oscuros)
+3. ✅ Las tablas "tela" y "entalle" YA EXISTEN con estructura diferente, usar **"x_tela_desarrollo"** y **"x_entalle_desarrollo"**
+4. ✅ **TODAS las tablas nuevas llevan prefijo "x_"** para identificarlas fácilmente
+5. ✅ Descarga de archivos con fetch + blob (NO usar <a> con href directo)
+6. ✅ Eliminar sin window.confirm (directo con toast)
+7. ✅ Fichas es Many-to-One (tabla separada **x_ficha**, no columna TEXT)
+8. ✅ Mostrar bases relacionadas dentro del formulario de Muestra Base
+9. ✅ Modal clickeable en contador de fichas para ver tabla
+10. ✅ Diseño minimalista profesional (NO colores vibrantes ni gradientes oscuros)
 
 ### TESTING
 Después de implementar, usa el testing agent para verificar:
