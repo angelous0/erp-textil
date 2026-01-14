@@ -250,12 +250,12 @@ def create_base(base: BaseCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_base)
     
-    base_result = db.query(BaseDBModel).options(joinedload(BaseModel.tizados)).filter(BaseModel.id_base == db_base.id_base).first()
+    base_result = db.query(BaseDBModel).options(joinedload(BaseDBModel.tizados)).filter(BaseDBModel.id_base == db_base.id_base).first()
     return base_result
 
 @api_router.put("/bases/{id_base}", response_model=BaseSchema)
 def update_base(id_base: int, base: BaseUpdate, db: Session = Depends(get_db)):
-    db_base = db.query(BaseDBModel).filter(BaseModel.id_base == id_base).first()
+    db_base = db.query(BaseDBModel).filter(BaseDBModel.id_base == id_base).first()
     if not db_base:
         raise HTTPException(status_code=404, detail="Base no encontrada")
     
@@ -264,7 +264,7 @@ def update_base(id_base: int, base: BaseUpdate, db: Session = Depends(get_db)):
     
     db.commit()
     
-    base_result = db.query(BaseDBModel).options(joinedload(BaseModel.tizados)).filter(BaseModel.id_base == id_base).first()
+    base_result = db.query(BaseDBModel).options(joinedload(BaseDBModel.tizados)).filter(BaseDBModel.id_base == id_base).first()
     return base_result
 
 @api_router.delete("/bases/{id_base}")
