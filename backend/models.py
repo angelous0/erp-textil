@@ -71,6 +71,7 @@ class BaseModel(Base):
     
     id_base = Column(Integer, primary_key=True, autoincrement=True)
     id_muestra_base = Column(Integer, ForeignKey('x_muestra_base.id_muestra_base'), nullable=False)
+    modelo = Column(String(255))
     patron = Column(String(500))
     imagen = Column(String(500))
     aprobado = Column(Boolean, default=False)
