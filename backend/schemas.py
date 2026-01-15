@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional, List
+from typing import Optional, List, Any
 from decimal import Decimal
 from datetime import datetime
 from enum import Enum
@@ -11,6 +11,44 @@ class RolEnum(str, Enum):
     admin = "admin"
     editor = "editor"
     viewer = "viewer"
+
+class AccionEnum(str, Enum):
+    crear = "crear"
+    editar = "editar"
+    eliminar = "eliminar"
+    subir_archivo = "subir_archivo"
+    descargar_archivo = "descargar_archivo"
+    eliminar_archivo = "eliminar_archivo"
+    login = "login"
+    logout = "logout"
+
+# ==================== HISTORIAL SCHEMAS ====================
+
+class HistorialBase(BaseModel):
+    tabla: str
+    accion: AccionEnum
+    id_registro: Optional[int] = None
+    descripcion: Optional[str] = None
+    datos_anteriores: Optional[dict] = None
+    datos_nuevos: Optional[dict] = None
+
+class HistorialSchema(HistorialBase):
+    model_config = ConfigDict(from_attributes=True)
+    id_movimiento: int
+    id_usuario: Optional[int] = None
+    username: str
+    fecha_hora: datetime
+    ip_address: Optional[str] = None
+    user_agent: Optional[str] = None
+
+class HistorialFilter(BaseModel):
+    usuario: Optional[str] = None
+    tabla: Optional[str] = None
+    accion: Optional[AccionEnum] = None
+    fecha_desde: Optional[datetime] = None
+    fecha_hasta: Optional[datetime] = None
+    page: int = 1
+    page_size: int = 50
 
 class PermisoBase(BaseModel):
     marcas_ver: bool = True
