@@ -1113,6 +1113,46 @@ const Bases = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* AlertDialog para confirmar eliminación */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertTriangle size={20} />
+              Confirmar Eliminación
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600">
+              ¿Estás seguro de que deseas eliminar esta base?
+              {itemToDelete && (
+                <div className="mt-3 p-3 bg-slate-50 rounded-lg text-sm">
+                  <p><strong>ID:</strong> {itemToDelete.id_base}</p>
+                  {itemToDelete.patron && <p><strong>Patrón:</strong> Se eliminará el archivo</p>}
+                  {itemToDelete.imagen && <p><strong>Imagen:</strong> Se eliminará el archivo</p>}
+                  {itemToDelete.fichas?.length > 0 && (
+                    <p><strong>Fichas:</strong> Se eliminarán {itemToDelete.fichas.length} ficha(s) y sus archivos</p>
+                  )}
+                  {tizados.filter(t => t.id_base === itemToDelete.id_base).length > 0 && (
+                    <p><strong>Tizados:</strong> Se eliminarán {tizados.filter(t => t.id_base === itemToDelete.id_base).length} tizado(s) y sus archivos</p>
+                  )}
+                </div>
+              )}
+              <p className="mt-3 text-red-500 font-medium">
+                Esta acción no se puede deshacer.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
