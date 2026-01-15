@@ -24,7 +24,7 @@ Antes de comenzar, ten a la mano las credenciales de tu base de datos MariaDB:
    - `[TU_USER]` → tu usuario real
    - `[TU_PASSWORD]` → tu contraseña real
    - `[TU_DB_NAME]` → nombre de tu base de datos
-   - `https://sample-dev-module.preview.emergentagent.com` → tu dominio de Emergent
+   - `https://textilauthplus.preview.emergentagent.com` → tu dominio de Emergent
 
 ### Paso 3: Crear Tablas en MariaDB
 Ejecuta el script SQL `/app/backend/schema_completo.sql` en tu base de datos MariaDB:
