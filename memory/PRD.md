@@ -66,6 +66,9 @@ Sistema ERP textil full-stack (FastAPI + React + MariaDB) para gestión de desar
 - Modal de confirmación de eliminación en: Bases, Tizados, Muestras Base
 - **Modal de Fichas mejorado**: Ahora incluye búsqueda, creación y eliminación (igual que Tizados)
 - **Botones "+ Agregar"**: Los badges de Fichas y Tizados ahora muestran "+ Agregar" cuando están vacíos y permiten crear
+- **Formulario de crear arriba**: En modales de Fichas y Tizados, el formulario de crear está arriba y la tabla/buscador abajo
+- **Subir imagen desde tabla**: Botón "⬆ Subir" en la columna de imagen para subir directamente
+- **Visor de imagen mejorado**: Ahora incluye botón "📥 Descargar" además del botón "Cerrar"
 
 **Nota técnica**: La descarga usa StreamingResponse en lugar de RedirectResponse porque fetch() del frontend no puede seguir redirects cross-origin (CORS).
 
