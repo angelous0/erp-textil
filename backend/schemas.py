@@ -53,6 +53,13 @@ class PermisoBase(BaseModel):
     descargar_fichas: bool = False
     descargar_imagenes: bool = True
     descargar_costos: bool = False
+    
+    # Permisos de subida (separado de descarga)
+    subir_patrones: bool = True
+    subir_tizados: bool = True
+    subir_fichas: bool = True
+    subir_imagenes: bool = True
+    subir_costos: bool = True
 
 class PermisoSchema(PermisoBase):
     model_config = ConfigDict(from_attributes=True)
