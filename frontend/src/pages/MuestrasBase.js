@@ -528,13 +528,13 @@ const MuestrasBase = () => {
                 Fichas Técnicas ({viewingBase?.fichas?.length || 0})
               </Label>
               {viewingBase?.fichas && viewingBase.fichas.length > 0 ? (
-                <div className="border border-slate-200 rounded-lg overflow-hidden">
-                  <table className="w-full text-sm">
+                <div className="border border-slate-200 rounded-lg overflow-x-auto">
+                  <table className="w-full text-sm min-w-[400px]">
                     <thead className="bg-slate-50 border-b border-slate-200">
                       <tr>
-                        <th className="text-left py-2 px-3 text-xs font-semibold text-slate-700">#</th>
-                        <th className="text-left py-2 px-3 text-xs font-semibold text-slate-700">Nombre</th>
-                        <th className="text-left py-2 px-3 text-xs font-semibold text-slate-700">Archivo</th>
+                        <th className="text-left py-2 px-3 text-xs font-semibold text-slate-700 whitespace-nowrap">#</th>
+                        <th className="text-left py-2 px-3 text-xs font-semibold text-slate-700 whitespace-nowrap">Nombre</th>
+                        <th className="text-left py-2 px-3 text-xs font-semibold text-slate-700 whitespace-nowrap">Archivo</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
