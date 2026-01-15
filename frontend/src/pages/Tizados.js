@@ -4,13 +4,14 @@ import { toast } from 'sonner';
 import ExcelGrid from '../components/ExcelGrid';
 import FileUpload from '../components/FileUpload';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Separator } from '../components/ui/separator';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, AlertTriangle } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -26,6 +27,10 @@ const Tizados = () => {
     archivo_tizado: '',
     curva: '',
   });
+  
+  // Estados para confirmación de eliminación
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   const handleDownloadFile = async (filename) => {
     try {
