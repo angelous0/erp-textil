@@ -942,20 +942,20 @@ const Bases = () => {
 
             {/* Tabla de Fichas - ABAJO */}
             {getFichasForModal().length > 0 ? (
-              <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-                <table className="w-full">
+              <div className="border border-slate-200 rounded-lg overflow-x-auto bg-white">
+                <table className="w-full min-w-[500px]">
                   <thead className="bg-slate-100 border-b border-slate-200">
                     <tr>
-                      <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                      <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase tracking-wider whitespace-nowrap">
                         #
                       </th>
-                      <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                      <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase tracking-wider whitespace-nowrap">
                         Nombre de Ficha
                       </th>
-                      <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                      <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase tracking-wider whitespace-nowrap">
                         Archivo
                       </th>
-                      <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase tracking-wider w-20">
+                      <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase tracking-wider w-20 whitespace-nowrap">
                         Acciones
                       </th>
                     </tr>
