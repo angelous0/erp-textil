@@ -699,10 +699,20 @@ def update_ficha(
     return db_ficha
 
 @api_router.delete("/fichas/{id_ficha}")
-def delete_ficha(id_ficha: int, db: Session = Depends(get_db)):
+def delete_ficha(
+    id_ficha: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_ficha = db.query(FichaModel).filter(FichaModel.id_ficha == id_ficha).first()
     if not db_ficha:
         raise HTTPException(status_code=404, detail="Ficha no encontrada")
+    
+    nombre = db_ficha.nombre_ficha or 'Sin nombre'
+    audit_delete(db, current_user, "fichas", db_ficha, id_ficha,
+                 f"Eliminó ficha: {nombre}",
+                 get_client_ip(request), get_user_agent(request))
     
     db.delete(db_ficha)
     db.commit()
@@ -710,7 +720,12 @@ def delete_ficha(id_ficha: int, db: Session = Depends(get_db)):
 
 # FILE UPLOAD Endpoint
 @api_router.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(
+    request: Request,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     try:
         file_extension = Path(file.filename).suffix
         unique_filename = f"{uuid.uuid4()}{file_extension}"
@@ -734,7 +749,14 @@ async def upload_file(file: UploadFile = File(...)):
                 f.write(file_content)
             print(f"✅ Archivo guardado localmente: {unique_filename}")
         
+        # Auditar subida de archivo
+        audit_file_action(db, current_user, AccionEnum.subir_archivo, unique_filename,
+                         ip_address=get_client_ip(request), user_agent=get_user_agent(request))
+        
         return {"filename": unique_filename, "url": f"/api/files/{unique_filename}"}
+    except Exception as e:
+        print(f"❌ Error en upload: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
         print(f"❌ Error en upload: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
