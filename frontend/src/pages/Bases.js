@@ -10,7 +10,7 @@ import { Input } from '../components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Switch } from '../components/ui/switch';
 import { Separator } from '../components/ui/separator';
-import { Edit, Trash2, CheckCircle, XCircle, Plus, X } from 'lucide-react';
+import { Edit, Trash2, CheckCircle, XCircle, Plus, X, Search } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
