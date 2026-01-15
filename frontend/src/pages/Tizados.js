@@ -246,24 +246,28 @@ const Tizados = () => {
       header: 'Acciones',
       cell: ({ row }) => (
         <div className="flex space-x-2">
-          <Button
-            data-testid={`edit-tizado-${row.original.id_tizado}`}
-            variant="ghost"
-            size="sm"
-            onClick={() => handleOpenDialog(row.original)}
-            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-          >
-            <Edit size={16} />
-          </Button>
-          <Button
-            data-testid={`delete-tizado-${row.original.id_tizado}`}
-            variant="ghost"
-            size="sm"
-            onClick={() => handleDelete(row.original.id_tizado)}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <Trash2 size={16} />
-          </Button>
+          {canEdit('tizados') && (
+            <Button
+              data-testid={`edit-tizado-${row.original.id_tizado}`}
+              variant="ghost"
+              size="sm"
+              onClick={() => handleOpenDialog(row.original)}
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            >
+              <Edit size={16} />
+            </Button>
+          )}
+          {canDelete('tizados') && (
+            <Button
+              data-testid={`delete-tizado-${row.original.id_tizado}`}
+              variant="ghost"
+              size="sm"
+              onClick={() => handleDelete(row.original.id_tizado)}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <Trash2 size={16} />
+            </Button>
+          )}
         </div>
       ),
     },
@@ -274,7 +278,7 @@ const Tizados = () => {
       <ExcelGrid
         data={tizados}
         columns={columns}
-        onAdd={() => handleOpenDialog()}
+        onAdd={canCreate('tizados') ? () => handleOpenDialog() : null}
         searchPlaceholder="Buscar tizados..."
       />
 
