@@ -29,6 +29,13 @@ const Bases = () => {
   const [fichas, setFichas] = useState([]);
   const [fichasDialogOpen, setFichasDialogOpen] = useState(false);
   const [fichasViewing, setFichasViewing] = useState([]);
+  const [imageViewerOpen, setImageViewerOpen] = useState(false);
+  const [viewingImage, setViewingImage] = useState(null);
+
+  const handleViewImage = (imageUrl) => {
+    setViewingImage(imageUrl);
+    setImageViewerOpen(true);
+  };
 
   const handleViewFichas = (fichasData) => {
     setFichasViewing(fichasData);
@@ -222,6 +229,26 @@ const Bases = () => {
             📄 Descargar
           </button>
         ) : '-'
+      ),
+    },
+    {
+      accessorKey: 'imagen',
+      header: 'Imagen',
+      cell: ({ row }) => (
+        row.original.imagen ? (
+          <button
+            onClick={() => handleViewImage(row.original.imagen)}
+            className="inline-block"
+          >
+            <img 
+              src={`${API}/files/${row.original.imagen}`} 
+              alt="Base"
+              className="w-16 h-16 object-cover rounded border border-slate-200 hover:border-blue-500 transition-all cursor-pointer hover:scale-105"
+            />
+          </button>
+        ) : (
+          <span className="text-slate-400 text-xs">Sin imagen</span>
+        )
       ),
     },
     {
