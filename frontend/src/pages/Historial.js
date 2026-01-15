@@ -301,7 +301,7 @@ const Historial = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-x-auto">
         {loading ? (
           <div className="p-8 text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
@@ -311,16 +311,16 @@ const Historial = () => {
             No se encontraron movimientos con los filtros actuales
           </div>
         ) : (
-          <table className="w-full" data-testid="historial-table">
+          <table className="w-full min-w-[900px]" data-testid="historial-table">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="text-left py-4 px-4 text-xs font-semibold text-slate-600 uppercase">Fecha/Hora</th>
-                <th className="text-left py-4 px-4 text-xs font-semibold text-slate-600 uppercase">Usuario</th>
-                <th className="text-left py-4 px-4 text-xs font-semibold text-slate-600 uppercase">Acción</th>
-                <th className="text-left py-4 px-4 text-xs font-semibold text-slate-600 uppercase">Tabla</th>
-                <th className="text-left py-4 px-4 text-xs font-semibold text-slate-600 uppercase">Descripción</th>
-                <th className="text-left py-4 px-4 text-xs font-semibold text-slate-600 uppercase">IP</th>
-                <th className="text-left py-4 px-4 text-xs font-semibold text-slate-600 uppercase">Detalles</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-slate-600 uppercase whitespace-nowrap">Fecha/Hora</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-slate-600 uppercase whitespace-nowrap">Usuario</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-slate-600 uppercase whitespace-nowrap">Acción</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-slate-600 uppercase whitespace-nowrap">Tabla</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-slate-600 uppercase whitespace-nowrap">Descripción</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-slate-600 uppercase whitespace-nowrap">IP</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-slate-600 uppercase whitespace-nowrap">Detalles</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
