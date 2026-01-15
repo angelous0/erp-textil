@@ -69,6 +69,8 @@ Sistema ERP textil full-stack (FastAPI + React + MariaDB) para gestión de desar
 - **Formulario de crear arriba**: En modales de Fichas y Tizados, el formulario de crear está arriba y la tabla/buscador abajo
 - **Subir imagen desde tabla**: Botón "⬆ Subir" en la columna de imagen para subir directamente
 - **Visor de imagen mejorado**: Ahora incluye botón "📥 Descargar" además del botón "Cerrar"
+- **Reordenamiento de columnas en Muestras Base**: ID → Marca → Tipo Producto → Entalle → Tela → resto
+- **Nueva columna "Modelo" en Bases**: Campo añadido a la BD y UI, columna ID ocultada
 
 **Nota técnica**: La descarga usa StreamingResponse en lugar de RedirectResponse porque fetch() del frontend no puede seguir redirects cross-origin (CORS).
 
