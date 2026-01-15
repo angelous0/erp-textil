@@ -110,6 +110,16 @@ const MuestrasBase = () => {
     }
   };
 
+  const fetchMarcas = async () => {
+    try {
+      const response = await axios.get(`${API}/marcas`);
+      setMarcas(response.data);
+    } catch (error) {
+      console.error('Error al cargar marcas');
+    }
+  };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -123,8 +133,10 @@ const MuestrasBase = () => {
         id_tipo: parseInt(formData.id_tipo),
         id_entalle: parseInt(formData.id_entalle),
         id_tela: parseInt(formData.id_tela),
+        id_marca: formData.id_marca ? parseInt(formData.id_marca) : null,
         consumo_estimado: formData.consumo_estimado ? parseFloat(formData.consumo_estimado) : null,
         costo_estimado: formData.costo_estimado ? parseFloat(formData.costo_estimado) : null,
+        precio_estimado: formData.precio_estimado ? parseFloat(formData.precio_estimado) : null,
         archivo_costo: formData.archivo_costo || null,
         aprobado: formData.aprobado,
       };
