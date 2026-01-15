@@ -28,7 +28,7 @@ const Layout = ({ children }) => {
       <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col sidebar-texture">
         <div className="p-6 border-b border-slate-800">
           <h1 className="text-2xl font-heading font-bold text-white tracking-tight">
-            ERP Textil
+            Modulo Muestras
           </h1>
           <p className="text-xs text-slate-400 mt-1">Sistema de Desarrollo</p>
         </div>
