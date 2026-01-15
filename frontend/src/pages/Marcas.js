@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import ExcelGrid from '../components/ExcelGrid';
+import { useAuth } from '../context/AuthContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -12,10 +14,12 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const Marcas = () => {
+  const { canCreate, canEdit, canDelete } = useAuth();
   const [marcas, setMarcas] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingMarca, setEditingMarca] = useState(null);
   const [formData, setFormData] = useState({ nombre_marca: '' });
+  const [deleteConfirm, setDeleteConfirm] = useState({ open: false, marca: null });
 
   useEffect(() => {
     fetchMarcas();
@@ -47,13 +51,16 @@ const Marcas = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
+    if (!deleteConfirm.marca) return;
     try {
-      await axios.delete(`${API}/marcas/${id}`);
+      await axios.delete(`${API}/marcas/${deleteConfirm.marca.id_marca}`);
       toast.success('Marca eliminada');
       fetchMarcas();
     } catch (error) {
       toast.error('Error al eliminar marca');
+    } finally {
+      setDeleteConfirm({ open: false, marca: null });
     }
   };
 
@@ -89,24 +96,28 @@ const Marcas = () => {
       header: 'Acciones',
       cell: ({ row }) => (
         <div className="flex space-x-2">
-          <Button
-            data-testid={`edit-marca-${row.original.id_marca}`}
-            variant="ghost"
-            size="sm"
-            onClick={() => handleOpenDialog(row.original)}
-            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-          >
-            <Edit size={16} />
-          </Button>
-          <Button
-            data-testid={`delete-marca-${row.original.id_marca}`}
-            variant="ghost"
-            size="sm"
-            onClick={() => handleDelete(row.original.id_marca)}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <Trash2 size={16} />
-          </Button>
+          {canEdit('marcas') && (
+            <Button
+              data-testid={`edit-marca-${row.original.id_marca}`}
+              variant="ghost"
+              size="sm"
+              onClick={() => handleOpenDialog(row.original)}
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            >
+              <Edit size={16} />
+            </Button>
+          )}
+          {canDelete('marcas') && (
+            <Button
+              data-testid={`delete-marca-${row.original.id_marca}`}
+              variant="ghost"
+              size="sm"
+              onClick={() => setDeleteConfirm({ open: true, marca: row.original })}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <Trash2 size={16} />
+            </Button>
+          )}
         </div>
       ),
     },
@@ -117,7 +128,7 @@ const Marcas = () => {
       <ExcelGrid
         data={marcas}
         columns={columns}
-        onAdd={() => handleOpenDialog()}
+        onAdd={canCreate('marcas') ? () => handleOpenDialog() : null}
         searchPlaceholder="Buscar marcas..."
       />
 
@@ -158,6 +169,25 @@ const Marcas = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Confirmación de eliminación */}
+      <AlertDialog open={deleteConfirm.open} onOpenChange={(open) => setDeleteConfirm({ ...deleteConfirm, open })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar marca?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Se eliminará permanentemente la marca 
+              <strong> "{deleteConfirm.marca?.nombre_marca}"</strong>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
