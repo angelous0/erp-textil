@@ -80,6 +80,33 @@ def get_current_user(
     
     return user
 
+# Security opcional para endpoints que pueden funcionar sin auth
+optional_security = HTTPBearer(auto_error=False)
+
+def get_current_user_optional(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(optional_security),
+    db: Session = Depends(get_db)
+) -> Optional[Usuario]:
+    """Obtiene el usuario actual si hay token, None si no hay"""
+    if credentials is None:
+        return None
+    
+    token = credentials.credentials
+    payload = decode_token(token)
+    
+    if payload is None:
+        return None
+    
+    username: str = payload.get("sub")
+    if username is None:
+        return None
+    
+    user = db.query(Usuario).filter(Usuario.username == username).first()
+    if user is None or not user.activo:
+        return None
+    
+    return user
+
 def get_current_active_user(current_user: Usuario = Depends(get_current_user)) -> Usuario:
     if not current_user.activo:
         raise HTTPException(status_code=400, detail="Usuario inactivo")
