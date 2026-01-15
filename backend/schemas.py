@@ -103,6 +103,7 @@ class Ficha(FichaBase):
     id_base: int
 
 class BaseBase(BaseModel):
+    modelo: Optional[str] = None
     patron: Optional[str] = None
     imagen: Optional[str] = None
     aprobado: Optional[bool] = False
@@ -111,6 +112,7 @@ class BaseCreate(BaseBase):
     id_muestra_base: int
 
 class BaseUpdate(BaseModel):
+    modelo: Optional[str] = None
     patron: Optional[str] = None
     imagen: Optional[str] = None
     aprobado: Optional[bool] = None
