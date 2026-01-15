@@ -905,7 +905,88 @@ const Bases = () => {
           </DialogHeader>
           
           <div className="py-4 space-y-4">
-            {/* Buscador */}
+            {/* Formulario para crear nuevo tizado - ARRIBA */}
+            {!isCreatingTizado ? (
+              <Button
+                onClick={() => setIsCreatingTizado(true)}
+                className="w-full bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Plus size={18} className="mr-2" />
+                Crear Nuevo Tizado
+              </Button>
+            ) : (
+              <div className="border border-green-200 rounded-lg p-4 bg-green-50 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-slate-900">Nuevo Tizado</h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setIsCreatingTizado(false);
+                      setNewTizado({ ancho: '', curva: '', archivo_tizado: '' });
+                    }}
+                  >
+                    <X size={16} />
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="new-ancho">Ancho</Label>
+                    <Input
+                      id="new-ancho"
+                      type="number"
+                      step="0.01"
+                      value={newTizado.ancho}
+                      onChange={(e) => setNewTizado({ ...newTizado, ancho: e.target.value })}
+                      placeholder="Ej: 150, 180"
+                      className="border-slate-300 bg-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="new-curva">Curva</Label>
+                    <Input
+                      id="new-curva"
+                      value={newTizado.curva}
+                      onChange={(e) => setNewTizado({ ...newTizado, curva: e.target.value })}
+                      placeholder="Ej: S-M-L-XL, 2-4-6-8"
+                      className="border-slate-300 bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Archivo de Tizado</Label>
+                  <FileUpload
+                    value={newTizado.archivo_tizado}
+                    onChange={(file) => setNewTizado({ ...newTizado, archivo_tizado: file })}
+                    accept=".pdf,.dxf,.ai,.cdr"
+                  />
+                </div>
+
+                <div className="flex space-x-2">
+                  <Button
+                    onClick={handleCreateTizado}
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Guardar Tizado
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsCreatingTizado(false);
+                      setNewTizado({ ancho: '', curva: '', archivo_tizado: '' });
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            <Separator />
+
+            {/* Buscador - ABAJO */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={16} />
               <Input
@@ -916,7 +997,7 @@ const Bases = () => {
               />
             </div>
 
-            {/* Tabla de Tizados */}
+            {/* Tabla de Tizados - ABAJO */}
             {getTizadosForModal().length > 0 ? (
               <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
                 <div className="overflow-x-auto">
@@ -1016,87 +1097,6 @@ const Bases = () => {
             ) : (
               <div className="text-center py-8 text-slate-500 bg-slate-50 border border-slate-200 rounded-lg">
                 {tizadosSearchModal ? 'No se encontraron tizados con esa búsqueda' : 'No hay tizados para esta base'}
-              </div>
-            )}
-
-            <Separator />
-
-            {/* Formulario para crear nuevo tizado */}
-            {!isCreatingTizado ? (
-              <Button
-                onClick={() => setIsCreatingTizado(true)}
-                className="w-full bg-green-600 hover:bg-green-700 text-white"
-              >
-                <Plus size={18} className="mr-2" />
-                Crear Nuevo Tizado
-              </Button>
-            ) : (
-              <div className="border border-slate-200 rounded-lg p-4 bg-slate-50 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-slate-900">Nuevo Tizado</h3>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setIsCreatingTizado(false);
-                      setNewTizado({ ancho: '', curva: '', archivo_tizado: '' });
-                    }}
-                  >
-                    <X size={16} />
-                  </Button>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="new-ancho">Ancho</Label>
-                    <Input
-                      id="new-ancho"
-                      type="number"
-                      step="0.01"
-                      value={newTizado.ancho}
-                      onChange={(e) => setNewTizado({ ...newTizado, ancho: e.target.value })}
-                      placeholder="Ej: 150, 180"
-                      className="border-slate-300"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="new-curva">Curva</Label>
-                    <Input
-                      id="new-curva"
-                      value={newTizado.curva}
-                      onChange={(e) => setNewTizado({ ...newTizado, curva: e.target.value })}
-                      placeholder="Ej: S-M-L-XL, 2-4-6-8"
-                      className="border-slate-300"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Archivo de Tizado</Label>
-                  <FileUpload
-                    value={newTizado.archivo_tizado}
-                    onChange={(file) => setNewTizado({ ...newTizado, archivo_tizado: file })}
-                    accept=".pdf,.dxf,.ai,.cdr"
-                  />
-                </div>
-
-                <div className="flex space-x-2">
-                  <Button
-                    onClick={handleCreateTizado}
-                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    Guardar Tizado
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setIsCreatingTizado(false);
-                      setNewTizado({ ancho: '', curva: '', archivo_tizado: '' });
-                    }}
-                  >
-                    Cancelar
-                  </Button>
-                </div>
               </div>
             )}
           </div>
