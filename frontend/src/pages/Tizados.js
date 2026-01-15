@@ -195,6 +195,15 @@ const Tizados = () => {
         const archivo = row.original.archivo_tizado;
         if (!archivo) return <span className="text-slate-400 text-xs">Sin archivo</span>;
         
+        if (!canDownload('tizados')) {
+          const extension = archivo.split('.').pop()?.toUpperCase() || 'FILE';
+          return (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-500 border border-slate-200">
+              {extension}
+            </span>
+          );
+        }
+        
         const extension = archivo.split('.').pop()?.toUpperCase() || 'FILE';
         const getFileColor = (ext) => {
           const colors = {
