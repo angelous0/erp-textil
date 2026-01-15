@@ -153,6 +153,8 @@ def get_user_permissions(user: Usuario, db: Session) -> dict:
                 "tizados_ver": True, "tizados_crear": True, "tizados_editar": True, "tizados_eliminar": False,
                 "descargar_patrones": True, "descargar_tizados": True, "descargar_fichas": True,
                 "descargar_imagenes": True, "descargar_costos": False,
+                "subir_patrones": True, "subir_tizados": True, "subir_fichas": True,
+                "subir_imagenes": True, "subir_costos": True,
                 "gestionar_usuarios": False
             }
         else:  # viewer
@@ -166,6 +168,8 @@ def get_user_permissions(user: Usuario, db: Session) -> dict:
                 "tizados_ver": True, "tizados_crear": False, "tizados_editar": False, "tizados_eliminar": False,
                 "descargar_patrones": False, "descargar_tizados": False, "descargar_fichas": False,
                 "descargar_imagenes": True, "descargar_costos": False,
+                "subir_patrones": False, "subir_tizados": False, "subir_fichas": False,
+                "subir_imagenes": False, "subir_costos": False,
                 "gestionar_usuarios": False
             }
     
@@ -188,6 +192,9 @@ def get_user_permissions(user: Usuario, db: Session) -> dict:
         "descargar_patrones": permiso.descargar_patrones, "descargar_tizados": permiso.descargar_tizados,
         "descargar_fichas": permiso.descargar_fichas, "descargar_imagenes": permiso.descargar_imagenes,
         "descargar_costos": permiso.descargar_costos,
+        "subir_patrones": permiso.subir_patrones, "subir_tizados": permiso.subir_tizados,
+        "subir_fichas": permiso.subir_fichas, "subir_imagenes": permiso.subir_imagenes,
+        "subir_costos": permiso.subir_costos,
         "gestionar_usuarios": False
     }
 
