@@ -299,19 +299,26 @@ const Bases = () => {
     }
   };
 
-  const handleDeleteFichaFromModal = async (ficha) => {
+  const handleDeleteFichaFromModal = (ficha) => {
+    setFichaToDelete(ficha);
+    setDeleteFichaDialogOpen(true);
+  };
+
+  const confirmDeleteFicha = async () => {
+    if (!fichaToDelete) return;
+    
     try {
       // Eliminar archivo de R2 si existe
-      if (ficha.archivo) {
+      if (fichaToDelete.archivo) {
         try {
-          await axios.delete(`${API}/files/${ficha.archivo}`);
+          await axios.delete(`${API}/files/${fichaToDelete.archivo}`);
         } catch (e) {
           console.log('Archivo no encontrado');
         }
       }
       
       // Eliminar la ficha
-      await axios.delete(`${API}/fichas/${ficha.id_ficha}`);
+      await axios.delete(`${API}/fichas/${fichaToDelete.id_ficha}`);
       toast.success('Ficha eliminada');
       
       // Recargar fichas
