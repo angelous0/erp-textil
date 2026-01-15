@@ -17,8 +17,18 @@ class Tela(Base):
     proveedor = Column(String(255))
     ancho_estandar = Column(Numeric(10, 2))
     color = Column(Enum(ColorEnum), nullable=True)
+    clasificacion = Column(String(255))
+    precio = Column(Numeric(10, 2))
     
     muestras_base = relationship('MuestraBase', back_populates='tela')
+
+class Marca(Base):
+    __tablename__ = 'x_marca'
+    
+    id_marca = Column(Integer, primary_key=True, autoincrement=True)
+    nombre_marca = Column(String(255), nullable=False)
+    
+    muestras_base = relationship('MuestraBase', back_populates='marca')
 
 class Entalle(Base):
     __tablename__ = 'x_entalle_desarrollo'
@@ -43,14 +53,17 @@ class MuestraBase(Base):
     id_tipo = Column(Integer, ForeignKey('tipo_producto.id_tipo'), nullable=False)
     id_entalle = Column(Integer, ForeignKey('x_entalle_desarrollo.id_entalle'), nullable=False)
     id_tela = Column(Integer, ForeignKey('x_tela_desarrollo.id_tela'), nullable=False)
+    id_marca = Column(Integer, ForeignKey('x_marca.id_marca'))
     consumo_estimado = Column(Numeric(10, 2))
     costo_estimado = Column(Numeric(10, 2))
+    precio_estimado = Column(Numeric(10, 2))
     archivo_costo = Column(String(500))
     aprobado = Column(Boolean, default=False)
     
     tipo_producto = relationship('TipoProducto', back_populates='muestras_base')
     entalle = relationship('Entalle', back_populates='muestras_base')
     tela = relationship('Tela', back_populates='muestras_base')
+    marca = relationship('Marca', back_populates='muestras_base')
     bases = relationship('BaseModel', back_populates='muestra_base', cascade='all, delete-orphan')
 
 class BaseModel(Base):
@@ -80,6 +93,7 @@ class Tizado(Base):
     
     id_tizado = Column(Integer, primary_key=True, autoincrement=True)
     id_base = Column(Integer, ForeignKey('x_base.id_base'), nullable=False)
+    ancho = Column(Numeric(10, 2))
     archivo_tizado = Column(String(500))
     curva = Column(Text)
     
