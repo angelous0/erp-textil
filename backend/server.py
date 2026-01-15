@@ -1044,6 +1044,125 @@ def get_usuario_permisos(
     
     return get_user_permissions(usuario, db)
 
+# ==================== HISTORIAL / AUDITORÍA ENDPOINTS ====================
+
+@api_router.get("/historial", response_model=List[HistorialSchema])
+def get_historial(
+    usuario: Optional[str] = Query(None, description="Filtrar por username"),
+    tabla: Optional[str] = Query(None, description="Filtrar por tabla"),
+    accion: Optional[str] = Query(None, description="Filtrar por acción"),
+    fecha_desde: Optional[str] = Query(None, description="Fecha desde (ISO format)"),
+    fecha_hasta: Optional[str] = Query(None, description="Fecha hasta (ISO format)"),
+    page: int = Query(1, ge=1, description="Número de página"),
+    page_size: int = Query(50, ge=1, le=200, description="Tamaño de página"),
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(require_admin)
+):
+    """Obtiene el historial de movimientos con filtros opcionales"""
+    query = db.query(HistorialMovimiento)
+    
+    # Aplicar filtros
+    if usuario:
+        query = query.filter(HistorialMovimiento.username.ilike(f"%{usuario}%"))
+    if tabla:
+        query = query.filter(HistorialMovimiento.tabla == tabla)
+    if accion:
+        query = query.filter(HistorialMovimiento.accion == accion)
+    if fecha_desde:
+        try:
+            fecha_desde_dt = datetime.fromisoformat(fecha_desde.replace('Z', '+00:00'))
+            query = query.filter(HistorialMovimiento.fecha_hora >= fecha_desde_dt)
+        except ValueError:
+            pass
+    if fecha_hasta:
+        try:
+            fecha_hasta_dt = datetime.fromisoformat(fecha_hasta.replace('Z', '+00:00'))
+            query = query.filter(HistorialMovimiento.fecha_hora <= fecha_hasta_dt)
+        except ValueError:
+            pass
+    
+    # Ordenar por fecha descendente y paginar
+    total = query.count()
+    movimientos = query.order_by(desc(HistorialMovimiento.fecha_hora))\
+        .offset((page - 1) * page_size)\
+        .limit(page_size)\
+        .all()
+    
+    return movimientos
+
+@api_router.get("/historial/stats")
+def get_historial_stats(
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(require_admin)
+):
+    """Obtiene estadísticas del historial"""
+    from sqlalchemy import func
+    
+    # Total de movimientos
+    total = db.query(HistorialMovimiento).count()
+    
+    # Movimientos por tabla
+    por_tabla = db.query(
+        HistorialMovimiento.tabla,
+        func.count(HistorialMovimiento.id_movimiento).label('count')
+    ).group_by(HistorialMovimiento.tabla).all()
+    
+    # Movimientos por acción
+    por_accion = db.query(
+        HistorialMovimiento.accion,
+        func.count(HistorialMovimiento.id_movimiento).label('count')
+    ).group_by(HistorialMovimiento.accion).all()
+    
+    # Movimientos por usuario (top 10)
+    por_usuario = db.query(
+        HistorialMovimiento.username,
+        func.count(HistorialMovimiento.id_movimiento).label('count')
+    ).group_by(HistorialMovimiento.username)\
+     .order_by(desc('count'))\
+     .limit(10).all()
+    
+    # Últimos 7 días
+    hace_7_dias = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    hace_7_dias = hace_7_dias.replace(day=hace_7_dias.day - 7)
+    ultimos_7_dias = db.query(HistorialMovimiento)\
+        .filter(HistorialMovimiento.fecha_hora >= hace_7_dias)\
+        .count()
+    
+    return {
+        "total": total,
+        "ultimos_7_dias": ultimos_7_dias,
+        "por_tabla": {t: c for t, c in por_tabla},
+        "por_accion": {str(a.value) if hasattr(a, 'value') else str(a): c for a, c in por_accion},
+        "por_usuario": {u: c for u, c in por_usuario}
+    }
+
+@api_router.get("/historial/tablas")
+def get_historial_tablas(
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(require_admin)
+):
+    """Obtiene las tablas disponibles en el historial"""
+    tablas = db.query(HistorialMovimiento.tabla)\
+        .distinct()\
+        .all()
+    return [t[0] for t in tablas]
+
+@api_router.get("/historial/{id_movimiento}", response_model=HistorialSchema)
+def get_movimiento(
+    id_movimiento: int,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(require_admin)
+):
+    """Obtiene un movimiento específico con todos sus detalles"""
+    movimiento = db.query(HistorialMovimiento)\
+        .filter(HistorialMovimiento.id_movimiento == id_movimiento)\
+        .first()
+    
+    if not movimiento:
+        raise HTTPException(status_code=404, detail="Movimiento no encontrado")
+    
+    return movimiento
+
 app.include_router(api_router)
 
 app.add_middleware(
