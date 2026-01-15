@@ -115,6 +115,8 @@ def get_user_permissions(user: Usuario, db: Session) -> dict:
             "tizados_ver": True, "tizados_crear": True, "tizados_editar": True, "tizados_eliminar": True,
             "descargar_patrones": True, "descargar_tizados": True, "descargar_fichas": True,
             "descargar_imagenes": True, "descargar_costos": True,
+            "subir_patrones": True, "subir_tizados": True, "subir_fichas": True,
+            "subir_imagenes": True, "subir_costos": True,
             "gestionar_usuarios": True
         }
     
@@ -130,6 +132,8 @@ def get_user_permissions(user: Usuario, db: Session) -> dict:
             "tizados_ver": True, "tizados_crear": True, "tizados_editar": True, "tizados_eliminar": True,
             "descargar_patrones": True, "descargar_tizados": True, "descargar_fichas": True,
             "descargar_imagenes": True, "descargar_costos": True,
+            "subir_patrones": True, "subir_tizados": True, "subir_fichas": True,
+            "subir_imagenes": True, "subir_costos": True,
             "gestionar_usuarios": True
         }
     
