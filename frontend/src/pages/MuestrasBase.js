@@ -348,11 +348,57 @@ const MuestrasBase = () => {
 
   return (
     <div>
+      {/* Filtros de Aprobación */}
+      <div className="mb-4 flex items-center space-x-2">
+        <span className="text-sm font-medium text-slate-700">Filtrar por estado:</span>
+        <Button
+          variant={filtroAprobacion === 'aprobados' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setFiltroAprobacion('aprobados')}
+          className={filtroAprobacion === 'aprobados' ? 'bg-green-600 hover:bg-green-700' : ''}
+        >
+          <CheckCircle size={14} className="mr-1" />
+          Aprobados ({muestras.filter(m => m.aprobado).length})
+        </Button>
+        <Button
+          variant={filtroAprobacion === 'pendientes' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setFiltroAprobacion('pendientes')}
+          className={filtroAprobacion === 'pendientes' ? 'bg-slate-600 hover:bg-slate-700' : ''}
+        >
+          <XCircle size={14} className="mr-1" />
+          Pendientes ({muestras.filter(m => !m.aprobado).length})
+        </Button>
+        <Button
+          variant={filtroAprobacion === 'todos' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setFiltroAprobacion('todos')}
+          className={filtroAprobacion === 'todos' ? 'bg-blue-600 hover:bg-blue-700' : ''}
+        >
+          Todos ({muestras.length})
+        </Button>
+      </div>
+
       <ExcelGrid
-        data={muestras}
+        data={muestrasFiltradas}
         columns={columns}
         onAdd={() => handleOpenDialog()}
-        searchPlaceholder="Buscar muestras base..."
+        searchPlaceholder="Buscar por marca, tipo, tela, entalle..."
+        globalFilterFn={(row, columnId, filterValue) => {
+          // Búsqueda personalizada en múltiples campos
+          const searchValue = filterValue.toLowerCase();
+          const marca = row.original.marca?.nombre_marca?.toLowerCase() || '';
+          const tipo = row.original.tipo_producto?.nombre_tipo?.toLowerCase() || '';
+          const tela = row.original.tela?.nombre_tela?.toLowerCase() || '';
+          const entalle = row.original.entalle?.nombre_entalle?.toLowerCase() || '';
+          const id = row.original.id_muestra_base?.toString() || '';
+          
+          return marca.includes(searchValue) || 
+                 tipo.includes(searchValue) || 
+                 tela.includes(searchValue) || 
+                 entalle.includes(searchValue) ||
+                 id.includes(searchValue);
+        }}
       />
 
       {/* Dialog para ver detalles de una Base */}
