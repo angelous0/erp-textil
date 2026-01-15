@@ -165,6 +165,51 @@ def delete_tipo_producto(id_tipo: int, db: Session = Depends(get_db)):
     db.commit()
     return {"message": "Tipo de producto eliminado"}
 
+# MARCA Endpoints
+@api_router.get("/marcas", response_model=List[Marca])
+def get_marcas(db: Session = Depends(get_db)):
+    marcas = db.query(MarcaModel).all()
+    return marcas
+
+@api_router.get("/marcas/{id_marca}", response_model=Marca)
+def get_marca(id_marca: int, db: Session = Depends(get_db)):
+    marca = db.query(MarcaModel).filter(MarcaModel.id_marca == id_marca).first()
+    if not marca:
+        raise HTTPException(status_code=404, detail="Marca no encontrada")
+    return marca
+
+@api_router.post("/marcas", response_model=Marca)
+def create_marca(marca: MarcaCreate, db: Session = Depends(get_db)):
+    db_marca = MarcaModel(**marca.model_dump())
+    db.add(db_marca)
+    db.commit()
+    db.refresh(db_marca)
+    return db_marca
+
+@api_router.put("/marcas/{id_marca}", response_model=Marca)
+def update_marca(id_marca: int, marca: MarcaUpdate, db: Session = Depends(get_db)):
+    db_marca = db.query(MarcaModel).filter(MarcaModel.id_marca == id_marca).first()
+    if not db_marca:
+        raise HTTPException(status_code=404, detail="Marca no encontrada")
+    
+    for key, value in marca.model_dump(exclude_unset=True).items():
+        setattr(db_marca, key, value)
+    
+    db.commit()
+    db.refresh(db_marca)
+    return db_marca
+
+@api_router.delete("/marcas/{id_marca}")
+def delete_marca(id_marca: int, db: Session = Depends(get_db)):
+    db_marca = db.query(MarcaModel).filter(MarcaModel.id_marca == id_marca).first()
+    if not db_marca:
+        raise HTTPException(status_code=404, detail="Marca no encontrada")
+    
+    db.delete(db_marca)
+    db.commit()
+    return {"message": "Marca eliminada"}
+
+
 # MUESTRA_BASE Endpoints
 @api_router.get("/muestras-base", response_model=List[MuestraBase])
 def get_muestras_base(db: Session = Depends(get_db)):
