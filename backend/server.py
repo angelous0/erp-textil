@@ -10,12 +10,13 @@ import shutil
 import uuid
 
 from database import get_db, engine, Base
-from models import Tela as TelaModel, Entalle as EntalleModel, TipoProducto as TipoProductoModel
+from models import Tela as TelaModel, Entalle as EntalleModel, TipoProducto as TipoProductoModel, Marca as MarcaModel
 from models import MuestraBase as MuestraBaseModel, BaseModel as BaseDBModel, Tizado as TizadoModel, Ficha as FichaModel
 from schemas import (
     Tela, TelaCreate, TelaUpdate,
     Entalle, EntalleCreate, EntalleUpdate,
     TipoProducto, TipoProductoCreate, TipoProductoUpdate,
+    Marca, MarcaCreate, MarcaUpdate,
     MuestraBase, MuestraBaseCreate, MuestraBaseUpdate,
     BaseSchema, BaseCreate, BaseUpdate,
     Tizado, TizadoCreate, TizadoUpdate,
