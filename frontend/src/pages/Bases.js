@@ -539,14 +539,18 @@ const Bases = () => {
       header: 'Fichas',
       cell: ({ row }) => {
         const fichasCount = row.original.fichas?.length || 0;
-        return fichasCount > 0 ? (
+        return (
           <button
-            onClick={() => handleViewFichas(row.original.fichas)}
-            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer transition-colors"
+            onClick={() => handleViewFichas(row.original)}
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${
+              fichasCount > 0 
+                ? 'bg-blue-100 text-blue-800 hover:bg-blue-200' 
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
           >
-            {fichasCount} ficha{fichasCount > 1 ? 's' : ''}
+            {fichasCount > 0 ? `${fichasCount} ficha${fichasCount > 1 ? 's' : ''}` : '+ Agregar'}
           </button>
-        ) : '-';
+        );
       },
     },
     {
@@ -554,15 +558,17 @@ const Bases = () => {
       header: 'Tizados',
       cell: ({ row }) => {
         const tizadosCount = tizados.filter(t => t.id_base === row.original.id_base).length;
-        return tizadosCount > 0 ? (
+        return (
           <button
             onClick={() => handleViewTizados(row.original)}
-            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 hover:bg-purple-200 cursor-pointer transition-colors"
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${
+              tizadosCount > 0 
+                ? 'bg-purple-100 text-purple-800 hover:bg-purple-200' 
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
           >
-            {tizadosCount} tizado{tizadosCount > 1 ? 's' : ''}
+            {tizadosCount > 0 ? `${tizadosCount} tizado${tizadosCount > 1 ? 's' : ''}` : '+ Agregar'}
           </button>
-        ) : (
-          <span className="text-slate-400 text-xs">-</span>
         );
       },
     },
