@@ -17,6 +17,8 @@ const API = `${BACKEND_URL}/api`;
 
 const MuestrasBase = () => {
   const [muestras, setMuestras] = useState([]);
+  const [muestrasFiltradas, setMuestrasFiltradas] = useState([]);
+  const [filtroAprobacion, setFiltroAprobacion] = useState('aprobados'); // 'todos', 'aprobados', 'pendientes'
   const [telas, setTelas] = useState([]);
   const [entalles, setEntalles] = useState([]);
   const [tipos, setTipos] = useState([]);
@@ -78,10 +80,25 @@ const MuestrasBase = () => {
     try {
       const response = await axios.get(`${API}/muestras-base`);
       setMuestras(response.data);
+      aplicarFiltro(response.data, filtroAprobacion);
     } catch (error) {
       toast.error('Error al cargar muestras base');
     }
   };
+
+  const aplicarFiltro = (data, filtro) => {
+    let filtradas = data;
+    if (filtro === 'aprobados') {
+      filtradas = data.filter(m => m.aprobado === true);
+    } else if (filtro === 'pendientes') {
+      filtradas = data.filter(m => m.aprobado === false);
+    }
+    setMuestrasFiltradas(filtradas);
+  };
+
+  useEffect(() => {
+    aplicarFiltro(muestras, filtroAprobacion);
+  }, [filtroAprobacion, muestras]);
 
   const fetchTelas = async () => {
     try {
