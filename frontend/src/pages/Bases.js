@@ -575,6 +575,8 @@ const Bases = () => {
               Cerrar
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Dialog para ver y crear Tizados */}
       <Dialog open={tizadosDialogOpen} onOpenChange={setTizadosDialogOpen}>
