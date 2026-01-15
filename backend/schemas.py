@@ -104,6 +104,7 @@ class Ficha(FichaBase):
 
 class BaseBase(BaseModel):
     patron: Optional[str] = None
+    imagen: Optional[str] = None
     aprobado: Optional[bool] = False
 
 class BaseCreate(BaseBase):
@@ -111,6 +112,7 @@ class BaseCreate(BaseBase):
 
 class BaseUpdate(BaseModel):
     patron: Optional[str] = None
+    imagen: Optional[str] = None
     aprobado: Optional[bool] = None
 
 class BaseSchema(BaseBase):
