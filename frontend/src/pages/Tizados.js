@@ -21,6 +21,7 @@ const Tizados = () => {
   const [editingTizado, setEditingTizado] = useState(null);
   const [formData, setFormData] = useState({
     id_base: '',
+    ancho: '',
     archivo_tizado: '',
     curva: '',
   });
@@ -82,6 +83,7 @@ const Tizados = () => {
     try {
       const submitData = {
         id_base: parseInt(formData.id_base),
+        ancho: formData.ancho ? parseFloat(formData.ancho) : null,
         archivo_tizado: formData.archivo_tizado || null,
         curva: formData.curva || null,
       };
