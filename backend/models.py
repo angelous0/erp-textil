@@ -73,6 +73,13 @@ class PermisoUsuario(Base):
     descargar_imagenes = Column(Boolean, default=True)
     descargar_costos = Column(Boolean, default=False)
     
+    # Permisos de subida de archivos (separado de descarga)
+    subir_patrones = Column(Boolean, default=True)
+    subir_tizados = Column(Boolean, default=True)
+    subir_fichas = Column(Boolean, default=True)
+    subir_imagenes = Column(Boolean, default=True)
+    subir_costos = Column(Boolean, default=True)
+    
     usuario = relationship('Usuario', back_populates='permisos')
 
 class ColorEnum(str, enum.Enum):
