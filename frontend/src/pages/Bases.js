@@ -536,6 +536,7 @@ const Bases = () => {
       setEditingBase(base);
       setFormData({
         id_muestra_base: base.id_muestra_base.toString(),
+        modelo: base.modelo || '',
         patron: base.patron || '',
         imagen: base.imagen || '',
         aprobado: base.aprobado,
@@ -545,6 +546,7 @@ const Bases = () => {
       setEditingBase(null);
       setFormData({
         id_muestra_base: '',
+        modelo: '',
         patron: '',
         imagen: '',
         aprobado: false,
