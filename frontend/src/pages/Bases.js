@@ -751,24 +751,28 @@ const Bases = () => {
       header: 'Acciones',
       cell: ({ row }) => (
         <div className="flex space-x-2">
-          <Button
-            data-testid={`edit-base-${row.original.id_base}`}
-            variant="ghost"
-            size="sm"
-            onClick={() => handleOpenDialog(row.original)}
-            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-          >
-            <Edit size={16} />
-          </Button>
-          <Button
-            data-testid={`delete-base-${row.original.id_base}`}
-            variant="ghost"
-            size="sm"
-            onClick={() => handleDelete(row.original.id_base)}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <Trash2 size={16} />
-          </Button>
+          {canEdit('bases') && (
+            <Button
+              data-testid={`edit-base-${row.original.id_base}`}
+              variant="ghost"
+              size="sm"
+              onClick={() => handleOpenDialog(row.original)}
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            >
+              <Edit size={16} />
+            </Button>
+          )}
+          {canDelete('bases') && (
+            <Button
+              data-testid={`delete-base-${row.original.id_base}`}
+              variant="ghost"
+              size="sm"
+              onClick={() => handleDelete(row.original.id_base)}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <Trash2 size={16} />
+            </Button>
+          )}
         </div>
       ),
     },
