@@ -98,6 +98,12 @@ const Bases = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
+  // Estados para confirmación de eliminación de fichas y tizados en modales
+  const [deleteFichaDialogOpen, setDeleteFichaDialogOpen] = useState(false);
+  const [fichaToDelete, setFichaToDelete] = useState(null);
+  const [deleteTizadoDialogOpen, setDeleteTizadoDialogOpen] = useState(false);
+  const [tizadoToDelete, setTizadoToDelete] = useState(null);
+
   // Estados para modal de fichas con funcionalidad de crear
   const [currentBaseForFichas, setCurrentBaseForFichas] = useState(null);
   const [fichasSearchModal, setFichasSearchModal] = useState('');
