@@ -284,13 +284,18 @@ const MuestrasBase = () => {
       cell: ({ row }) => <span className="font-mono text-slate-600">{row.original.id_muestra_base}</span>,
     },
     {
-      accessorKey: 'tipo_producto.nombre_tipo',
-      header: 'Tipo Producto',
+      accessorKey: 'marca.nombre_marca',
+      header: 'Marca',
       cell: ({ row }) => (
         <span className="font-semibold text-slate-900">
-          {row.original.tipo_producto?.nombre_tipo || '-'}
+          {row.original.marca?.nombre_marca || '-'}
         </span>
       ),
+    },
+    {
+      accessorKey: 'tipo_producto.nombre_tipo',
+      header: 'Tipo Producto',
+      cell: ({ row }) => row.original.tipo_producto?.nombre_tipo || '-',
     },
     {
       accessorKey: 'entalle.nombre_entalle',
@@ -301,11 +306,6 @@ const MuestrasBase = () => {
       accessorKey: 'tela.nombre_tela',
       header: 'Tela',
       cell: ({ row }) => row.original.tela?.nombre_tela || '-',
-    },
-    {
-      accessorKey: 'marca.nombre_marca',
-      header: 'Marca',
-      cell: ({ row }) => row.original.marca?.nombre_marca || '-',
     },
     {
       accessorKey: 'consumo_estimado',
