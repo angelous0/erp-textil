@@ -573,6 +573,159 @@ const Bases = () => {
               Cerrar
             </Button>
           </DialogFooter>
+
+      {/* Dialog para ver y crear Tizados */}
+      <Dialog open={tizadosDialogOpen} onOpenChange={setTizadosDialogOpen}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-2xl">
+              Tizados de Base #{currentBaseForTizados?.id_base}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4 space-y-4">
+            {/* Buscador */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={16} />
+              <Input
+                placeholder="Buscar por ancho o curva..."
+                value={tizadosSearchModal}
+                onChange={(e) => setTizadosSearchModal(e.target.value)}
+                className="pl-9 bg-white border-slate-300"
+              />
+            </div>
+
+            {/* Tabla de Tizados */}
+            {getTizadosForModal().length > 0 ? (
+              <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-slate-100 border-b border-slate-200">
+                      <tr>
+                        <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">ID</th>
+                        <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">Ancho</th>
+                        <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">Curva</th>
+                        <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">Archivo</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {getTizadosForModal().map((tizado) => (
+                        <tr key={tizado.id_tizado} className="border-b border-slate-100 hover:bg-slate-50">
+                          <td className="py-3 px-4 font-mono text-slate-600">{tizado.id_tizado}</td>
+                          <td className="py-3 px-4 font-mono">{tizado.ancho || '-'}</td>
+                          <td className="py-3 px-4 text-slate-700">{tizado.curva || '-'}</td>
+                          <td className="py-3 px-4">
+                            {tizado.archivo_tizado ? (
+                              <button
+                                onClick={() => handleDownloadFile(tizado.archivo_tizado)}
+                                className="text-blue-600 hover:text-blue-800 underline text-sm"
+                              >
+                                📄 Descargar
+                              </button>
+                            ) : (
+                              <span className="text-slate-400 text-sm">Sin archivo</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-slate-500 bg-slate-50 border border-slate-200 rounded-lg">
+                {tizadosSearchModal ? 'No se encontraron tizados con esa búsqueda' : 'No hay tizados para esta base'}
+              </div>
+            )}
+
+            <Separator />
+
+            {/* Formulario para crear nuevo tizado */}
+            {!isCreatingTizado ? (
+              <Button
+                onClick={() => setIsCreatingTizado(true)}
+                className="w-full bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Plus size={18} className="mr-2" />
+                Crear Nuevo Tizado
+              </Button>
+            ) : (
+              <div className="border border-slate-200 rounded-lg p-4 bg-slate-50 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-slate-900">Nuevo Tizado</h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setIsCreatingTizado(false);
+                      setNewTizado({ ancho: '', curva: '', archivo_tizado: '' });
+                    }}
+                  >
+                    <X size={16} />
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="new-ancho">Ancho</Label>
+                    <Input
+                      id="new-ancho"
+                      type="number"
+                      step="0.01"
+                      value={newTizado.ancho}
+                      onChange={(e) => setNewTizado({ ...newTizado, ancho: e.target.value })}
+                      placeholder="Ej: 150, 180"
+                      className="border-slate-300"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="new-curva">Curva</Label>
+                    <Input
+                      id="new-curva"
+                      value={newTizado.curva}
+                      onChange={(e) => setNewTizado({ ...newTizado, curva: e.target.value })}
+                      placeholder="Ej: S-M-L-XL, 2-4-6-8"
+                      className="border-slate-300"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Archivo de Tizado</Label>
+                  <FileUpload
+                    value={newTizado.archivo_tizado}
+                    onChange={(file) => setNewTizado({ ...newTizado, archivo_tizado: file })}
+                    accept=".pdf,.dxf,.ai,.cdr"
+                  />
+                </div>
+
+                <div className="flex space-x-2">
+                  <Button
+                    onClick={handleCreateTizado}
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Guardar Tizado
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsCreatingTizado(false);
+                      setNewTizado({ ancho: '', curva: '', archivo_tizado: '' });
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button onClick={() => setTizadosDialogOpen(false)}>Cerrar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
         </DialogContent>
       </Dialog>
 
