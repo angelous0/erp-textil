@@ -217,6 +217,7 @@ def get_muestras_base(db: Session = Depends(get_db)):
         joinedload(MuestraBaseModel.tipo_producto),
         joinedload(MuestraBaseModel.entalle),
         joinedload(MuestraBaseModel.tela),
+        joinedload(MuestraBaseModel.marca),
         joinedload(MuestraBaseModel.bases).joinedload(BaseDBModel.tizados)
     ).all()
     return muestras
