@@ -34,6 +34,19 @@ const Bases = () => {
   const [fichasViewing, setFichasViewing] = useState([]);
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
   const [viewingImage, setViewingImage] = useState(null);
+  const [tizadosBusqueda, setTizadosBusqueda] = useState('');
+
+  const getTizadosFiltrados = () => {
+    if (!editingBase) return [];
+    const tizadosDeBase = tizados.filter(t => t.id_base === editingBase.id_base);
+    if (!tizadosBusqueda) return tizadosDeBase;
+    
+    const busqueda = tizadosBusqueda.toLowerCase();
+    return tizadosDeBase.filter(t => 
+      (t.ancho?.toString().includes(busqueda)) ||
+      (t.curva?.toLowerCase().includes(busqueda))
+    );
+  };
 
   const handleViewImage = (imageUrl) => {
     setViewingImage(imageUrl);
@@ -489,6 +502,74 @@ const Bases = () => {
                   </div>
                 </div>
               </div>
+
+              <Separator />
+
+              {/* Tabla de Tizados relacionados */}
+              {editingBase && (
+                <div className="space-y-3 border border-slate-200 rounded-lg p-4 bg-slate-50">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-base font-semibold text-slate-900">Tizados de esta Base</Label>
+                    <span className="text-xs text-slate-500">
+                      {getTizadosFiltrados().length} tizado(s)
+                    </span>
+                  </div>
+                  
+                  {/* Buscador de tizados */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={16} />
+                    <Input
+                      placeholder="Buscar por ancho o curva..."
+                      value={tizadosBusqueda}
+                      onChange={(e) => setTizadosBusqueda(e.target.value)}
+                      className="pl-9 bg-white border-slate-300 text-sm"
+                    />
+                  </div>
+
+                  {/* Tabla tipo Excel de Tizados */}
+                  {getTizadosFiltrados().length > 0 ? (
+                    <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead className="bg-slate-100 border-b border-slate-200">
+                            <tr>
+                              <th className="text-left py-2 px-3 text-xs font-semibold text-slate-700 uppercase">ID</th>
+                              <th className="text-left py-2 px-3 text-xs font-semibold text-slate-700 uppercase">Ancho</th>
+                              <th className="text-left py-2 px-3 text-xs font-semibold text-slate-700 uppercase">Curva</th>
+                              <th className="text-left py-2 px-3 text-xs font-semibold text-slate-700 uppercase">Archivo</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {getTizadosFiltrados().map((tizado, index) => (
+                              <tr key={tizado.id_tizado} className="border-b border-slate-100 hover:bg-slate-50">
+                                <td className="py-2 px-3 font-mono text-slate-600">{tizado.id_tizado}</td>
+                                <td className="py-2 px-3 font-mono">{tizado.ancho || '-'}</td>
+                                <td className="py-2 px-3 text-slate-700">{tizado.curva || '-'}</td>
+                                <td className="py-2 px-3">
+                                  {tizado.archivo_tizado ? (
+                                    <button
+                                      onClick={() => handleDownloadFile(tizado.archivo_tizado)}
+                                      className="text-blue-600 hover:text-blue-800 underline text-xs"
+                                    >
+                                      📄 Descargar
+                                    </button>
+                                  ) : (
+                                    <span className="text-slate-400 text-xs">Sin archivo</span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-6 text-slate-500 text-sm bg-white border border-slate-200 rounded-lg">
+                      {tizadosBusqueda ? 'No se encontraron tizados con esa búsqueda' : 'No hay tizados para esta base'}
+                    </div>
+                  )}
+                </div>
+              )}
 
               <Separator />
 
