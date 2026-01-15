@@ -1,9 +1,13 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { LayoutGrid, Tag, Package, Ruler, Layers, FileText, Zap } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutGrid, Tag, Package, Ruler, Layers, FileText, Zap, Users, LogOut, User } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Button } from './ui/button';
 
 const Layout = ({ children }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { usuario, logout, isAdmin } = useAuth();
 
   const menuItems = [
     { path: '/', icon: LayoutGrid, label: 'Dashboard', exact: true },
@@ -16,11 +20,31 @@ const Layout = ({ children }) => {
     { path: '/tizados', icon: FileText, label: 'Tizados' },
   ];
 
+  // Agregar usuarios si es admin
+  if (isAdmin()) {
+    menuItems.push({ path: '/usuarios', icon: Users, label: 'Usuarios' });
+  }
+
   const isActive = (item) => {
     if (item.exact) {
       return location.pathname === item.path;
     }
     return location.pathname.startsWith(item.path);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const getRolBadge = (rol) => {
+    const config = {
+      super_admin: 'bg-red-500',
+      admin: 'bg-orange-500',
+      editor: 'bg-blue-500',
+      viewer: 'bg-slate-500'
+    };
+    return config[rol] || 'bg-slate-500';
   };
 
   return (
@@ -33,7 +57,7 @@ const Layout = ({ children }) => {
           <p className="text-xs text-slate-400 mt-1">Sistema de Desarrollo</p>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {menuItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -54,8 +78,25 @@ const Layout = ({ children }) => {
           })}
         </nav>
 
+        {/* Usuario y logout */}
         <div className="p-4 border-t border-slate-800">
-          <p className="text-xs text-slate-500">v1.0.0 - Módulo Muestras</p>
+          <div className="flex items-center gap-3 mb-3">
+            <div className={`w-10 h-10 rounded-full ${getRolBadge(usuario?.rol)} flex items-center justify-center`}>
+              <User size={20} className="text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white truncate">{usuario?.nombre}</p>
+              <p className="text-xs text-slate-400 truncate">@{usuario?.username}</p>
+            </div>
+          </div>
+          <Button
+            onClick={handleLogout}
+            variant="ghost"
+            className="w-full justify-start text-slate-400 hover:text-white hover:bg-slate-800"
+          >
+            <LogOut size={18} className="mr-2" />
+            Cerrar Sesión
+          </Button>
         </div>
       </aside>
 
@@ -66,6 +107,16 @@ const Layout = ({ children }) => {
               <h2 className="text-2xl font-heading font-bold text-slate-900 tracking-tight">
                 {menuItems.find((item) => isActive(item))?.label || 'Dashboard'}
               </h2>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                usuario?.rol === 'super_admin' ? 'bg-red-100 text-red-800' :
+                usuario?.rol === 'admin' ? 'bg-orange-100 text-orange-800' :
+                usuario?.rol === 'editor' ? 'bg-blue-100 text-blue-800' :
+                'bg-slate-100 text-slate-800'
+              }`}>
+                {usuario?.rol?.replace('_', ' ').toUpperCase()}
+              </span>
             </div>
           </div>
         </header>
