@@ -585,11 +585,6 @@ const Bases = () => {
 
   const columns = [
     {
-      accessorKey: 'id_base',
-      header: 'ID',
-      cell: ({ row }) => <span className="font-mono text-slate-600">{row.original.id_base}</span>,
-    },
-    {
       accessorKey: 'id_muestra_base',
       header: 'Muestra Base',
       cell: ({ row }) => {
@@ -601,6 +596,15 @@ const Bases = () => {
           </span>
         );
       },
+    },
+    {
+      accessorKey: 'modelo',
+      header: 'Modelo',
+      cell: ({ row }) => (
+        <span className="font-semibold text-slate-900">
+          {row.original.modelo || <span className="text-slate-400 font-normal">-</span>}
+        </span>
+      ),
     },
     {
       accessorKey: 'patron',
