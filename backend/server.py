@@ -487,13 +487,38 @@ async def upload_file(file: UploadFile = File(...)):
 async def get_file(filename: str):
     if USE_R2:
         try:
-            # Generar URL firmada de R2 usando boto3
-            download_url = s3_client.generate_presigned_url(
-                'get_object',
-                Params={'Bucket': R2_BUCKET_NAME, 'Key': filename},
-                ExpiresIn=3600  # 1 hora
+            # Obtener el archivo directamente de R2 y servirlo
+            response = s3_client.get_object(
+                Bucket=R2_BUCKET_NAME,
+                Key=filename
             )
-            return RedirectResponse(url=download_url)
+            
+            # Obtener el contenido y tipo
+            file_content = response['Body'].read()
+            content_type = response.get('ContentType', 'application/octet-stream')
+            
+            # Determinar el content-disposition basado en la extensión
+            extension = Path(filename).suffix.lower()
+            if extension in ['.jpg', '.jpeg', '.png', '.gif', '.webp']:
+                disposition = 'inline'
+            else:
+                disposition = 'attachment'
+            
+            return StreamingResponse(
+                io.BytesIO(file_content),
+                media_type=content_type,
+                headers={
+                    'Content-Disposition': f'{disposition}; filename="{filename}"',
+                    'Content-Length': str(len(file_content))
+                }
+            )
+        except s3_client.exceptions.NoSuchKey:
+            print(f"⚠️ Archivo no encontrado en R2: {filename}")
+            # Fallback a archivo local
+            file_path = UPLOAD_DIR / filename
+            if file_path.exists():
+                return FileResponse(file_path)
+            raise HTTPException(status_code=404, detail="Archivo no encontrado")
         except Exception as e:
             print(f"⚠️ Error obteniendo de R2: {e}")
             # Fallback a archivo local
