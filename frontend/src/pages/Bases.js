@@ -84,6 +84,7 @@ const Bases = () => {
   useEffect(() => {
     fetchBases();
     fetchMuestras();
+    fetchTizados();
   }, []);
 
   const fetchBases = async () => {
