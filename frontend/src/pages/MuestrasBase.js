@@ -176,8 +176,10 @@ const MuestrasBase = () => {
         id_tipo: muestra.id_tipo.toString(),
         id_entalle: muestra.id_entalle.toString(),
         id_tela: muestra.id_tela.toString(),
+        id_marca: muestra.id_marca ? muestra.id_marca.toString() : '',
         consumo_estimado: muestra.consumo_estimado || '',
         costo_estimado: muestra.costo_estimado || '',
+        precio_estimado: muestra.precio_estimado || '',
         archivo_costo: muestra.archivo_costo || '',
         aprobado: muestra.aprobado,
       });
@@ -187,8 +189,10 @@ const MuestrasBase = () => {
         id_tipo: '',
         id_entalle: '',
         id_tela: '',
+        id_marca: '',
         consumo_estimado: '',
         costo_estimado: '',
+        precio_estimado: '',
         archivo_costo: '',
         aprobado: false,
       });
