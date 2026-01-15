@@ -20,14 +20,17 @@ const MuestrasBase = () => {
   const [telas, setTelas] = useState([]);
   const [entalles, setEntalles] = useState([]);
   const [tipos, setTipos] = useState([]);
+  const [marcas, setMarcas] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingMuestra, setEditingMuestra] = useState(null);
   const [formData, setFormData] = useState({
     id_tipo: '',
     id_entalle: '',
     id_tela: '',
+    id_marca: '',
     consumo_estimado: '',
     costo_estimado: '',
+    precio_estimado: '',
     archivo_costo: '',
     aprobado: false,
   });
@@ -68,6 +71,7 @@ const MuestrasBase = () => {
     fetchTelas();
     fetchEntalles();
     fetchTipos();
+    fetchMarcas();
   }, []);
 
   const fetchMuestras = async () => {
