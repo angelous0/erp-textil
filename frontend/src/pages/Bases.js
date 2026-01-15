@@ -137,11 +137,44 @@ const Bases = () => {
       // Recargar tizados
       await fetchTizados();
       
+      // Actualizar la lista del modal
+      const response = await axios.get(`${API}/tizados`);
+      const tizadosDeBase = response.data.filter(t => t.id_base === currentBaseForTizados.id_base);
+      setTizadosOrdenados(tizadosDeBase);
+      
       // Limpiar formulario
       setNewTizado({ ancho: '', curva: '', archivo_tizado: '' });
       setIsCreatingTizado(false);
     } catch (error) {
       toast.error('Error al crear tizado');
+      console.error(error);
+    }
+  };
+
+  const handleDeleteTizadoFromModal = async (tizado) => {
+    try {
+      // Eliminar archivo de R2 si existe
+      if (tizado.archivo_tizado) {
+        try {
+          await axios.delete(`${API}/files/${tizado.archivo_tizado}`);
+        } catch (e) {
+          console.log('Archivo no encontrado');
+        }
+      }
+      
+      // Eliminar el tizado
+      await axios.delete(`${API}/tizados/${tizado.id_tizado}`);
+      toast.success('Tizado eliminado');
+      
+      // Recargar tizados
+      await fetchTizados();
+      
+      // Actualizar la lista del modal
+      const response = await axios.get(`${API}/tizados`);
+      const tizadosDeBase = response.data.filter(t => t.id_base === currentBaseForTizados.id_base);
+      setTizadosOrdenados(tizadosDeBase);
+    } catch (error) {
+      toast.error('Error al eliminar tizado');
       console.error(error);
     }
   };
