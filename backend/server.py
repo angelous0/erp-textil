@@ -2,7 +2,7 @@ from fastapi import FastAPI, APIRouter, Depends, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse, RedirectResponse, StreamingResponse
 from starlette.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session, joinedload
-from typing import List
+from typing import List, Optional
 import os
 import logging
 from pathlib import Path
@@ -11,10 +11,12 @@ import uuid
 import boto3
 from botocore.config import Config as BotoConfig
 import io
+from datetime import timedelta
 
 from database import get_db, engine, Base
 from models import Tela as TelaModel, Entalle as EntalleModel, TipoProducto as TipoProductoModel, Marca as MarcaModel
 from models import MuestraBase as MuestraBaseModel, BaseModel as BaseDBModel, Tizado as TizadoModel, Ficha as FichaModel
+from models import Usuario as UsuarioModel, PermisoUsuario as PermisoModel, RolEnum
 from schemas import (
     Tela, TelaCreate, TelaUpdate,
     Entalle, EntalleCreate, EntalleUpdate,
@@ -23,7 +25,13 @@ from schemas import (
     MuestraBase, MuestraBaseCreate, MuestraBaseUpdate,
     BaseSchema, BaseCreate, BaseUpdate,
     Tizado, TizadoCreate, TizadoUpdate,
-    Ficha, FichaCreate, FichaUpdate
+    Ficha, FichaCreate, FichaUpdate,
+    UsuarioSchema, UsuarioCreate, UsuarioUpdate, UsuarioLogin, Token, PermisoBase
+)
+from auth import (
+    verify_password, get_password_hash, create_access_token,
+    get_current_user, require_admin, require_super_admin,
+    get_user_permissions, create_default_permissions, ACCESS_TOKEN_EXPIRE_MINUTES
 )
 
 app = FastAPI()
