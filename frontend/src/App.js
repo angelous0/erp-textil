@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Telas from './pages/Telas';
 import Entalles from './pages/Entalles';
 import TiposProducto from './pages/TiposProducto';
+import Marcas from './pages/Marcas';
 import MuestrasBase from './pages/MuestrasBase';
 import Bases from './pages/Bases';
 import Tizados from './pages/Tizados';
@@ -21,6 +22,7 @@ function App() {
             <Route path="/telas" element={<Telas />} />
             <Route path="/entalles" element={<Entalles />} />
             <Route path="/tipos-producto" element={<TiposProducto />} />
+            <Route path="/marcas" element={<Marcas />} />
             <Route path="/muestras-base" element={<MuestrasBase />} />
             <Route path="/bases" element={<Bases />} />
             <Route path="/tizados" element={<Tizados />} />
