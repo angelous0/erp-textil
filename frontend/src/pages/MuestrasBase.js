@@ -871,6 +871,44 @@ const MuestrasBase = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* AlertDialog para confirmar eliminación */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertTriangle size={20} />
+              Confirmar Eliminación
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600">
+              ¿Estás seguro de que deseas eliminar esta muestra base?
+              {itemToDelete && (
+                <div className="mt-3 p-3 bg-slate-50 rounded-lg text-sm">
+                  <p><strong>ID:</strong> {itemToDelete.id_muestra_base}</p>
+                  <p><strong>Tipo:</strong> {itemToDelete.tipo_producto?.nombre_tipo || '-'}</p>
+                  <p><strong>Marca:</strong> {itemToDelete.marca?.nombre_marca || '-'}</p>
+                  {itemToDelete.archivo_costo && <p><strong>Archivo Costo:</strong> Se eliminará</p>}
+                  {itemToDelete.bases?.length > 0 && (
+                    <p className="text-orange-600"><strong>⚠️ Bases:</strong> Se eliminarán {itemToDelete.bases.length} base(s) y todos sus archivos asociados</p>
+                  )}
+                </div>
+              )}
+              <p className="mt-3 text-red-500 font-medium">
+                Esta acción no se puede deshacer.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
