@@ -188,16 +188,16 @@ const Usuarios = () => {
       </div>
 
       {/* Lista de usuarios */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <table className="w-full">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-x-auto">
+        <table className="w-full min-w-[800px]">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
-              <th className="text-left py-4 px-6 text-xs font-semibold text-slate-600 uppercase">Usuario</th>
-              <th className="text-left py-4 px-6 text-xs font-semibold text-slate-600 uppercase">Nombre</th>
-              <th className="text-left py-4 px-6 text-xs font-semibold text-slate-600 uppercase">Email</th>
-              <th className="text-left py-4 px-6 text-xs font-semibold text-slate-600 uppercase">Rol</th>
-              <th className="text-left py-4 px-6 text-xs font-semibold text-slate-600 uppercase">Estado</th>
-              <th className="text-left py-4 px-6 text-xs font-semibold text-slate-600 uppercase">Acciones</th>
+              <th className="text-left py-4 px-6 text-xs font-semibold text-slate-600 uppercase whitespace-nowrap">Usuario</th>
+              <th className="text-left py-4 px-6 text-xs font-semibold text-slate-600 uppercase whitespace-nowrap">Nombre</th>
+              <th className="text-left py-4 px-6 text-xs font-semibold text-slate-600 uppercase whitespace-nowrap">Email</th>
+              <th className="text-left py-4 px-6 text-xs font-semibold text-slate-600 uppercase whitespace-nowrap">Rol</th>
+              <th className="text-left py-4 px-6 text-xs font-semibold text-slate-600 uppercase whitespace-nowrap">Estado</th>
+              <th className="text-left py-4 px-6 text-xs font-semibold text-slate-600 uppercase whitespace-nowrap">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
