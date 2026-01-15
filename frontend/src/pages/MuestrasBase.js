@@ -397,24 +397,28 @@ const MuestrasBase = () => {
       header: 'Acciones',
       cell: ({ row }) => (
         <div className="flex space-x-2">
-          <Button
-            data-testid={`edit-muestra-${row.original.id_muestra_base}`}
-            variant="ghost"
-            size="sm"
-            onClick={() => handleOpenDialog(row.original)}
-            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-          >
-            <Edit size={16} />
-          </Button>
-          <Button
-            data-testid={`delete-muestra-${row.original.id_muestra_base}`}
-            variant="ghost"
-            size="sm"
-            onClick={() => handleDelete(row.original.id_muestra_base)}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <Trash2 size={16} />
-          </Button>
+          {canEdit('muestras') && (
+            <Button
+              data-testid={`edit-muestra-${row.original.id_muestra_base}`}
+              variant="ghost"
+              size="sm"
+              onClick={() => handleOpenDialog(row.original)}
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            >
+              <Edit size={16} />
+            </Button>
+          )}
+          {canDelete('muestras') && (
+            <Button
+              data-testid={`delete-muestra-${row.original.id_muestra_base}`}
+              variant="ghost"
+              size="sm"
+              onClick={() => handleDelete(row.original.id_muestra_base)}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <Trash2 size={16} />
+            </Button>
+          )}
         </div>
       ),
     },
@@ -456,7 +460,7 @@ const MuestrasBase = () => {
       <ExcelGrid
         data={muestrasFiltradas}
         columns={columns}
-        onAdd={() => handleOpenDialog()}
+        onAdd={canCreate('muestras') ? () => handleOpenDialog() : null}
         searchPlaceholder="Buscar por marca, tipo, tela, entalle..."
         globalFilterFn={(row, columnId, filterValue) => {
           // Búsqueda personalizada en múltiples campos
