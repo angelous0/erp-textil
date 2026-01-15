@@ -319,31 +319,62 @@ def get_marca(id_marca: int, db: Session = Depends(get_db)):
     return marca
 
 @api_router.post("/marcas", response_model=Marca)
-def create_marca(marca: MarcaCreate, db: Session = Depends(get_db)):
+def create_marca(
+    marca: MarcaCreate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_marca = MarcaModel(**marca.model_dump())
     db.add(db_marca)
     db.commit()
     db.refresh(db_marca)
+    
+    audit_create(db, current_user, "marcas", db_marca, db_marca.id_marca,
+                 f"Creó marca: {db_marca.nombre_marca}",
+                 get_client_ip(request), get_user_agent(request))
     return db_marca
 
 @api_router.put("/marcas/{id_marca}", response_model=Marca)
-def update_marca(id_marca: int, marca: MarcaUpdate, db: Session = Depends(get_db)):
+def update_marca(
+    id_marca: int,
+    marca: MarcaUpdate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_marca = db.query(MarcaModel).filter(MarcaModel.id_marca == id_marca).first()
     if not db_marca:
         raise HTTPException(status_code=404, detail="Marca no encontrada")
+    
+    datos_anteriores = model_to_dict(db_marca)
     
     for key, value in marca.model_dump(exclude_unset=True).items():
         setattr(db_marca, key, value)
     
     db.commit()
     db.refresh(db_marca)
+    
+    audit_update(db, current_user, "marcas", datos_anteriores, db_marca, id_marca,
+                 f"Editó marca: {db_marca.nombre_marca}",
+                 get_client_ip(request), get_user_agent(request))
     return db_marca
 
 @api_router.delete("/marcas/{id_marca}")
-def delete_marca(id_marca: int, db: Session = Depends(get_db)):
+def delete_marca(
+    id_marca: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_marca = db.query(MarcaModel).filter(MarcaModel.id_marca == id_marca).first()
     if not db_marca:
         raise HTTPException(status_code=404, detail="Marca no encontrada")
+    
+    nombre = db_marca.nombre_marca
+    audit_delete(db, current_user, "marcas", db_marca, id_marca,
+                 f"Eliminó marca: {nombre}",
+                 get_client_ip(request), get_user_agent(request))
     
     db.delete(db_marca)
     db.commit()
@@ -376,11 +407,20 @@ def get_muestra_base(id_muestra_base: int, db: Session = Depends(get_db)):
     return muestra
 
 @api_router.post("/muestras-base", response_model=MuestraBase)
-def create_muestra_base(muestra: MuestraBaseCreate, db: Session = Depends(get_db)):
+def create_muestra_base(
+    muestra: MuestraBaseCreate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_muestra = MuestraBaseModel(**muestra.model_dump())
     db.add(db_muestra)
     db.commit()
     db.refresh(db_muestra)
+    
+    audit_create(db, current_user, "muestras_base", db_muestra, db_muestra.id_muestra_base,
+                 f"Creó muestra base ID: {db_muestra.id_muestra_base}",
+                 get_client_ip(request), get_user_agent(request))
     
     muestra_result = db.query(MuestraBaseModel).options(
         joinedload(MuestraBaseModel.tipo_producto),
@@ -392,10 +432,18 @@ def create_muestra_base(muestra: MuestraBaseCreate, db: Session = Depends(get_db
     return muestra_result
 
 @api_router.put("/muestras-base/{id_muestra_base}", response_model=MuestraBase)
-def update_muestra_base(id_muestra_base: int, muestra: MuestraBaseUpdate, db: Session = Depends(get_db)):
+def update_muestra_base(
+    id_muestra_base: int,
+    muestra: MuestraBaseUpdate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_muestra = db.query(MuestraBaseModel).filter(MuestraBaseModel.id_muestra_base == id_muestra_base).first()
     if not db_muestra:
         raise HTTPException(status_code=404, detail="Muestra base no encontrada")
+    
+    datos_anteriores = model_to_dict(db_muestra)
     
     for key, value in muestra.model_dump(exclude_unset=True).items():
         setattr(db_muestra, key, value)
