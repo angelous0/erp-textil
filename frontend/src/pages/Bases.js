@@ -321,6 +321,27 @@ const Bases = () => {
         searchPlaceholder="Buscar bases..."
       />
 
+      {/* Dialog para ver imagen ampliada */}
+      <Dialog open={imageViewerOpen} onOpenChange={setImageViewerOpen}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-2xl">Vista de Imagen</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 flex justify-center">
+            {viewingImage && (
+              <img 
+                src={`${API}/files/${viewingImage}`} 
+                alt="Base completa"
+                className="max-w-full max-h-[70vh] object-contain rounded-lg border border-slate-200"
+              />
+            )}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setImageViewerOpen(false)}>Cerrar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Dialog para ver fichas */}
       <Dialog open={fichasDialogOpen} onOpenChange={setFichasDialogOpen}>
         <DialogContent className="max-w-3xl">
