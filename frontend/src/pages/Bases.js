@@ -217,8 +217,16 @@ const Bases = () => {
     },
     {
       accessorKey: 'id_muestra_base',
-      header: 'ID Muestra',
-      cell: ({ row }) => <span className="font-mono text-slate-600">{row.original.id_muestra_base}</span>,
+      header: 'Muestra Base',
+      cell: ({ row }) => {
+        const muestra = muestras.find(m => m.id_muestra_base === row.original.id_muestra_base);
+        if (!muestra) return <span className="text-slate-400">-</span>;
+        return (
+          <span className="text-sm">
+            {muestra.id_muestra_base} - {muestra.marca?.nombre_marca || 'Sin Marca'} - {muestra.tipo_producto?.nombre_tipo} - {muestra.entalle?.nombre_entalle} - {muestra.tela?.nombre_tela}
+          </span>
+        );
+      },
     },
     {
       accessorKey: 'patron',
