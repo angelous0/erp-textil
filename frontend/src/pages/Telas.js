@@ -16,6 +16,7 @@ const Telas = () => {
   const [telas, setTelas] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTela, setEditingTela] = useState(null);
+  const [clasificacionesHistorial, setClasificacionesHistorial] = useState([]);
   const [formData, setFormData] = useState({
     nombre_tela: '',
     gramaje: '',
@@ -23,6 +24,8 @@ const Telas = () => {
     proveedor: '',
     ancho_estandar: '',
     color: '',
+    clasificacion: '',
+    precio: '',
   });
 
   useEffect(() => {
@@ -33,6 +36,13 @@ const Telas = () => {
     try {
       const response = await axios.get(`${API}/telas`);
       setTelas(response.data);
+      
+      // Extraer clasificaciones únicas para el historial
+      const clasificaciones = [...new Set(response.data
+        .map(t => t.clasificacion)
+        .filter(c => c && c.trim() !== '')
+      )];
+      setClasificacionesHistorial(clasificaciones);
     } catch (error) {
       toast.error('Error al cargar telas');
     }
@@ -75,6 +85,8 @@ const Telas = () => {
         proveedor: tela.proveedor || '',
         ancho_estandar: tela.ancho_estandar || '',
         color: tela.color || '',
+        clasificacion: tela.clasificacion || '',
+        precio: tela.precio || '',
       });
     } else {
       setEditingTela(null);
@@ -85,6 +97,8 @@ const Telas = () => {
         proveedor: '',
         ancho_estandar: '',
         color: '',
+        clasificacion: '',
+        precio: '',
       });
     }
     setIsDialogOpen(true);
@@ -134,6 +148,19 @@ const Telas = () => {
             {color}
           </span>
         ) : null;
+      },
+    },
+    {
+      accessorKey: 'clasificacion',
+      header: 'Clasificación',
+      cell: ({ row }) => <span>{row.original.clasificacion}</span>,
+    },
+    {
+      accessorKey: 'precio',
+      header: 'Precio',
+      cell: ({ row }) => {
+        const precio = row.original.precio;
+        return precio ? <span className="font-mono">S/ {parseFloat(precio).toFixed(2)}</span> : null;
       },
     },
     {
@@ -251,6 +278,35 @@ const Telas = () => {
                     <SelectItem value="Negro">Negro</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="clasificacion">Clasificación</Label>
+                <Input
+                  id="clasificacion"
+                  data-testid="input-clasificacion"
+                  value={formData.clasificacion}
+                  onChange={(e) => setFormData({ ...formData, clasificacion: e.target.value })}
+                  className="border-slate-200 focus:ring-blue-500"
+                  list="clasificaciones-historial"
+                  placeholder="Ej: Premium, Estándar"
+                />
+                <datalist id="clasificaciones-historial">
+                  {clasificacionesHistorial.map((clasificacion, index) => (
+                    <option key={index} value={clasificacion} />
+                  ))}
+                </datalist>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="precio">Precio (S/)</Label>
+                <Input
+                  id="precio"
+                  data-testid="input-precio"
+                  type="number"
+                  step="0.01"
+                  value={formData.precio}
+                  onChange={(e) => setFormData({ ...formData, precio: e.target.value })}
+                  className="border-slate-200 focus:ring-blue-500"
+                />
               </div>
             </div>
             <DialogFooter>
