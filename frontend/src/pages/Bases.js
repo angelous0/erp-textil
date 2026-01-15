@@ -377,7 +377,7 @@ const Bases = () => {
                     <SelectContent>
                       {muestras.map((muestra) => (
                         <SelectItem key={muestra.id_muestra_base} value={muestra.id_muestra_base.toString()}>
-                          ID {muestra.id_muestra_base} - {muestra.tipo_producto?.nombre_tipo}
+                          {muestra.id_muestra_base} - {muestra.marca?.nombre_marca || 'Sin Marca'} - {muestra.tipo_producto?.nombre_tipo} - {muestra.tela?.nombre_tela} - {muestra.entalle?.nombre_entalle}
                         </SelectItem>
                       ))}
                     </SelectContent>
