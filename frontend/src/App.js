@@ -13,6 +13,7 @@ import MuestrasBase from './pages/MuestrasBase';
 import Bases from './pages/Bases';
 import Tizados from './pages/Tizados';
 import Usuarios from './pages/Usuarios';
+import Historial from './pages/Historial';
 import '@/App.css';
 
 // Componente para rutas protegidas
@@ -70,6 +71,14 @@ const AppRoutes = () => {
                   element={
                     <ProtectedRoute requireAdmin>
                       <Usuarios />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/historial" 
+                  element={
+                    <ProtectedRoute requireAdmin>
+                      <Historial />
                     </ProtectedRoute>
                   } 
                 />
