@@ -203,16 +203,16 @@ const MuestrasBase = () => {
       if (itemToDelete.bases) {
         for (const base of itemToDelete.bases) {
           if (base.patron) {
-            try { await axios.delete(`${API}/files/${base.patron}`); } catch (e) {}
+            try { await axios.delete(`${API}/files/${base.patron}`); } catch (e) { /* archivo no encontrado */ }
           }
           if (base.imagen) {
-            try { await axios.delete(`${API}/files/${base.imagen}`); } catch (e) {}
+            try { await axios.delete(`${API}/files/${base.imagen}`); } catch (e) { /* archivo no encontrado */ }
           }
           // Fichas
           if (base.fichas) {
             for (const ficha of base.fichas) {
               if (ficha.archivo) {
-                try { await axios.delete(`${API}/files/${ficha.archivo}`); } catch (e) {}
+                try { await axios.delete(`${API}/files/${ficha.archivo}`); } catch (e) { /* archivo no encontrado */ }
               }
             }
           }
@@ -220,7 +220,7 @@ const MuestrasBase = () => {
           if (base.tizados) {
             for (const tizado of base.tizados) {
               if (tizado.archivo_tizado) {
-                try { await axios.delete(`${API}/files/${tizado.archivo_tizado}`); } catch (e) {}
+                try { await axios.delete(`${API}/files/${tizado.archivo_tizado}`); } catch (e) { /* archivo no encontrado */ }
               }
             }
           }
