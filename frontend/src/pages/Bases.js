@@ -425,6 +425,7 @@ const Bases = () => {
     try {
       const submitData = {
         id_muestra_base: parseInt(formData.id_muestra_base),
+        modelo: formData.modelo || null,
         patron: formData.patron || null,
         imagen: formData.imagen || null,
         aprobado: formData.aprobado,
