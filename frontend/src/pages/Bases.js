@@ -1486,6 +1486,74 @@ const Bases = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* AlertDialog para confirmar eliminación de Ficha */}
+      <AlertDialog open={deleteFichaDialogOpen} onOpenChange={setDeleteFichaDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertTriangle size={20} />
+              Confirmar Eliminación de Ficha
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600">
+              ¿Estás seguro de que deseas eliminar esta ficha?
+              {fichaToDelete && (
+                <div className="mt-3 p-3 bg-slate-50 rounded-lg text-sm">
+                  <p><strong>Nombre:</strong> {fichaToDelete.nombre_ficha || 'Sin nombre'}</p>
+                  {fichaToDelete.archivo && <p><strong>Archivo:</strong> Se eliminará el archivo</p>}
+                </div>
+              )}
+              <p className="mt-3 text-red-500 font-medium">
+                Esta acción no se puede deshacer.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteFicha}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* AlertDialog para confirmar eliminación de Tizado */}
+      <AlertDialog open={deleteTizadoDialogOpen} onOpenChange={setDeleteTizadoDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertTriangle size={20} />
+              Confirmar Eliminación de Tizado
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600">
+              ¿Estás seguro de que deseas eliminar este tizado?
+              {tizadoToDelete && (
+                <div className="mt-3 p-3 bg-slate-50 rounded-lg text-sm">
+                  <p><strong>ID:</strong> {tizadoToDelete.id_tizado}</p>
+                  {tizadoToDelete.ancho && <p><strong>Ancho:</strong> {tizadoToDelete.ancho}</p>}
+                  {tizadoToDelete.curva && <p><strong>Curva:</strong> {tizadoToDelete.curva}</p>}
+                  {tizadoToDelete.archivo_tizado && <p><strong>Archivo:</strong> Se eliminará el archivo</p>}
+                </div>
+              )}
+              <p className="mt-3 text-red-500 font-medium">
+                Esta acción no se puede deshacer.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteTizado}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
