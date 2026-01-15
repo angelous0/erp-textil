@@ -1,7 +1,8 @@
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, UploadFile, File, Request, Query
 from fastapi.responses import FileResponse, RedirectResponse, StreamingResponse
 from starlette.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import desc
 from typing import List, Optional
 import os
 import logging
@@ -11,12 +12,12 @@ import uuid
 import boto3
 from botocore.config import Config as BotoConfig
 import io
-from datetime import timedelta
+from datetime import timedelta, datetime, timezone
 
 from database import get_db, engine, Base
 from models import Tela as TelaModel, Entalle as EntalleModel, TipoProducto as TipoProductoModel, Marca as MarcaModel
 from models import MuestraBase as MuestraBaseModel, BaseModel as BaseDBModel, Tizado as TizadoModel, Ficha as FichaModel
-from models import Usuario as UsuarioModel, PermisoUsuario as PermisoModel, RolEnum
+from models import Usuario as UsuarioModel, PermisoUsuario as PermisoModel, RolEnum, HistorialMovimiento, AccionEnum
 from schemas import (
     Tela, TelaCreate, TelaUpdate,
     Entalle, EntalleCreate, EntalleUpdate,
@@ -26,13 +27,15 @@ from schemas import (
     BaseSchema, BaseCreate, BaseUpdate,
     Tizado, TizadoCreate, TizadoUpdate,
     Ficha, FichaCreate, FichaUpdate,
-    UsuarioSchema, UsuarioCreate, UsuarioUpdate, UsuarioLogin, Token, PermisoBase
+    UsuarioSchema, UsuarioCreate, UsuarioUpdate, UsuarioLogin, Token, PermisoBase,
+    HistorialSchema, AccionEnum as AccionEnumSchema
 )
 from auth import (
     verify_password, get_password_hash, create_access_token,
-    get_current_user, require_admin, require_super_admin,
+    get_current_user, get_current_user_optional, require_admin, require_super_admin,
     get_user_permissions, create_default_permissions, ACCESS_TOKEN_EXPIRE_MINUTES
 )
+from audit import audit_create, audit_update, audit_delete, audit_file_action, audit_login, model_to_dict
 
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
