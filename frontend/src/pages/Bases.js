@@ -51,6 +51,12 @@ const Bases = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
+  // Estados para modal de fichas con funcionalidad de crear
+  const [currentBaseForFichas, setCurrentBaseForFichas] = useState(null);
+  const [fichasSearchModal, setFichasSearchModal] = useState('');
+  const [newFicha, setNewFicha] = useState({ nombre_ficha: '', archivo: '' });
+  const [isCreatingFicha, setIsCreatingFicha] = useState(false);
+
   const handleViewTizados = (base) => {
     setCurrentBaseForTizados(base);
     const tizadosDeBase = tizados.filter(t => t.id_base === base.id_base);
