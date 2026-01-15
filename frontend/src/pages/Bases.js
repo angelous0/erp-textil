@@ -1205,16 +1205,26 @@ const Bases = () => {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <div className="flex items-center space-x-2 pt-8">
-                    <Switch
-                      id="aprobado"
-                      data-testid="switch-aprobado-base"
-                      checked={formData.aprobado}
-                      onCheckedChange={(checked) => setFormData({ ...formData, aprobado: checked })}
-                    />
-                    <Label htmlFor="aprobado">Aprobado</Label>
-                  </div>
+                  <Label htmlFor="modelo">Modelo</Label>
+                  <Input
+                    id="modelo"
+                    data-testid="input-modelo"
+                    value={formData.modelo}
+                    onChange={(e) => setFormData({ ...formData, modelo: e.target.value })}
+                    placeholder="Ej: MOD-001, POLO-BASIC"
+                    className="border-slate-300"
+                  />
                 </div>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="aprobado"
+                  data-testid="switch-aprobado-base"
+                  checked={formData.aprobado}
+                  onCheckedChange={(checked) => setFormData({ ...formData, aprobado: checked })}
+                />
+                <Label htmlFor="aprobado">Aprobado</Label>
               </div>
 
               <Separator />
