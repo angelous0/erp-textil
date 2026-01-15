@@ -228,6 +228,7 @@ def get_muestra_base(id_muestra_base: int, db: Session = Depends(get_db)):
         joinedload(MuestraBaseModel.tipo_producto),
         joinedload(MuestraBaseModel.entalle),
         joinedload(MuestraBaseModel.tela),
+        joinedload(MuestraBaseModel.marca),
         joinedload(MuestraBaseModel.bases).joinedload(BaseDBModel.tizados)
     ).filter(MuestraBaseModel.id_muestra_base == id_muestra_base).first()
     if not muestra:
