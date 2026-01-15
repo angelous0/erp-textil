@@ -48,7 +48,7 @@ class Usuario(Base):
     nombre = Column(String(255), nullable=False)
     rol = Column(Enum(RolEnum), default=RolEnum.viewer)
     activo = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     
     permisos = relationship('PermisoUsuario', back_populates='usuario', cascade='all, delete-orphan')
 
