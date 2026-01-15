@@ -29,6 +29,13 @@ api_router = APIRouter(prefix="/api")
 UPLOAD_DIR = Path(os.environ.get('UPLOAD_DIR', '/app/backend/uploads'))
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
+# Configuración R2
+USE_R2 = os.environ.get("R2_ACCOUNT_ID") is not None
+if USE_R2:
+    print("✅ Almacenamiento configurado: CLOUDFLARE R2")
+else:
+    print("⚠️  Almacenamiento configurado: LOCAL (uploads/)")
+
 @api_router.get("/")
 def root():
     return {"message": "ERP Textil API"}
@@ -427,26 +434,108 @@ def delete_ficha(id_ficha: int, db: Session = Depends(get_db)):
 
 # FILE UPLOAD Endpoint
 @api_router.post("/upload")
-def upload_file(file: UploadFile = File(...)):
+async def upload_file(file: UploadFile = File(...)):
     try:
         file_extension = Path(file.filename).suffix
         unique_filename = f"{uuid.uuid4()}{file_extension}"
-        file_path = UPLOAD_DIR / unique_filename
         
-        with open(file_path, 'wb') as f:
-            shutil.copyfileobj(file.file, f)
+        # Leer contenido del archivo
+        file_content = await file.read()
+        
+        if USE_R2:
+            # Subir a Cloudflare R2 usando Node.js
+            import subprocess
+            import json
+            
+            # Guardar temporalmente
+            temp_path = UPLOAD_DIR / unique_filename
+            with open(temp_path, 'wb') as f:
+                f.write(file_content)
+            
+            result = subprocess.run(
+                ['node', '-e', f'''
+                const {{ uploadToR2 }} = require('./r2Storage.js');
+                const fs = require('fs');
+                
+                const buffer = fs.readFileSync('{temp_path}');
+                
+                uploadToR2(buffer, '{unique_filename}', '{file.content_type or "application/octet-stream"}')
+                    .then(() => {{
+                        console.log('SUCCESS');
+                        fs.unlinkSync('{temp_path}');
+                    }})
+                    .catch(err => {{
+                        console.error('ERROR:', err.message);
+                        process.exit(1);
+                    }});
+                '''],
+                cwd='/app/backend',
+                capture_output=True,
+                text=True
+            )
+            
+            if result.returncode != 0 or 'ERROR' in result.stdout:
+                # Si falla R2, guardar localmente como fallback
+                print(f"⚠️ R2 falló, guardando localmente: {result.stderr}")
+            else:
+                print(f"✅ Archivo subido a R2: {unique_filename}")
+                # Eliminar archivo temporal si la subida fue exitosa
+                if temp_path.exists():
+                    temp_path.unlink()
+        else:
+            # Guardar localmente
+            file_path = UPLOAD_DIR / unique_filename
+            with open(file_path, 'wb') as f:
+                f.write(file_content)
+            print(f"✅ Archivo guardado localmente: {unique_filename}")
         
         return {"filename": unique_filename, "url": f"/api/files/{unique_filename}"}
     except Exception as e:
+        print(f"❌ Error en upload: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # FILE DOWNLOAD Endpoint
 @api_router.get("/files/{filename}")
-def get_file(filename: str):
-    file_path = UPLOAD_DIR / filename
-    if not file_path.exists():
-        raise HTTPException(status_code=404, detail="Archivo no encontrado")
-    return FileResponse(file_path)
+async def get_file(filename: str):
+    if USE_R2:
+        # Generar URL firmada de R2
+        import subprocess
+        
+        result = subprocess.run(
+            ['node', '-e', f'''
+            const {{ getDownloadUrl }} = require('./r2Storage.js');
+            
+            getDownloadUrl('{filename}', 3600)
+                .then(url => {{
+                    console.log(url);
+                }})
+                .catch(err => {{
+                    console.error('ERROR:', err.message);
+                    process.exit(1);
+                }});
+            '''],
+            cwd='/app/backend',
+            capture_output=True,
+            text=True
+        )
+        
+        if result.returncode != 0 or 'ERROR' in result.stdout:
+            # Fallback a archivo local si R2 falla
+            file_path = UPLOAD_DIR / filename
+            if file_path.exists():
+                print(f"⚠️ R2 falló, sirviendo archivo local: {filename}")
+                return FileResponse(file_path)
+            raise HTTPException(status_code=404, detail="Archivo no encontrado")
+        
+        download_url = result.stdout.strip()
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url=download_url)
+    else:
+        # Servir archivo local
+        file_path = UPLOAD_DIR / filename
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="Archivo no encontrado")
+        return FileResponse(file_path)
 
 app.include_router(api_router)
 
