@@ -1,16 +1,16 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutGrid, Layers, Ruler, Package, Tag, FileText, Zap } from 'lucide-react';
+import { LayoutGrid, Tag, Package, Ruler, Layers, FileText, Zap } from 'lucide-react';
 
 const Layout = ({ children }) => {
   const location = useLocation();
 
   const menuItems = [
     { path: '/', icon: LayoutGrid, label: 'Dashboard', exact: true },
-    { path: '/telas', icon: Layers, label: 'Telas' },
-    { path: '/entalles', icon: Ruler, label: 'Entalles' },
-    { path: '/tipos-producto', icon: Package, label: 'Tipos Producto' },
     { path: '/marcas', icon: Tag, label: 'Marcas' },
+    { path: '/tipos-producto', icon: Package, label: 'Tipos Producto' },
+    { path: '/entalles', icon: Ruler, label: 'Entalles' },
+    { path: '/telas', icon: Layers, label: 'Telas' },
     { path: '/muestras-base', icon: FileText, label: 'Muestras Base' },
     { path: '/bases', icon: Zap, label: 'Bases' },
     { path: '/tizados', icon: FileText, label: 'Tizados' },
