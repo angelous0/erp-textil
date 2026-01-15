@@ -450,6 +450,10 @@ def update_muestra_base(
     
     db.commit()
     
+    audit_update(db, current_user, "muestras_base", datos_anteriores, db_muestra, id_muestra_base,
+                 f"Editó muestra base ID: {id_muestra_base}",
+                 get_client_ip(request), get_user_agent(request))
+    
     muestra_result = db.query(MuestraBaseModel).options(
         joinedload(MuestraBaseModel.tipo_producto),
         joinedload(MuestraBaseModel.entalle),
@@ -459,10 +463,19 @@ def update_muestra_base(
     return muestra_result
 
 @api_router.delete("/muestras-base/{id_muestra_base}")
-def delete_muestra_base(id_muestra_base: int, db: Session = Depends(get_db)):
+def delete_muestra_base(
+    id_muestra_base: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_muestra = db.query(MuestraBaseModel).filter(MuestraBaseModel.id_muestra_base == id_muestra_base).first()
     if not db_muestra:
         raise HTTPException(status_code=404, detail="Muestra base no encontrada")
+    
+    audit_delete(db, current_user, "muestras_base", db_muestra, id_muestra_base,
+                 f"Eliminó muestra base ID: {id_muestra_base}",
+                 get_client_ip(request), get_user_agent(request))
     
     db.delete(db_muestra)
     db.commit()
@@ -488,11 +501,20 @@ def get_base(id_base: int, db: Session = Depends(get_db)):
     return base
 
 @api_router.post("/bases", response_model=BaseSchema)
-def create_base(base: BaseCreate, db: Session = Depends(get_db)):
+def create_base(
+    base: BaseCreate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_base = BaseDBModel(**base.model_dump())
     db.add(db_base)
     db.commit()
     db.refresh(db_base)
+    
+    audit_create(db, current_user, "bases", db_base, db_base.id_base,
+                 f"Creó base modelo: {db_base.modelo or 'Sin modelo'}",
+                 get_client_ip(request), get_user_agent(request))
     
     base_result = db.query(BaseDBModel).options(
         joinedload(BaseDBModel.tizados),
@@ -501,15 +523,27 @@ def create_base(base: BaseCreate, db: Session = Depends(get_db)):
     return base_result
 
 @api_router.put("/bases/{id_base}", response_model=BaseSchema)
-def update_base(id_base: int, base: BaseUpdate, db: Session = Depends(get_db)):
+def update_base(
+    id_base: int,
+    base: BaseUpdate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_base = db.query(BaseDBModel).filter(BaseDBModel.id_base == id_base).first()
     if not db_base:
         raise HTTPException(status_code=404, detail="Base no encontrada")
+    
+    datos_anteriores = model_to_dict(db_base)
     
     for key, value in base.model_dump(exclude_unset=True).items():
         setattr(db_base, key, value)
     
     db.commit()
+    
+    audit_update(db, current_user, "bases", datos_anteriores, db_base, id_base,
+                 f"Editó base modelo: {db_base.modelo or 'Sin modelo'}",
+                 get_client_ip(request), get_user_agent(request))
     
     base_result = db.query(BaseDBModel).options(
         joinedload(BaseDBModel.tizados),
@@ -518,10 +552,20 @@ def update_base(id_base: int, base: BaseUpdate, db: Session = Depends(get_db)):
     return base_result
 
 @api_router.delete("/bases/{id_base}")
-def delete_base(id_base: int, db: Session = Depends(get_db)):
+def delete_base(
+    id_base: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_base = db.query(BaseDBModel).filter(BaseDBModel.id_base == id_base).first()
     if not db_base:
         raise HTTPException(status_code=404, detail="Base no encontrada")
+    
+    modelo = db_base.modelo or 'Sin modelo'
+    audit_delete(db, current_user, "bases", db_base, id_base,
+                 f"Eliminó base modelo: {modelo}",
+                 get_client_ip(request), get_user_agent(request))
     
     db.delete(db_base)
     db.commit()
