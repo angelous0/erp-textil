@@ -565,6 +565,211 @@ async def delete_file(filename: str):
         print(f"❌ Error eliminando archivo: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ==================== AUTH ENDPOINTS ====================
+
+@api_router.post("/auth/login", response_model=Token)
+def login(credentials: UsuarioLogin, db: Session = Depends(get_db)):
+    user = db.query(UsuarioModel).filter(UsuarioModel.username == credentials.username).first()
+    
+    if not user or not verify_password(credentials.password, user.password_hash):
+        raise HTTPException(
+            status_code=401,
+            detail="Usuario o contraseña incorrectos"
+        )
+    
+    if not user.activo:
+        raise HTTPException(
+            status_code=403,
+            detail="Usuario desactivado. Contacta al administrador."
+        )
+    
+    access_token = create_access_token(
+        data={"sub": user.username},
+        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "usuario": user
+    }
+
+@api_router.get("/auth/me", response_model=UsuarioSchema)
+def get_me(current_user: UsuarioModel = Depends(get_current_user)):
+    return current_user
+
+@api_router.get("/auth/me/permisos")
+def get_my_permissions(
+    current_user: UsuarioModel = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    return get_user_permissions(current_user, db)
+
+@api_router.put("/auth/me/password")
+def change_password(
+    old_password: str,
+    new_password: str,
+    current_user: UsuarioModel = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not verify_password(old_password, current_user.password_hash):
+        raise HTTPException(status_code=400, detail="Contraseña actual incorrecta")
+    
+    current_user.password_hash = get_password_hash(new_password)
+    db.commit()
+    return {"message": "Contraseña actualizada"}
+
+# ==================== USER MANAGEMENT ENDPOINTS ====================
+
+@api_router.get("/usuarios", response_model=List[UsuarioSchema])
+def get_usuarios(
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(require_admin)
+):
+    return db.query(UsuarioModel).options(joinedload(UsuarioModel.permisos)).all()
+
+@api_router.post("/usuarios", response_model=UsuarioSchema)
+def create_usuario(
+    usuario: UsuarioCreate,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(require_admin)
+):
+    # Verificar username único
+    if db.query(UsuarioModel).filter(UsuarioModel.username == usuario.username).first():
+        raise HTTPException(status_code=400, detail="El username ya existe")
+    
+    # Solo super_admin puede crear otros super_admin
+    if usuario.rol == RolEnum.super_admin and current_user.rol != RolEnum.super_admin:
+        raise HTTPException(status_code=403, detail="Solo un super admin puede crear otros super admins")
+    
+    db_usuario = UsuarioModel(
+        username=usuario.username,
+        email=usuario.email,
+        password_hash=get_password_hash(usuario.password),
+        nombre=usuario.nombre,
+        rol=usuario.rol
+    )
+    db.add(db_usuario)
+    db.commit()
+    db.refresh(db_usuario)
+    
+    # Crear permisos por defecto si es editor o viewer
+    if usuario.rol in [RolEnum.editor, RolEnum.viewer]:
+        create_default_permissions(db_usuario.id_usuario, usuario.rol, db)
+    
+    db.refresh(db_usuario)
+    return db_usuario
+
+@api_router.get("/usuarios/{id_usuario}", response_model=UsuarioSchema)
+def get_usuario(
+    id_usuario: int,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(require_admin)
+):
+    usuario = db.query(UsuarioModel).options(joinedload(UsuarioModel.permisos)).filter(
+        UsuarioModel.id_usuario == id_usuario
+    ).first()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return usuario
+
+@api_router.put("/usuarios/{id_usuario}", response_model=UsuarioSchema)
+def update_usuario(
+    id_usuario: int,
+    usuario_update: UsuarioUpdate,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(require_admin)
+):
+    usuario = db.query(UsuarioModel).filter(UsuarioModel.id_usuario == id_usuario).first()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    # Solo super_admin puede modificar otros super_admin
+    if usuario.rol == RolEnum.super_admin and current_user.rol != RolEnum.super_admin:
+        raise HTTPException(status_code=403, detail="Solo un super admin puede modificar otros super admins")
+    
+    # Solo super_admin puede promover a super_admin
+    if usuario_update.rol == RolEnum.super_admin and current_user.rol != RolEnum.super_admin:
+        raise HTTPException(status_code=403, detail="Solo un super admin puede promover a super admin")
+    
+    update_data = usuario_update.model_dump(exclude_unset=True)
+    
+    if "password" in update_data and update_data["password"]:
+        update_data["password_hash"] = get_password_hash(update_data.pop("password"))
+    elif "password" in update_data:
+        del update_data["password"]
+    
+    for key, value in update_data.items():
+        setattr(usuario, key, value)
+    
+    db.commit()
+    db.refresh(usuario)
+    return usuario
+
+@api_router.delete("/usuarios/{id_usuario}")
+def delete_usuario(
+    id_usuario: int,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(require_admin)
+):
+    usuario = db.query(UsuarioModel).filter(UsuarioModel.id_usuario == id_usuario).first()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    # No se puede eliminar a sí mismo
+    if usuario.id_usuario == current_user.id_usuario:
+        raise HTTPException(status_code=400, detail="No puedes eliminarte a ti mismo")
+    
+    # Solo super_admin puede eliminar otros super_admin
+    if usuario.rol == RolEnum.super_admin and current_user.rol != RolEnum.super_admin:
+        raise HTTPException(status_code=403, detail="Solo un super admin puede eliminar otros super admins")
+    
+    db.delete(usuario)
+    db.commit()
+    return {"message": "Usuario eliminado"}
+
+@api_router.put("/usuarios/{id_usuario}/permisos")
+def update_usuario_permisos(
+    id_usuario: int,
+    permisos: PermisoBase,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(require_admin)
+):
+    usuario = db.query(UsuarioModel).filter(UsuarioModel.id_usuario == id_usuario).first()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    # No se pueden modificar permisos de admins
+    if usuario.rol in [RolEnum.super_admin, RolEnum.admin]:
+        raise HTTPException(status_code=400, detail="Los administradores tienen todos los permisos")
+    
+    # Buscar o crear permisos
+    permiso = db.query(PermisoModel).filter(PermisoModel.id_usuario == id_usuario).first()
+    
+    if not permiso:
+        permiso = PermisoModel(id_usuario=id_usuario)
+        db.add(permiso)
+    
+    # Actualizar permisos
+    for key, value in permisos.model_dump().items():
+        setattr(permiso, key, value)
+    
+    db.commit()
+    db.refresh(permiso)
+    return {"message": "Permisos actualizados", "permisos": permisos}
+
+@api_router.get("/usuarios/{id_usuario}/permisos")
+def get_usuario_permisos(
+    id_usuario: int,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(require_admin)
+):
+    usuario = db.query(UsuarioModel).filter(UsuarioModel.id_usuario == id_usuario).first()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    return get_user_permissions(usuario, db)
+
 app.include_router(api_router)
 
 app.add_middleware(
