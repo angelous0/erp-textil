@@ -70,6 +70,16 @@ else:
 def root():
     return {"message": "ERP Textil API"}
 
+# Helper para obtener IP del cliente
+def get_client_ip(request: Request) -> str:
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+def get_user_agent(request: Request) -> str:
+    return request.headers.get("User-Agent", "unknown")[:500]
+
 # TELA Endpoints
 @api_router.get("/telas", response_model=List[Tela])
 def get_telas(db: Session = Depends(get_db)):
@@ -84,31 +94,62 @@ def get_tela(id_tela: int, db: Session = Depends(get_db)):
     return tela
 
 @api_router.post("/telas", response_model=Tela)
-def create_tela(tela: TelaCreate, db: Session = Depends(get_db)):
+def create_tela(
+    tela: TelaCreate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_tela = TelaModel(**tela.model_dump())
     db.add(db_tela)
     db.commit()
     db.refresh(db_tela)
+    
+    audit_create(db, current_user, "telas", db_tela, db_tela.id_tela,
+                 f"Creó tela: {db_tela.nombre_tela}",
+                 get_client_ip(request), get_user_agent(request))
     return db_tela
 
 @api_router.put("/telas/{id_tela}", response_model=Tela)
-def update_tela(id_tela: int, tela: TelaUpdate, db: Session = Depends(get_db)):
+def update_tela(
+    id_tela: int,
+    tela: TelaUpdate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_tela = db.query(TelaModel).filter(TelaModel.id_tela == id_tela).first()
     if not db_tela:
         raise HTTPException(status_code=404, detail="Tela no encontrada")
+    
+    datos_anteriores = model_to_dict(db_tela)
     
     for key, value in tela.model_dump(exclude_unset=True).items():
         setattr(db_tela, key, value)
     
     db.commit()
     db.refresh(db_tela)
+    
+    audit_update(db, current_user, "telas", datos_anteriores, db_tela, id_tela,
+                 f"Editó tela: {db_tela.nombre_tela}",
+                 get_client_ip(request), get_user_agent(request))
     return db_tela
 
 @api_router.delete("/telas/{id_tela}")
-def delete_tela(id_tela: int, db: Session = Depends(get_db)):
+def delete_tela(
+    id_tela: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_tela = db.query(TelaModel).filter(TelaModel.id_tela == id_tela).first()
     if not db_tela:
         raise HTTPException(status_code=404, detail="Tela no encontrada")
+    
+    nombre_tela = db_tela.nombre_tela
+    audit_delete(db, current_user, "telas", db_tela, id_tela,
+                 f"Eliminó tela: {nombre_tela}",
+                 get_client_ip(request), get_user_agent(request))
     
     db.delete(db_tela)
     db.commit()
