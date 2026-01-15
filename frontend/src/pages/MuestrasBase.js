@@ -231,6 +231,11 @@ const MuestrasBase = () => {
       cell: ({ row }) => row.original.tela?.nombre_tela || '-',
     },
     {
+      accessorKey: 'marca.nombre_marca',
+      header: 'Marca',
+      cell: ({ row }) => row.original.marca?.nombre_marca || '-',
+    },
+    {
       accessorKey: 'consumo_estimado',
       header: 'Consumo Est.',
       cell: ({ row }) => <span className="font-mono">{row.original.consumo_estimado}</span>,
@@ -238,7 +243,30 @@ const MuestrasBase = () => {
     {
       accessorKey: 'costo_estimado',
       header: 'Costo Est.',
-      cell: ({ row }) => <span className="font-mono">{row.original.costo_estimado}</span>,
+      cell: ({ row }) => {
+        const costo = row.original.costo_estimado;
+        return costo ? <span className="font-mono">S/ {parseFloat(costo).toFixed(2)}</span> : '-';
+      },
+    },
+    {
+      accessorKey: 'precio_estimado',
+      header: 'Precio Est.',
+      cell: ({ row }) => {
+        const precio = row.original.precio_estimado;
+        return precio ? <span className="font-mono">S/ {parseFloat(precio).toFixed(2)}</span> : '-';
+      },
+    },
+    {
+      id: 'rentabilidad',
+      header: 'Rentabilidad',
+      cell: ({ row }) => {
+        const costo = row.original.costo_estimado;
+        const precio = row.original.precio_estimado;
+        if (!costo || !precio || costo === 0) return '-';
+        const rentabilidad = ((precio - costo) / costo) * 100;
+        const color = rentabilidad >= 25 ? 'text-green-600' : rentabilidad >= 10 ? 'text-yellow-600' : 'text-red-600';
+        return <span className={`font-mono font-semibold ${color}`}>{rentabilidad.toFixed(1)}%</span>;
+      },
     },
     {
       accessorKey: 'archivo_costo',
