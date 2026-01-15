@@ -43,22 +43,64 @@ const Bases = () => {
   const [tizadosSearchModal, setTizadosSearchModal] = useState('');
   const [newTizado, setNewTizado] = useState({ ancho: '', curva: '', archivo_tizado: '' });
   const [isCreatingTizado, setIsCreatingTizado] = useState(false);
+  const [tizadosOrdenados, setTizadosOrdenados] = useState([]);
+  const [ordenColumna, setOrdenColumna] = useState({ columna: null, direccion: 'asc' });
 
   const handleViewTizados = (base) => {
     setCurrentBaseForTizados(base);
+    const tizadosDeBase = tizados.filter(t => t.id_base === base.id_base);
+    setTizadosOrdenados(tizadosDeBase);
     setTizadosDialogOpen(true);
     setTizadosSearchModal('');
     setNewTizado({ ancho: '', curva: '', archivo_tizado: '' });
     setIsCreatingTizado(false);
+    setOrdenColumna({ columna: null, direccion: 'asc' });
+  };
+
+  const handleOrdenarColumna = (columna) => {
+    let direccion = 'asc';
+    if (ordenColumna.columna === columna && ordenColumna.direccion === 'asc') {
+      direccion = 'desc';
+    }
+    
+    const tizadosCopia = [...tizadosOrdenados];
+    tizadosCopia.sort((a, b) => {
+      let valorA = a[columna];
+      let valorB = b[columna];
+      
+      if (columna === 'ancho') {
+        valorA = parseFloat(valorA) || 0;
+        valorB = parseFloat(valorB) || 0;
+      } else if (columna === 'curva') {
+        valorA = (valorA || '').toLowerCase();
+        valorB = (valorB || '').toLowerCase();
+      }
+      
+      if (valorA < valorB) return direccion === 'asc' ? -1 : 1;
+      if (valorA > valorB) return direccion === 'asc' ? 1 : -1;
+      return 0;
+    });
+    
+    setTizadosOrdenados(tizadosCopia);
+    setOrdenColumna({ columna, direccion });
+  };
+
+  const handleMoverFila = (index, direccion) => {
+    const nuevaLista = [...tizadosOrdenados];
+    const nuevoIndex = direccion === 'arriba' ? index - 1 : index + 1;
+    
+    if (nuevoIndex < 0 || nuevoIndex >= nuevaLista.length) return;
+    
+    [nuevaLista[index], nuevaLista[nuevoIndex]] = [nuevaLista[nuevoIndex], nuevaLista[index]];
+    setTizadosOrdenados(nuevaLista);
+    setOrdenColumna({ columna: null, direccion: 'asc' }); // Reset ordenamiento
   };
 
   const getTizadosForModal = () => {
-    if (!currentBaseForTizados) return [];
-    const tizadosDeBase = tizados.filter(t => t.id_base === currentBaseForTizados.id_base);
-    if (!tizadosSearchModal) return tizadosDeBase;
+    if (!tizadosSearchModal) return tizadosOrdenados;
     
     const busqueda = tizadosSearchModal.toLowerCase();
-    return tizadosDeBase.filter(t => 
+    return tizadosOrdenados.filter(t => 
       (t.ancho?.toString().includes(busqueda)) ||
       (t.curva?.toLowerCase().includes(busqueda))
     );
