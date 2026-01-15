@@ -23,6 +23,7 @@ const Bases = () => {
   const [formData, setFormData] = useState({
     id_muestra_base: '',
     patron: '',
+    imagen: '',
     aprobado: false,
   });
   const [fichas, setFichas] = useState([]);
