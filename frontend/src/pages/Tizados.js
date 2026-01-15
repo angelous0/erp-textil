@@ -119,6 +119,7 @@ const Tizados = () => {
       setEditingTizado(tizado);
       setFormData({
         id_base: tizado.id_base.toString(),
+        ancho: tizado.ancho || '',
         archivo_tizado: tizado.archivo_tizado || '',
         curva: tizado.curva || '',
       });
@@ -126,6 +127,7 @@ const Tizados = () => {
       setEditingTizado(null);
       setFormData({
         id_base: '',
+        ancho: '',
         archivo_tizado: '',
         curva: '',
       });
