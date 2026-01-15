@@ -246,6 +246,7 @@ def create_muestra_base(muestra: MuestraBaseCreate, db: Session = Depends(get_db
         joinedload(MuestraBaseModel.tipo_producto),
         joinedload(MuestraBaseModel.entalle),
         joinedload(MuestraBaseModel.tela),
+        joinedload(MuestraBaseModel.marca),
         joinedload(MuestraBaseModel.bases)
     ).filter(MuestraBaseModel.id_muestra_base == db_muestra.id_muestra_base).first()
     return muestra_result
