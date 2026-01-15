@@ -730,9 +730,6 @@ const Bases = () => {
         </DialogContent>
       </Dialog>
 
-        </DialogContent>
-      </Dialog>
-
       {/* Dialog principal para crear/editar base */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
