@@ -3,6 +3,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import ExcelGrid from '../components/ExcelGrid';
 import FileUpload from '../components/FileUpload';
+import { useAuth } from '../context/AuthContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
 import { Button } from '../components/ui/button';
@@ -18,7 +19,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 // Componente para la celda de imagen con subida directa
-const ImageCell = ({ base, onViewImage, onUploadImage }) => {
+const ImageCell = ({ base, onViewImage, onUploadImage, canUpload }) => {
   const inputRef = useRef(null);
   
   const handleFileSelect = (e) => {
