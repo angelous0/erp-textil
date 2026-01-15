@@ -585,31 +585,61 @@ def get_tizado(id_tizado: int, db: Session = Depends(get_db)):
     return tizado
 
 @api_router.post("/tizados", response_model=Tizado)
-def create_tizado(tizado: TizadoCreate, db: Session = Depends(get_db)):
+def create_tizado(
+    tizado: TizadoCreate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_tizado = TizadoModel(**tizado.model_dump())
     db.add(db_tizado)
     db.commit()
     db.refresh(db_tizado)
+    
+    audit_create(db, current_user, "tizados", db_tizado, db_tizado.id_tizado,
+                 f"Creó tizado ID: {db_tizado.id_tizado} (ancho: {db_tizado.ancho})",
+                 get_client_ip(request), get_user_agent(request))
     return db_tizado
 
 @api_router.put("/tizados/{id_tizado}", response_model=Tizado)
-def update_tizado(id_tizado: int, tizado: TizadoUpdate, db: Session = Depends(get_db)):
+def update_tizado(
+    id_tizado: int,
+    tizado: TizadoUpdate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_tizado = db.query(TizadoModel).filter(TizadoModel.id_tizado == id_tizado).first()
     if not db_tizado:
         raise HTTPException(status_code=404, detail="Tizado no encontrado")
+    
+    datos_anteriores = model_to_dict(db_tizado)
     
     for key, value in tizado.model_dump(exclude_unset=True).items():
         setattr(db_tizado, key, value)
     
     db.commit()
     db.refresh(db_tizado)
+    
+    audit_update(db, current_user, "tizados", datos_anteriores, db_tizado, id_tizado,
+                 f"Editó tizado ID: {id_tizado}",
+                 get_client_ip(request), get_user_agent(request))
     return db_tizado
 
 @api_router.delete("/tizados/{id_tizado}")
-def delete_tizado(id_tizado: int, db: Session = Depends(get_db)):
+def delete_tizado(
+    id_tizado: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_tizado = db.query(TizadoModel).filter(TizadoModel.id_tizado == id_tizado).first()
     if not db_tizado:
         raise HTTPException(status_code=404, detail="Tizado no encontrado")
+    
+    audit_delete(db, current_user, "tizados", db_tizado, id_tizado,
+                 f"Eliminó tizado ID: {id_tizado}",
+                 get_client_ip(request), get_user_agent(request))
     
     db.delete(db_tizado)
     db.commit()
@@ -627,24 +657,45 @@ def get_fichas_by_base(id_base: int, db: Session = Depends(get_db)):
     return fichas
 
 @api_router.post("/fichas", response_model=Ficha)
-def create_ficha(ficha: FichaCreate, db: Session = Depends(get_db)):
+def create_ficha(
+    ficha: FichaCreate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_ficha = FichaModel(**ficha.model_dump())
     db.add(db_ficha)
     db.commit()
     db.refresh(db_ficha)
+    
+    audit_create(db, current_user, "fichas", db_ficha, db_ficha.id_ficha,
+                 f"Creó ficha: {db_ficha.nombre_ficha or 'Sin nombre'}",
+                 get_client_ip(request), get_user_agent(request))
     return db_ficha
 
 @api_router.put("/fichas/{id_ficha}", response_model=Ficha)
-def update_ficha(id_ficha: int, ficha: FichaUpdate, db: Session = Depends(get_db)):
+def update_ficha(
+    id_ficha: int,
+    ficha: FichaUpdate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_ficha = db.query(FichaModel).filter(FichaModel.id_ficha == id_ficha).first()
     if not db_ficha:
         raise HTTPException(status_code=404, detail="Ficha no encontrada")
+    
+    datos_anteriores = model_to_dict(db_ficha)
     
     for key, value in ficha.model_dump(exclude_unset=True).items():
         setattr(db_ficha, key, value)
     
     db.commit()
     db.refresh(db_ficha)
+    
+    audit_update(db, current_user, "fichas", datos_anteriores, db_ficha, id_ficha,
+                 f"Editó ficha: {db_ficha.nombre_ficha or 'Sin nombre'}",
+                 get_client_ip(request), get_user_agent(request))
     return db_ficha
 
 @api_router.delete("/fichas/{id_ficha}")
