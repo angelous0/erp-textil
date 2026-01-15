@@ -46,25 +46,32 @@ const ImageCell = ({ base, onViewImage, onUploadImage, canUpload }) => {
   
   return (
     <div>
-      <input
-        type="file"
-        ref={inputRef}
-        onChange={handleFileSelect}
-        accept="image/*"
-        className="hidden"
-      />
-      <button
-        onClick={() => inputRef.current?.click()}
-        className="inline-flex items-center px-2.5 py-1.5 rounded text-xs font-medium bg-slate-100 text-slate-600 hover:bg-blue-100 hover:text-blue-700 transition-colors cursor-pointer border border-dashed border-slate-300 hover:border-blue-400"
-      >
-        <Upload size={12} className="mr-1" />
-        Subir
-      </button>
+      {canUpload ? (
+        <>
+          <input
+            type="file"
+            ref={inputRef}
+            onChange={handleFileSelect}
+            accept="image/*"
+            className="hidden"
+          />
+          <button
+            onClick={() => inputRef.current?.click()}
+            className="inline-flex items-center px-2.5 py-1.5 rounded text-xs font-medium bg-slate-100 text-slate-600 hover:bg-blue-100 hover:text-blue-700 transition-colors cursor-pointer border border-dashed border-slate-300 hover:border-blue-400"
+          >
+            <Upload size={12} className="mr-1" />
+            Subir
+          </button>
+        </>
+      ) : (
+        <span className="text-slate-400 text-xs">-</span>
+      )}
     </div>
   );
 };
 
 const Bases = () => {
+  const { canCreate, canEdit, canDelete, canDownload, canUpload } = useAuth();
   const [bases, setBases] = useState([]);
   const [basesFiltradas, setBasesFiltradas] = useState([]);
   const [filtroAprobacion, setFiltroAprobacion] = useState('aprobados'); // 'todos', 'aprobados', 'pendientes'
