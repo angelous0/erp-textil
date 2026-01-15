@@ -90,10 +90,25 @@ const Bases = () => {
     try {
       const response = await axios.get(`${API}/bases`);
       setBases(response.data);
+      aplicarFiltro(response.data, filtroAprobacion);
     } catch (error) {
       toast.error('Error al cargar bases');
     }
   };
+
+  const aplicarFiltro = (data, filtro) => {
+    let filtradas = data;
+    if (filtro === 'aprobados') {
+      filtradas = data.filter(b => b.aprobado === true);
+    } else if (filtro === 'pendientes') {
+      filtradas = data.filter(b => b.aprobado === false);
+    }
+    setBasesFiltradas(filtradas);
+  };
+
+  useEffect(() => {
+    aplicarFiltro(bases, filtroAprobacion);
+  }, [filtroAprobacion, bases]);
 
   const fetchMuestras = async () => {
     try {
