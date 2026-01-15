@@ -63,7 +63,7 @@ Sistema ERP textil full-stack (FastAPI + React + MariaDB) para gestión de desar
 - Migración de 18 archivos existentes a Cloudflare R2
 - Implementación de descarga de archivos desde R2 (usando StreamingResponse)
 - Implementación de eliminación de archivos en R2
-- Modal de confirmación de eliminación en: Bases, Tizados, Muestras Base
+- Modal de confirmación de eliminación en: Bases, Tizados, Muestras Base, Fichas (modales)
 - **Modal de Fichas mejorado**: Ahora incluye búsqueda, creación y eliminación (igual que Tizados)
 - **Botones "+ Agregar"**: Los badges de Fichas y Tizados ahora muestran "+ Agregar" cuando están vacíos y permiten crear
 - **Formulario de crear arriba**: En modales de Fichas y Tizados, el formulario de crear está arriba y la tabla/buscador abajo
@@ -71,6 +71,13 @@ Sistema ERP textil full-stack (FastAPI + React + MariaDB) para gestión de desar
 - **Visor de imagen mejorado**: Ahora incluye botón "📥 Descargar" además del botón "Cerrar"
 - **Reordenamiento de columnas en Muestras Base**: ID → Marca → Tipo Producto → Entalle → Tela → resto
 - **Nueva columna "Modelo" en Bases**: Campo añadido a la BD y UI, columna ID ocultada
+- **Diseño de archivos mejorado**: Badges con colores según tipo (XLSX=verde, PDF=rojo, etc.)
+- **Sistema de Autenticación completo**:
+  - Login con username único
+  - Roles: Super Admin, Admin, Editor, Viewer
+  - Permisos personalizables por usuario (CRUD por módulo + descargas)
+  - Panel de gestión de usuarios
+  - Super Admin: eduard / cardenas007
 
 **Nota técnica**: La descarga usa StreamingResponse en lugar de RedirectResponse porque fetch() del frontend no puede seguir redirects cross-origin (CORS).
 
