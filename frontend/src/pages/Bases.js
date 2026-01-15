@@ -73,6 +73,7 @@ const Bases = () => {
   const [editingBase, setEditingBase] = useState(null);
   const [formData, setFormData] = useState({
     id_muestra_base: '',
+    modelo: '',
     patron: '',
     imagen: '',
     aprobado: false,
