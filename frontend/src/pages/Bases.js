@@ -330,6 +330,9 @@ const Bases = () => {
     } catch (error) {
       toast.error('Error al eliminar ficha');
       console.error(error);
+    } finally {
+      setDeleteFichaDialogOpen(false);
+      setFichaToDelete(null);
     }
   };
 
