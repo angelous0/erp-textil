@@ -120,6 +120,15 @@ const Bases = () => {
     }
   };
 
+  const fetchTizados = async () => {
+    try {
+      const response = await axios.get(`${API}/tizados`);
+      setTizados(response.data);
+    } catch (error) {
+      console.error('Error al cargar tizados');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
