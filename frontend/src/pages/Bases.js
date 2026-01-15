@@ -648,15 +648,64 @@ const Bases = () => {
                   <table className="w-full">
                     <thead className="bg-slate-100 border-b border-slate-200">
                       <tr>
-                        <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">ID</th>
-                        <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">Ancho</th>
-                        <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">Curva</th>
+                        <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase w-16">Orden</th>
+                        <th 
+                          className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase cursor-pointer hover:bg-slate-200 transition-colors"
+                          onClick={() => handleOrdenarColumna('id_tizado')}
+                        >
+                          <div className="flex items-center space-x-1">
+                            <span>ID</span>
+                            {ordenColumna.columna === 'id_tizado' && (
+                              <span>{ordenColumna.direccion === 'asc' ? '↑' : '↓'}</span>
+                            )}
+                          </div>
+                        </th>
+                        <th 
+                          className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase cursor-pointer hover:bg-slate-200 transition-colors"
+                          onClick={() => handleOrdenarColumna('ancho')}
+                        >
+                          <div className="flex items-center space-x-1">
+                            <span>Ancho</span>
+                            {ordenColumna.columna === 'ancho' && (
+                              <span>{ordenColumna.direccion === 'asc' ? '↑' : '↓'}</span>
+                            )}
+                          </div>
+                        </th>
+                        <th 
+                          className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase cursor-pointer hover:bg-slate-200 transition-colors"
+                          onClick={() => handleOrdenarColumna('curva')}
+                        >
+                          <div className="flex items-center space-x-1">
+                            <span>Curva</span>
+                            {ordenColumna.columna === 'curva' && (
+                              <span>{ordenColumna.direccion === 'asc' ? '↑' : '↓'}</span>
+                            )}
+                          </div>
+                        </th>
                         <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">Archivo</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {getTizadosForModal().map((tizado) => (
+                      {getTizadosForModal().map((tizado, index) => (
                         <tr key={tizado.id_tizado} className="border-b border-slate-100 hover:bg-slate-50">
+                          <td className="py-3 px-4">
+                            <div className="flex flex-col space-y-1">
+                              <button
+                                onClick={() => handleMoverFila(index, 'arriba')}
+                                disabled={index === 0}
+                                className={`text-xs ${index === 0 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:text-blue-600 cursor-pointer'}`}
+                              >
+                                ▲
+                              </button>
+                              <button
+                                onClick={() => handleMoverFila(index, 'abajo')}
+                                disabled={index === getTizadosForModal().length - 1}
+                                className={`text-xs ${index === getTizadosForModal().length - 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:text-blue-600 cursor-pointer'}`}
+                              >
+                                ▼
+                              </button>
+                            </div>
+                          </td>
                           <td className="py-3 px-4 font-mono text-slate-600">{tizado.id_tizado}</td>
                           <td className="py-3 px-4 font-mono">{tizado.ancho || '-'}</td>
                           <td className="py-3 px-4 text-slate-700">{tizado.curva || '-'}</td>
