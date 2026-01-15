@@ -111,12 +111,34 @@ const Tizados = () => {
   };
 
   const handleDelete = async (id) => {
+    // Encontrar el tizado y mostrar confirmación
+    const tizado = tizados.find(t => t.id_tizado === id);
+    setItemToDelete(tizado);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+    
     try {
-      await axios.delete(`${API}/tizados/${id}`);
-      toast.success('Tizado eliminado');
+      // Eliminar archivo de R2 si existe
+      if (itemToDelete.archivo_tizado) {
+        try {
+          await axios.delete(`${API}/files/${itemToDelete.archivo_tizado}`);
+        } catch (e) {
+          console.log(`Archivo ${itemToDelete.archivo_tizado} no encontrado o ya eliminado`);
+        }
+      }
+      
+      // Eliminar el tizado
+      await axios.delete(`${API}/tizados/${itemToDelete.id_tizado}`);
+      toast.success('Tizado y archivo eliminados');
       fetchTizados();
     } catch (error) {
       toast.error('Error al eliminar tizado');
+    } finally {
+      setDeleteDialogOpen(false);
+      setItemToDelete(null);
     }
   };
 
