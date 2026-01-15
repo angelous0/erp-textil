@@ -2,13 +2,41 @@ from sqlalchemy import Column, Integer, String, Numeric, Boolean, ForeignKey, Te
 from sqlalchemy.orm import relationship
 from database import Base
 import enum
-from datetime import datetime
+from datetime import datetime, timezone
 
 class RolEnum(str, enum.Enum):
     super_admin = "super_admin"
     admin = "admin"
     editor = "editor"
     viewer = "viewer"
+
+class AccionEnum(str, enum.Enum):
+    crear = "crear"
+    editar = "editar"
+    eliminar = "eliminar"
+    subir_archivo = "subir_archivo"
+    descargar_archivo = "descargar_archivo"
+    eliminar_archivo = "eliminar_archivo"
+    login = "login"
+    logout = "logout"
+
+class HistorialMovimiento(Base):
+    __tablename__ = 'x_historial_movimiento'
+    
+    id_movimiento = Column(Integer, primary_key=True, autoincrement=True)
+    id_usuario = Column(Integer, ForeignKey('x_usuario.id_usuario'), nullable=True)
+    username = Column(String(100), nullable=False)  # Guardamos el username por si se elimina el usuario
+    fecha_hora = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    tabla = Column(String(100), nullable=False)
+    accion = Column(Enum(AccionEnum), nullable=False)
+    id_registro = Column(Integer, nullable=True)  # ID del registro afectado
+    descripcion = Column(Text)  # Descripción legible de la acción
+    datos_anteriores = Column(JSON, nullable=True)  # Valores antes del cambio
+    datos_nuevos = Column(JSON, nullable=True)  # Valores después del cambio
+    ip_address = Column(String(50), nullable=True)
+    user_agent = Column(String(500), nullable=True)
+    
+    usuario = relationship('Usuario', backref='movimientos')
 
 class Usuario(Base):
     __tablename__ = 'x_usuario'
