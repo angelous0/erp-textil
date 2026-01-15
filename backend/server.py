@@ -169,31 +169,62 @@ def get_entalle(id_entalle: int, db: Session = Depends(get_db)):
     return entalle
 
 @api_router.post("/entalles", response_model=Entalle)
-def create_entalle(entalle: EntalleCreate, db: Session = Depends(get_db)):
+def create_entalle(
+    entalle: EntalleCreate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_entalle = EntalleModel(**entalle.model_dump())
     db.add(db_entalle)
     db.commit()
     db.refresh(db_entalle)
+    
+    audit_create(db, current_user, "entalles", db_entalle, db_entalle.id_entalle,
+                 f"Creó entalle: {db_entalle.nombre_entalle}",
+                 get_client_ip(request), get_user_agent(request))
     return db_entalle
 
 @api_router.put("/entalles/{id_entalle}", response_model=Entalle)
-def update_entalle(id_entalle: int, entalle: EntalleUpdate, db: Session = Depends(get_db)):
+def update_entalle(
+    id_entalle: int,
+    entalle: EntalleUpdate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_entalle = db.query(EntalleModel).filter(EntalleModel.id_entalle == id_entalle).first()
     if not db_entalle:
         raise HTTPException(status_code=404, detail="Entalle no encontrado")
+    
+    datos_anteriores = model_to_dict(db_entalle)
     
     for key, value in entalle.model_dump(exclude_unset=True).items():
         setattr(db_entalle, key, value)
     
     db.commit()
     db.refresh(db_entalle)
+    
+    audit_update(db, current_user, "entalles", datos_anteriores, db_entalle, id_entalle,
+                 f"Editó entalle: {db_entalle.nombre_entalle}",
+                 get_client_ip(request), get_user_agent(request))
     return db_entalle
 
 @api_router.delete("/entalles/{id_entalle}")
-def delete_entalle(id_entalle: int, db: Session = Depends(get_db)):
+def delete_entalle(
+    id_entalle: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_entalle = db.query(EntalleModel).filter(EntalleModel.id_entalle == id_entalle).first()
     if not db_entalle:
         raise HTTPException(status_code=404, detail="Entalle no encontrado")
+    
+    nombre = db_entalle.nombre_entalle
+    audit_delete(db, current_user, "entalles", db_entalle, id_entalle,
+                 f"Eliminó entalle: {nombre}",
+                 get_client_ip(request), get_user_agent(request))
     
     db.delete(db_entalle)
     db.commit()
@@ -213,31 +244,62 @@ def get_tipo_producto(id_tipo: int, db: Session = Depends(get_db)):
     return tipo
 
 @api_router.post("/tipos-producto", response_model=TipoProducto)
-def create_tipo_producto(tipo: TipoProductoCreate, db: Session = Depends(get_db)):
+def create_tipo_producto(
+    tipo: TipoProductoCreate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_tipo = TipoProductoModel(**tipo.model_dump())
     db.add(db_tipo)
     db.commit()
     db.refresh(db_tipo)
+    
+    audit_create(db, current_user, "tipos_producto", db_tipo, db_tipo.id_tipo,
+                 f"Creó tipo de producto: {db_tipo.nombre_tipo}",
+                 get_client_ip(request), get_user_agent(request))
     return db_tipo
 
 @api_router.put("/tipos-producto/{id_tipo}", response_model=TipoProducto)
-def update_tipo_producto(id_tipo: int, tipo: TipoProductoUpdate, db: Session = Depends(get_db)):
+def update_tipo_producto(
+    id_tipo: int,
+    tipo: TipoProductoUpdate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_tipo = db.query(TipoProductoModel).filter(TipoProductoModel.id_tipo == id_tipo).first()
     if not db_tipo:
         raise HTTPException(status_code=404, detail="Tipo de producto no encontrado")
+    
+    datos_anteriores = model_to_dict(db_tipo)
     
     for key, value in tipo.model_dump(exclude_unset=True).items():
         setattr(db_tipo, key, value)
     
     db.commit()
     db.refresh(db_tipo)
+    
+    audit_update(db, current_user, "tipos_producto", datos_anteriores, db_tipo, id_tipo,
+                 f"Editó tipo de producto: {db_tipo.nombre_tipo}",
+                 get_client_ip(request), get_user_agent(request))
     return db_tipo
 
 @api_router.delete("/tipos-producto/{id_tipo}")
-def delete_tipo_producto(id_tipo: int, db: Session = Depends(get_db)):
+def delete_tipo_producto(
+    id_tipo: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
     db_tipo = db.query(TipoProductoModel).filter(TipoProductoModel.id_tipo == id_tipo).first()
     if not db_tipo:
         raise HTTPException(status_code=404, detail="Tipo de producto no encontrado")
+    
+    nombre = db_tipo.nombre_tipo
+    audit_delete(db, current_user, "tipos_producto", db_tipo, id_tipo,
+                 f"Eliminó tipo de producto: {nombre}",
+                 get_client_ip(request), get_user_agent(request))
     
     db.delete(db_tipo)
     db.commit()
