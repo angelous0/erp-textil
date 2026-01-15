@@ -152,6 +152,13 @@ const Tizados = () => {
       cell: ({ row }) => <span className="font-mono text-slate-600">{row.original.id_base}</span>,
     },
     {
+      accessorKey: 'ancho',
+      header: 'Ancho',
+      cell: ({ row }) => (
+        row.original.ancho ? <span className="font-mono">{row.original.ancho}</span> : '-'
+      ),
+    },
+    {
       accessorKey: 'archivo_tizado',
       header: 'Archivo Tizado',
       cell: ({ row }) => (
