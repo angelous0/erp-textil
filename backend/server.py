@@ -461,45 +461,14 @@ async def upload_file(file: UploadFile = File(...)):
         file_content = await file.read()
         
         if USE_R2:
-            # Subir a Cloudflare R2 usando Node.js
-            import subprocess
-            import json
-            
-            # Guardar temporalmente
-            temp_path = UPLOAD_DIR / unique_filename
-            with open(temp_path, 'wb') as f:
-                f.write(file_content)
-            
-            result = subprocess.run(
-                ['node', '-e', f'''
-                const {{ uploadToR2 }} = require('./r2Storage.js');
-                const fs = require('fs');
-                
-                const buffer = fs.readFileSync('{temp_path}');
-                
-                uploadToR2(buffer, '{unique_filename}', '{file.content_type or "application/octet-stream"}')
-                    .then(() => {{
-                        console.log('SUCCESS');
-                        fs.unlinkSync('{temp_path}');
-                    }})
-                    .catch(err => {{
-                        console.error('ERROR:', err.message);
-                        process.exit(1);
-                    }});
-                '''],
-                cwd='/app/backend',
-                capture_output=True,
-                text=True
+            # Subir a Cloudflare R2 usando boto3
+            s3_client.put_object(
+                Bucket=R2_BUCKET_NAME,
+                Key=unique_filename,
+                Body=file_content,
+                ContentType=file.content_type or "application/octet-stream"
             )
-            
-            if result.returncode != 0 or 'ERROR' in result.stdout:
-                # Si falla R2, guardar localmente como fallback
-                print(f"⚠️ R2 falló, guardando localmente: {result.stderr}")
-            else:
-                print(f"✅ Archivo subido a R2: {unique_filename}")
-                # Eliminar archivo temporal si la subida fue exitosa
-                if temp_path.exists():
-                    temp_path.unlink()
+            print(f"✅ Archivo subido a R2: {unique_filename}")
         else:
             # Guardar localmente
             file_path = UPLOAD_DIR / unique_filename
@@ -516,44 +485,51 @@ async def upload_file(file: UploadFile = File(...)):
 @api_router.get("/files/{filename}")
 async def get_file(filename: str):
     if USE_R2:
-        # Generar URL firmada de R2
-        import subprocess
-        
-        result = subprocess.run(
-            ['node', '-e', f'''
-            const {{ getDownloadUrl }} = require('./r2Storage.js');
-            
-            getDownloadUrl('{filename}', 3600)
-                .then(url => {{
-                    console.log(url);
-                }})
-                .catch(err => {{
-                    console.error('ERROR:', err.message);
-                    process.exit(1);
-                }});
-            '''],
-            cwd='/app/backend',
-            capture_output=True,
-            text=True
-        )
-        
-        if result.returncode != 0 or 'ERROR' in result.stdout:
-            # Fallback a archivo local si R2 falla
+        try:
+            # Generar URL firmada de R2 usando boto3
+            download_url = s3_client.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': R2_BUCKET_NAME, 'Key': filename},
+                ExpiresIn=3600  # 1 hora
+            )
+            return RedirectResponse(url=download_url)
+        except Exception as e:
+            print(f"⚠️ Error obteniendo de R2: {e}")
+            # Fallback a archivo local
             file_path = UPLOAD_DIR / filename
             if file_path.exists():
                 print(f"⚠️ R2 falló, sirviendo archivo local: {filename}")
                 return FileResponse(file_path)
             raise HTTPException(status_code=404, detail="Archivo no encontrado")
-        
-        download_url = result.stdout.strip()
-        from fastapi.responses import RedirectResponse
-        return RedirectResponse(url=download_url)
     else:
         # Servir archivo local
         file_path = UPLOAD_DIR / filename
         if not file_path.exists():
             raise HTTPException(status_code=404, detail="Archivo no encontrado")
         return FileResponse(file_path)
+
+# FILE DELETE Endpoint
+@api_router.delete("/files/{filename}")
+async def delete_file(filename: str):
+    try:
+        if USE_R2:
+            # Eliminar de Cloudflare R2
+            s3_client.delete_object(
+                Bucket=R2_BUCKET_NAME,
+                Key=filename
+            )
+            print(f"✅ Archivo eliminado de R2: {filename}")
+        
+        # También eliminar de local si existe (por si hay copia)
+        file_path = UPLOAD_DIR / filename
+        if file_path.exists():
+            file_path.unlink()
+            print(f"✅ Archivo local eliminado: {filename}")
+        
+        return {"message": "Archivo eliminado", "filename": filename}
+    except Exception as e:
+        print(f"❌ Error eliminando archivo: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 app.include_router(api_router)
 
