@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutGrid, Tag, Package, Ruler, Layers, FileText, Zap, Users, LogOut, User } from 'lucide-react';
+import { LayoutGrid, Tag, Package, Ruler, Layers, FileText, Zap, Users, LogOut, User, History } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from './ui/button';
 
@@ -20,9 +20,10 @@ const Layout = ({ children }) => {
     { path: '/tizados', icon: FileText, label: 'Tizados' },
   ];
 
-  // Agregar usuarios si es admin
+  // Agregar opciones de admin
   if (isAdmin()) {
     menuItems.push({ path: '/usuarios', icon: Users, label: 'Usuarios' });
+    menuItems.push({ path: '/historial', icon: History, label: 'Historial' });
   }
 
   const isActive = (item) => {
