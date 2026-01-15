@@ -685,7 +685,8 @@ const Bases = () => {
         <ImageCell 
           base={row.original} 
           onViewImage={handleViewImage} 
-          onUploadImage={handleUploadImageFromTable} 
+          onUploadImage={handleUploadImageFromTable}
+          canUpload={canUpload('imagenes')}
         />
       ),
     },
