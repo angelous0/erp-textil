@@ -1,6 +1,13 @@
 const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
-require('dotenv').config();
+
+// Silenciar dotenv para evitar contaminar stdout
+require('dotenv').config({ debug: false });
+
+// Suprimir el mensaje de dotenv en stdout
+if (process.env.DOTENV_CONFIG_DEBUG) {
+  delete process.env.DOTENV_CONFIG_DEBUG;
+}
 
 // Configuración del cliente R2
 const r2Client = new S3Client({
