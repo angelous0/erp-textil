@@ -549,6 +549,24 @@ const MuestrasBase = () => {
                   </Select>
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="id_marca">Marca</Label>
+                  <Select
+                    value={formData.id_marca}
+                    onValueChange={(value) => setFormData({ ...formData, id_marca: value })}
+                  >
+                    <SelectTrigger data-testid="select-marca">
+                      <SelectValue placeholder="Seleccionar marca" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {marcas.map((marca) => (
+                        <SelectItem key={marca.id_marca} value={marca.id_marca.toString()}>
+                          {marca.nombre_marca}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="consumo_estimado">Consumo Estimado</Label>
                   <Input
                     id="consumo_estimado"
@@ -561,7 +579,7 @@ const MuestrasBase = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="costo_estimado">Costo Estimado</Label>
+                  <Label htmlFor="costo_estimado">Costo Estimado (S/)</Label>
                   <Input
                     id="costo_estimado"
                     data-testid="input-costo-estimado"
@@ -571,6 +589,37 @@ const MuestrasBase = () => {
                     onChange={(e) => setFormData({ ...formData, costo_estimado: e.target.value })}
                     className="border-slate-200 focus:ring-blue-500"
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="precio_estimado">Precio Estimado (S/)</Label>
+                  <Input
+                    id="precio_estimado"
+                    data-testid="input-precio-estimado"
+                    type="number"
+                    step="0.01"
+                    value={formData.precio_estimado}
+                    onChange={(e) => setFormData({ ...formData, precio_estimado: e.target.value })}
+                    className="border-slate-200 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="space-y-2">
+                  {/* Muestra rentabilidad calculada */}
+                  <Label>Rentabilidad Estimada</Label>
+                  <div className="text-lg font-mono font-semibold">
+                    {formData.costo_estimado && formData.precio_estimado && parseFloat(formData.costo_estimado) > 0 ? (
+                      <span className={
+                        ((parseFloat(formData.precio_estimado) - parseFloat(formData.costo_estimado)) / parseFloat(formData.costo_estimado) * 100) >= 25 
+                          ? 'text-green-600' 
+                          : ((parseFloat(formData.precio_estimado) - parseFloat(formData.costo_estimado)) / parseFloat(formData.costo_estimado) * 100) >= 10 
+                            ? 'text-yellow-600' 
+                            : 'text-red-600'
+                      }>
+                        {(((parseFloat(formData.precio_estimado) - parseFloat(formData.costo_estimado)) / parseFloat(formData.costo_estimado)) * 100).toFixed(1)}%
+                      </span>
+                    ) : (
+                      <span className="text-slate-400">-</span>
+                    )}
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
