@@ -57,14 +57,14 @@ const ExcelGrid = ({ data, columns, onAdd, onEdit, onDelete, searchPlaceholder =
 
       <div className="border border-slate-200 rounded-lg bg-white shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <Table className="excel-grid">
+          <Table className="excel-grid min-w-[800px]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id} className="bg-slate-50 border-b border-slate-200">
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
-                      className="text-slate-700 font-semibold py-3 px-4"
+                      className="text-slate-700 font-semibold py-3 px-4 whitespace-nowrap"
                     >
                       {header.isPlaceholder
                         ? null
