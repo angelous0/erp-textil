@@ -377,13 +377,15 @@ const Bases = () => {
       header: 'Tizados',
       cell: ({ row }) => {
         const tizadosCount = tizados.filter(t => t.id_base === row.original.id_base).length;
-        return (
+        return tizadosCount > 0 ? (
           <button
             onClick={() => handleViewTizados(row.original)}
-            className="text-purple-600 hover:text-purple-800 underline font-mono text-xs hover:font-semibold transition-all cursor-pointer"
+            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 hover:bg-purple-200 cursor-pointer transition-colors"
           >
-            📐 Ver {tizadosCount}
+            {tizadosCount} tizado{tizadosCount > 1 ? 's' : ''}
           </button>
+        ) : (
+          <span className="text-slate-400 text-xs">-</span>
         );
       },
     },
