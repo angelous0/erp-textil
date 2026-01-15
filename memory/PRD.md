@@ -8,76 +8,53 @@ Sistema ERP textil full-stack (FastAPI + React + MariaDB) para gestión de desar
 - **Frontend**: React, TanStack Table, Tailwind CSS, Shadcn/UI
 - **Almacenamiento**: Cloudflare R2 (AWS S3 compatible via boto3)
 - **Autenticación**: JWT (python-jose), bcrypt (passlib)
-- **Base de datos**: MariaDB (conexión externa)
 
-## Características Implementadas
+## Características Implementadas ✅
 
-### Sistema de Autenticación y Autorización ✅
+### Dashboard con Métricas (15 Enero 2026)
+- [x] Saludo personalizado al usuario
+- [x] Estadísticas en tiempo real (muestras, bases, tizados, telas)
+- [x] Indicador de aprobados vs pendientes
+- [x] Barras de progreso de aprobación
+- [x] Accesos rápidos a todos los módulos con contadores
+- [x] Actividad reciente (solo admins) con historial de acciones
+- [x] Alertas de items pendientes de aprobar
+
+### Sistema de Autenticación y Autorización
 - [x] Login con username y contraseña (JWT)
 - [x] Roles: Super Admin, Admin, Editor, Viewer
 - [x] Permisos personalizables por usuario
-- [x] Permisos CRUD por módulo (ver, crear, editar, eliminar)
-- [x] Permisos de descarga separados por tipo
-- [x] Permisos de subida separados por tipo
-- [x] Panel de gestión de usuarios (solo admins)
-- [x] **APLICACIÓN DE PERMISOS EN FRONTEND** (15 Enero 2026)
-  - Botones Crear/Editar/Eliminar condicionados según permisos
-  - Botones de descarga condicionados según permisos
-  - Botón de subida de imagen condicionado según permisos
+- [x] Permisos CRUD por módulo
+- [x] Permisos de descarga/subida separados
+- [x] **Aplicación de permisos en Frontend** (botones condicionados)
 
-### Sistema de Auditoría ✅ (15 Enero 2026)
+### Sistema de Auditoría
 - [x] Registro automático de todas las acciones CRUD
-- [x] Registro de logins/logouts
-- [x] Registro de subida/eliminación de archivos
-- [x] Almacenamiento de datos anteriores y nuevos en ediciones
-- [x] Captura de IP y User-Agent del usuario
-- [x] Página `/historial` con filtros y estadísticas (solo admins)
+- [x] Registro de logins y archivos
+- [x] Datos anteriores/nuevos en ediciones
+- [x] IP y User-Agent capturados
+- [x] Página `/historial` con filtros
 
-### Responsive / Scroll Horizontal ✅ (15 Enero 2026)
-- [x] Todas las tablas ahora tienen scroll horizontal
-- [x] `min-width` establecido para evitar columnas ocultas
-- [x] ExcelGrid component actualizado
-- [x] Páginas actualizadas: Usuarios, Historial, MuestrasBase, Bases
+### UI/UX
+- [x] Scroll horizontal en todas las tablas
+- [x] Título personalizado "ERP Textil | Módulo Muestras"
+- [x] Badge "Made with Emergent" eliminado
 
-### Super Admin
-- **Username**: `eduard`
-- **Password**: `cardenas007`
-
-## Entidades del Sistema
-
-### Módulo 1: Desarrollo de Muestras
-- `x_marca`, `tipo_producto`, `x_entalle_desarrollo`, `x_tela_desarrollo`
-- `x_muestra_base`, `x_base`, `x_tizado`, `x_ficha`
-
-### Módulo de Usuarios y Permisos
-- `x_usuario`, `x_permiso_usuario`
-
-### Módulo de Auditoría
-- `x_historial_movimiento`
+### Credenciales
+- **Super Admin**: `eduard` / `cardenas007`
 
 ## Tareas Pendientes
 
 ### P1 - Prioridad Alta
 - [ ] Sincronización con mini-ERP existente (pendiente credenciales)
 
-### P2 - Prioridad Media
-- [ ] Implementar Módulo 2: Producción y Materia Prima
-- [ ] Dashboard con métricas
-
-### P3 - Backlog
-- [ ] Edición en celda (In-cell editing)
+### P2 - Backlog
+- [ ] Módulo 2: Producción y Materia Prima
+- [ ] Edición en celda
 - [ ] SKUs e inventario
 
 ## Archivos Clave
-- `/app/backend/server.py` - Endpoints API con auditoría
-- `/app/backend/auth.py` - Lógica de autenticación
-- `/app/backend/audit.py` - Sistema de auditoría
-- `/app/frontend/src/context/AuthContext.js` - Contexto con funciones de permisos
-- `/app/frontend/src/pages/*.js` - Páginas con permisos aplicados
-- `/app/frontend/src/components/ExcelGrid.js` - Grid con scroll horizontal
-
-## Convenciones
-- Todas las tablas nuevas usan prefijo `x_`
-- Los archivos se almacenan con UUID como nombre
-- Auditoría automática en todas las operaciones CUD
-- Permisos verificados en frontend Y backend
+- `/app/frontend/src/pages/Dashboard.js` - Dashboard con métricas
+- `/app/frontend/public/index.html` - HTML personalizado
+- `/app/backend/server.py` - API endpoints
+- `/app/frontend/src/context/AuthContext.js` - Permisos frontend
