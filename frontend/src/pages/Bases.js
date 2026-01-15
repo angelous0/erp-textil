@@ -451,6 +451,24 @@ const Bases = () => {
               <Separator />
 
               <div className="space-y-2">
+                <Label>Imagen de la Base</Label>
+                <FileUpload
+                  value={formData.imagen}
+                  onChange={(file) => setFormData({ ...formData, imagen: file })}
+                  accept="image/*"
+                />
+                {formData.imagen && (
+                  <div className="mt-2">
+                    <img 
+                      src={`${API}/files/${formData.imagen}`} 
+                      alt="Preview"
+                      className="w-32 h-32 object-cover rounded border border-slate-200"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
                 <Label>Patrón (Archivo)</Label>
                 <FileUpload
                   value={formData.patron}
