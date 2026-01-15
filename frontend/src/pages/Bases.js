@@ -725,7 +725,14 @@ const Bases = () => {
               />
             )}
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex justify-between sm:justify-between">
+            <Button 
+              variant="outline"
+              onClick={() => handleDownloadFile(viewingImage)}
+              className="text-blue-600 border-blue-200 hover:bg-blue-50"
+            >
+              📥 Descargar
+            </Button>
             <Button onClick={() => setImageViewerOpen(false)}>Cerrar</Button>
           </DialogFooter>
         </DialogContent>
