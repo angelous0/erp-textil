@@ -1,6 +1,100 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
 from decimal import Decimal
+from datetime import datetime
+from enum import Enum
+
+# ==================== AUTH SCHEMAS ====================
+
+class RolEnum(str, Enum):
+    super_admin = "super_admin"
+    admin = "admin"
+    editor = "editor"
+    viewer = "viewer"
+
+class PermisoBase(BaseModel):
+    marcas_ver: bool = True
+    marcas_crear: bool = False
+    marcas_editar: bool = False
+    marcas_eliminar: bool = False
+    
+    tipos_ver: bool = True
+    tipos_crear: bool = False
+    tipos_editar: bool = False
+    tipos_eliminar: bool = False
+    
+    entalles_ver: bool = True
+    entalles_crear: bool = False
+    entalles_editar: bool = False
+    entalles_eliminar: bool = False
+    
+    telas_ver: bool = True
+    telas_crear: bool = False
+    telas_editar: bool = False
+    telas_eliminar: bool = False
+    
+    muestras_ver: bool = True
+    muestras_crear: bool = False
+    muestras_editar: bool = False
+    muestras_eliminar: bool = False
+    
+    bases_ver: bool = True
+    bases_crear: bool = False
+    bases_editar: bool = False
+    bases_eliminar: bool = False
+    
+    tizados_ver: bool = True
+    tizados_crear: bool = False
+    tizados_editar: bool = False
+    tizados_eliminar: bool = False
+    
+    descargar_patrones: bool = False
+    descargar_tizados: bool = False
+    descargar_fichas: bool = False
+    descargar_imagenes: bool = True
+    descargar_costos: bool = False
+
+class PermisoSchema(PermisoBase):
+    model_config = ConfigDict(from_attributes=True)
+    id_permiso: int
+    id_usuario: int
+
+class UsuarioBase(BaseModel):
+    username: str
+    email: str
+    nombre: str
+    rol: RolEnum = RolEnum.viewer
+
+class UsuarioCreate(UsuarioBase):
+    password: str
+
+class UsuarioUpdate(BaseModel):
+    email: Optional[str] = None
+    nombre: Optional[str] = None
+    rol: Optional[RolEnum] = None
+    activo: Optional[bool] = None
+    password: Optional[str] = None
+
+class UsuarioSchema(UsuarioBase):
+    model_config = ConfigDict(from_attributes=True)
+    id_usuario: int
+    activo: bool
+    created_at: datetime
+    permisos: List[PermisoSchema] = []
+
+class UsuarioLogin(BaseModel):
+    username: str
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    usuario: UsuarioSchema
+
+class TokenData(BaseModel):
+    username: Optional[str] = None
+
+# ==================== EXISTING SCHEMAS ====================
 
 class TelaBase(BaseModel):
     nombre_tela: str
