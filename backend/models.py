@@ -1,7 +1,79 @@
-from sqlalchemy import Column, Integer, String, Numeric, Boolean, ForeignKey, Text, Enum
+from sqlalchemy import Column, Integer, String, Numeric, Boolean, ForeignKey, Text, Enum, DateTime, JSON
 from sqlalchemy.orm import relationship
 from database import Base
 import enum
+from datetime import datetime
+
+class RolEnum(str, enum.Enum):
+    super_admin = "super_admin"
+    admin = "admin"
+    editor = "editor"
+    viewer = "viewer"
+
+class Usuario(Base):
+    __tablename__ = 'x_usuario'
+    
+    id_usuario = Column(Integer, primary_key=True, autoincrement=True)
+    username = Column(String(100), unique=True, nullable=False)
+    email = Column(String(255), nullable=False)
+    password_hash = Column(String(255), nullable=False)
+    nombre = Column(String(255), nullable=False)
+    rol = Column(Enum(RolEnum), default=RolEnum.viewer)
+    activo = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    permisos = relationship('PermisoUsuario', back_populates='usuario', cascade='all, delete-orphan')
+
+class PermisoUsuario(Base):
+    __tablename__ = 'x_permiso_usuario'
+    
+    id_permiso = Column(Integer, primary_key=True, autoincrement=True)
+    id_usuario = Column(Integer, ForeignKey('x_usuario.id_usuario'), nullable=False)
+    
+    # Permisos por módulo - CRUD
+    marcas_ver = Column(Boolean, default=True)
+    marcas_crear = Column(Boolean, default=False)
+    marcas_editar = Column(Boolean, default=False)
+    marcas_eliminar = Column(Boolean, default=False)
+    
+    tipos_ver = Column(Boolean, default=True)
+    tipos_crear = Column(Boolean, default=False)
+    tipos_editar = Column(Boolean, default=False)
+    tipos_eliminar = Column(Boolean, default=False)
+    
+    entalles_ver = Column(Boolean, default=True)
+    entalles_crear = Column(Boolean, default=False)
+    entalles_editar = Column(Boolean, default=False)
+    entalles_eliminar = Column(Boolean, default=False)
+    
+    telas_ver = Column(Boolean, default=True)
+    telas_crear = Column(Boolean, default=False)
+    telas_editar = Column(Boolean, default=False)
+    telas_eliminar = Column(Boolean, default=False)
+    
+    muestras_ver = Column(Boolean, default=True)
+    muestras_crear = Column(Boolean, default=False)
+    muestras_editar = Column(Boolean, default=False)
+    muestras_eliminar = Column(Boolean, default=False)
+    
+    bases_ver = Column(Boolean, default=True)
+    bases_crear = Column(Boolean, default=False)
+    bases_editar = Column(Boolean, default=False)
+    bases_eliminar = Column(Boolean, default=False)
+    
+    tizados_ver = Column(Boolean, default=True)
+    tizados_crear = Column(Boolean, default=False)
+    tizados_editar = Column(Boolean, default=False)
+    tizados_eliminar = Column(Boolean, default=False)
+    
+    # Permisos de descarga de archivos
+    descargar_patrones = Column(Boolean, default=False)
+    descargar_tizados = Column(Boolean, default=False)
+    descargar_fichas = Column(Boolean, default=False)
+    descargar_imagenes = Column(Boolean, default=True)
+    descargar_costos = Column(Boolean, default=False)
+    
+    usuario = relationship('Usuario', back_populates='permisos')
 
 class ColorEnum(str, enum.Enum):
     Azul = "Azul"
