@@ -17,6 +17,52 @@ import { Edit, Trash2, CheckCircle, XCircle, Plus, X, Search, AlertTriangle, Upl
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Componente para la celda de imagen con subida directa
+const ImageCell = ({ base, onViewImage, onUploadImage }) => {
+  const inputRef = useRef(null);
+  
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      onUploadImage(base.id_base, file);
+    }
+  };
+  
+  if (base.imagen) {
+    return (
+      <button
+        onClick={() => onViewImage(base.imagen)}
+        className="inline-block"
+      >
+        <img 
+          src={`${API}/files/${base.imagen}`} 
+          alt="Base"
+          className="w-16 h-16 object-cover rounded border border-slate-200 hover:border-blue-500 transition-all cursor-pointer hover:scale-105"
+        />
+      </button>
+    );
+  }
+  
+  return (
+    <div>
+      <input
+        type="file"
+        ref={inputRef}
+        onChange={handleFileSelect}
+        accept="image/*"
+        className="hidden"
+      />
+      <button
+        onClick={() => inputRef.current?.click()}
+        className="inline-flex items-center px-2.5 py-1.5 rounded text-xs font-medium bg-slate-100 text-slate-600 hover:bg-blue-100 hover:text-blue-700 transition-colors cursor-pointer border border-dashed border-slate-300 hover:border-blue-400"
+      >
+        <Upload size={12} className="mr-1" />
+        Subir
+      </button>
+    </div>
+  );
+};
+
 const Bases = () => {
   const [bases, setBases] = useState([]);
   const [basesFiltradas, setBasesFiltradas] = useState([]);
