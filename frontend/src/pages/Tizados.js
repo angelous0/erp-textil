@@ -250,11 +250,16 @@ const Tizados = () => {
               <Separator />
 
               <div className="space-y-2">
-                <Label>Archivo de Tizado</Label>
-                <FileUpload
-                  value={formData.archivo_tizado}
-                  onChange={(file) => setFormData({ ...formData, archivo_tizado: file })}
-                  accept=".pdf,.dxf,.ai,.cdr"
+                <Label htmlFor="ancho">Ancho (Número)</Label>
+                <Input
+                  id="ancho"
+                  data-testid="input-ancho"
+                  type="number"
+                  step="0.01"
+                  value={formData.ancho}
+                  onChange={(e) => setFormData({ ...formData, ancho: e.target.value })}
+                  className="border-slate-200 focus:ring-blue-500"
+                  placeholder="Ej: 150, 180"
                 />
               </div>
 
@@ -267,6 +272,15 @@ const Tizados = () => {
                   onChange={(e) => setFormData({ ...formData, curva: e.target.value })}
                   placeholder="Ej: S-M-L-XL, 2-4-6-8, etc."
                   className="border-slate-200 focus:ring-blue-500 min-h-[100px]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Archivo de Tizado</Label>
+                <FileUpload
+                  value={formData.archivo_tizado}
+                  onChange={(file) => setFormData({ ...formData, archivo_tizado: file })}
+                  accept=".pdf,.dxf,.ai,.cdr"
                 />
               </div>
             </div>
