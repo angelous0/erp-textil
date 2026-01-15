@@ -163,9 +163,81 @@ const Bases = () => {
     setImageViewerOpen(true);
   };
 
-  const handleViewFichas = (fichasData) => {
-    setFichasViewing(fichasData);
+  const handleViewFichas = (base) => {
+    setCurrentBaseForFichas(base);
+    setFichasViewing(base.fichas || []);
     setFichasDialogOpen(true);
+    setFichasSearchModal('');
+    setNewFicha({ nombre_ficha: '', archivo: '' });
+    setIsCreatingFicha(false);
+  };
+
+  const getFichasForModal = () => {
+    if (!fichasSearchModal) return fichasViewing;
+    
+    const busqueda = fichasSearchModal.toLowerCase();
+    return fichasViewing.filter(f => 
+      (f.nombre_ficha?.toLowerCase().includes(busqueda))
+    );
+  };
+
+  const handleCreateFicha = async () => {
+    if (!newFicha.nombre_ficha && !newFicha.archivo) {
+      toast.error('Por favor ingresa al menos el nombre o un archivo');
+      return;
+    }
+
+    try {
+      const submitData = {
+        id_base: currentBaseForFichas.id_base,
+        nombre_ficha: newFicha.nombre_ficha || null,
+        archivo: newFicha.archivo || null,
+      };
+
+      await axios.post(`${API}/fichas`, submitData);
+      toast.success('Ficha creada');
+      
+      // Recargar fichas
+      const response = await axios.get(`${API}/fichas/base/${currentBaseForFichas.id_base}`);
+      setFichasViewing(response.data);
+      
+      // Recargar bases para actualizar el contador
+      fetchBases();
+      
+      // Limpiar formulario
+      setNewFicha({ nombre_ficha: '', archivo: '' });
+      setIsCreatingFicha(false);
+    } catch (error) {
+      toast.error('Error al crear ficha');
+      console.error(error);
+    }
+  };
+
+  const handleDeleteFichaFromModal = async (ficha) => {
+    try {
+      // Eliminar archivo de R2 si existe
+      if (ficha.archivo) {
+        try {
+          await axios.delete(`${API}/files/${ficha.archivo}`);
+        } catch (e) {
+          console.log('Archivo no encontrado');
+        }
+      }
+      
+      // Eliminar la ficha
+      await axios.delete(`${API}/fichas/${ficha.id_ficha}`);
+      toast.success('Ficha eliminada');
+      
+      // Recargar fichas
+      const response = await axios.get(`${API}/fichas/base/${currentBaseForFichas.id_base}`);
+      setFichasViewing(response.data);
+      
+      // Recargar bases
+      fetchBases();
+    } catch (error) {
+      toast.error('Error al eliminar ficha');
+      console.error(error);
+    }
   };
 
   const handleDownloadFile = async (filename) => {
