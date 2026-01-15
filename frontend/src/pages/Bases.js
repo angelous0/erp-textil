@@ -748,7 +748,74 @@ const Bases = () => {
           </DialogHeader>
           
           <div className="py-4 space-y-4">
-            {/* Buscador */}
+            {/* Formulario para crear nueva ficha - ARRIBA */}
+            {!isCreatingFicha ? (
+              <Button
+                onClick={() => setIsCreatingFicha(true)}
+                className="w-full bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Plus size={18} className="mr-2" />
+                Crear Nueva Ficha
+              </Button>
+            ) : (
+              <div className="border border-green-200 rounded-lg p-4 bg-green-50 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-slate-900">Nueva Ficha</h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setIsCreatingFicha(false);
+                      setNewFicha({ nombre_ficha: '', archivo: '' });
+                    }}
+                  >
+                    <X size={16} />
+                  </Button>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="new-nombre-ficha">Nombre de Ficha</Label>
+                  <Input
+                    id="new-nombre-ficha"
+                    value={newFicha.nombre_ficha}
+                    onChange={(e) => setNewFicha({ ...newFicha, nombre_ficha: e.target.value })}
+                    placeholder="Ej: Ficha de Medidas, Ficha Técnica"
+                    className="border-slate-300 bg-white"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Archivo</Label>
+                  <FileUpload
+                    value={newFicha.archivo}
+                    onChange={(file) => setNewFicha({ ...newFicha, archivo: file })}
+                    accept=".pdf,.xlsx,.doc,.docx"
+                  />
+                </div>
+
+                <div className="flex space-x-2">
+                  <Button
+                    onClick={handleCreateFicha}
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Guardar Ficha
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsCreatingFicha(false);
+                      setNewFicha({ nombre_ficha: '', archivo: '' });
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            <Separator />
+
+            {/* Buscador - ABAJO */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={16} />
               <Input
@@ -759,7 +826,7 @@ const Bases = () => {
               />
             </div>
 
-            {/* Tabla de Fichas */}
+            {/* Tabla de Fichas - ABAJO */}
             {getFichasForModal().length > 0 ? (
               <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
                 <table className="w-full">
@@ -820,11 +887,13 @@ const Bases = () => {
                 {fichasSearchModal ? 'No se encontraron fichas con esa búsqueda' : 'No hay fichas para esta base'}
               </div>
             )}
+          </div>
 
-            <Separator />
-
-            {/* Formulario para crear nueva ficha */}
-            {!isCreatingFicha ? (
+          <DialogFooter>
+            <Button onClick={() => setFichasDialogOpen(false)}>Cerrar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
               <Button
                 onClick={() => setIsCreatingFicha(true)}
                 className="w-full bg-green-600 hover:bg-green-700 text-white"
