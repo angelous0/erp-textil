@@ -1,8 +1,6 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import dotenv from 'dotenv';
-
-dotenv.config();
+const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+require('dotenv').config();
 
 // Configuración del cliente R2
 const r2Client = new S3Client({
@@ -23,7 +21,7 @@ const BUCKET_NAME = process.env.R2_BUCKET_NAME;
  * @param {string} mimeType - Tipo MIME del archivo
  * @returns {Promise<string>} - Nombre del archivo subido
  */
-export async function uploadToR2(fileBuffer, fileName, mimeType) {
+async function uploadToR2(fileBuffer, fileName, mimeType) {
   try {
     const command = new PutObjectCommand({
       Bucket: BUCKET_NAME,
@@ -47,7 +45,7 @@ export async function uploadToR2(fileBuffer, fileName, mimeType) {
  * @param {number} expiresIn - Tiempo de expiración en segundos (default: 3600 = 1 hora)
  * @returns {Promise<string>} - URL firmada
  */
-export async function getDownloadUrl(fileName, expiresIn = 3600) {
+async function getDownloadUrl(fileName, expiresIn = 3600) {
   try {
     const command = new GetObjectCommand({
       Bucket: BUCKET_NAME,
@@ -67,7 +65,7 @@ export async function getDownloadUrl(fileName, expiresIn = 3600) {
  * @param {string} fileName - Nombre del archivo a eliminar
  * @returns {Promise<boolean>} - true si se eliminó correctamente
  */
-export async function deleteFromR2(fileName) {
+async function deleteFromR2(fileName) {
   try {
     const command = new DeleteObjectCommand({
       Bucket: BUCKET_NAME,
@@ -83,7 +81,7 @@ export async function deleteFromR2(fileName) {
   }
 }
 
-export default {
+module.exports = {
   uploadToR2,
   getDownloadUrl,
   deleteFromR2,
