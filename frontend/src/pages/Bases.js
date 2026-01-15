@@ -573,46 +573,13 @@ const Bases = () => {
     {
       accessorKey: 'imagen',
       header: 'Imagen',
-      cell: ({ row }) => {
-        const inputRef = useRef(null);
-        
-        const handleFileSelect = (e) => {
-          const file = e.target.files[0];
-          if (file) {
-            handleUploadImageFromTable(row.original.id_base, file);
-          }
-        };
-        
-        return row.original.imagen ? (
-          <button
-            onClick={() => handleViewImage(row.original.imagen)}
-            className="inline-block"
-          >
-            <img 
-              src={`${API}/files/${row.original.imagen}`} 
-              alt="Base"
-              className="w-16 h-16 object-cover rounded border border-slate-200 hover:border-blue-500 transition-all cursor-pointer hover:scale-105"
-            />
-          </button>
-        ) : (
-          <div>
-            <input
-              type="file"
-              ref={inputRef}
-              onChange={handleFileSelect}
-              accept="image/*"
-              className="hidden"
-            />
-            <button
-              onClick={() => inputRef.current?.click()}
-              className="inline-flex items-center px-2.5 py-1.5 rounded text-xs font-medium bg-slate-100 text-slate-600 hover:bg-blue-100 hover:text-blue-700 transition-colors cursor-pointer border border-dashed border-slate-300 hover:border-blue-400"
-            >
-              <Upload size={12} className="mr-1" />
-              Subir
-            </button>
-          </div>
-        );
-      },
+      cell: ({ row }) => (
+        <ImageCell 
+          base={row.original} 
+          onViewImage={handleViewImage} 
+          onUploadImage={handleUploadImageFromTable} 
+        />
+      ),
     },
     {
       accessorKey: 'fichas',
