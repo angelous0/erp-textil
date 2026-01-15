@@ -839,7 +839,7 @@ async def delete_file(filename: str):
 # ==================== AUTH ENDPOINTS ====================
 
 @api_router.post("/auth/login", response_model=Token)
-def login(credentials: UsuarioLogin, db: Session = Depends(get_db)):
+def login(credentials: UsuarioLogin, request: Request, db: Session = Depends(get_db)):
     user = db.query(UsuarioModel).filter(UsuarioModel.username == credentials.username).first()
     
     if not user or not verify_password(credentials.password, user.password_hash):
@@ -858,6 +858,9 @@ def login(credentials: UsuarioLogin, db: Session = Depends(get_db)):
         data={"sub": user.username},
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
+    
+    # Registrar login exitoso
+    audit_login(db, user, get_client_ip(request), get_user_agent(request), exitoso=True)
     
     return {
         "access_token": access_token,
