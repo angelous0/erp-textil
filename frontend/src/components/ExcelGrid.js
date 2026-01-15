@@ -11,7 +11,7 @@ import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Search, Plus, Edit, Trash2 } from 'lucide-react';
 
-const ExcelGrid = ({ data, columns, onAdd, onEdit, onDelete, searchPlaceholder = 'Buscar...' }) => {
+const ExcelGrid = ({ data, columns, onAdd, onEdit, onDelete, searchPlaceholder = 'Buscar...', globalFilterFn }) => {
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState('');
 
@@ -23,6 +23,7 @@ const ExcelGrid = ({ data, columns, onAdd, onEdit, onDelete, searchPlaceholder =
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: globalFilterFn || 'auto',
     state: {
       sorting,
       globalFilter,
