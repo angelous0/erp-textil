@@ -93,6 +93,7 @@ const Bases = () => {
       const submitData = {
         id_muestra_base: parseInt(formData.id_muestra_base),
         patron: formData.patron || null,
+        imagen: formData.imagen || null,
         aprobado: formData.aprobado,
       };
 
