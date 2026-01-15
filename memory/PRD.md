@@ -64,6 +64,8 @@ Sistema ERP textil full-stack (FastAPI + React + MariaDB) para gestión de desar
 - Implementación de descarga de archivos desde R2 (usando StreamingResponse)
 - Implementación de eliminación de archivos en R2
 - Modal de confirmación de eliminación en: Bases, Tizados, Muestras Base
+- **Modal de Fichas mejorado**: Ahora incluye búsqueda, creación y eliminación (igual que Tizados)
+- **Botones "+ Agregar"**: Los badges de Fichas y Tizados ahora muestran "+ Agregar" cuando están vacíos y permiten crear
 
 **Nota técnica**: La descarga usa StreamingResponse en lugar de RedirectResponse porque fetch() del frontend no puede seguir redirects cross-origin (CORS).
 
