@@ -288,13 +288,65 @@ const Bases = () => {
   };
 
   const handleDelete = async (id) => {
+    // Encontrar la base y mostrar confirmación
+    const base = bases.find(b => b.id_base === id);
+    setItemToDelete(base);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+    
     try {
-      await axios.delete(`${API}/bases/${id}`);
-      toast.success('Base eliminada');
+      // Eliminar archivos asociados de R2
+      const filesToDelete = [];
+      
+      // Archivo de patrón
+      if (itemToDelete.patron) {
+        filesToDelete.push(itemToDelete.patron);
+      }
+      
+      // Archivo de imagen
+      if (itemToDelete.imagen) {
+        filesToDelete.push(itemToDelete.imagen);
+      }
+      
+      // Archivos de fichas
+      if (itemToDelete.fichas) {
+        itemToDelete.fichas.forEach(ficha => {
+          if (ficha.archivo) {
+            filesToDelete.push(ficha.archivo);
+          }
+        });
+      }
+      
+      // Archivos de tizados
+      const tizadosDeBase = tizados.filter(t => t.id_base === itemToDelete.id_base);
+      tizadosDeBase.forEach(tizado => {
+        if (tizado.archivo_tizado) {
+          filesToDelete.push(tizado.archivo_tizado);
+        }
+      });
+      
+      // Eliminar todos los archivos de R2
+      for (const filename of filesToDelete) {
+        try {
+          await axios.delete(`${API}/files/${filename}`);
+        } catch (e) {
+          console.log(`Archivo ${filename} no encontrado o ya eliminado`);
+        }
+      }
+      
+      // Eliminar la base (y sus fichas/tizados por cascada)
+      await axios.delete(`${API}/bases/${itemToDelete.id_base}`);
+      toast.success('Base y archivos eliminados');
       fetchBases();
     } catch (error) {
       const errorMsg = error.response?.data?.detail || 'Error al eliminar base';
       toast.error(errorMsg);
+    } finally {
+      setDeleteDialogOpen(false);
+      setItemToDelete(null);
     }
   };
 
