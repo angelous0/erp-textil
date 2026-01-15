@@ -389,7 +389,25 @@ const Bases = () => {
         data={basesFiltradas}
         columns={columns}
         onAdd={() => handleOpenDialog()}
-        searchPlaceholder="Buscar bases..."
+        searchPlaceholder="Buscar por marca, tipo, entalle, tela..."
+        globalFilterFn={(row, columnId, filterValue) => {
+          // Búsqueda personalizada en múltiples campos de la muestra base
+          const searchValue = filterValue.toLowerCase();
+          const muestra = muestras.find(m => m.id_muestra_base === row.original.id_muestra_base);
+          if (!muestra) return false;
+          
+          const marca = muestra.marca?.nombre_marca?.toLowerCase() || '';
+          const tipo = muestra.tipo_producto?.nombre_tipo?.toLowerCase() || '';
+          const tela = muestra.tela?.nombre_tela?.toLowerCase() || '';
+          const entalle = muestra.entalle?.nombre_entalle?.toLowerCase() || '';
+          const id = row.original.id_base?.toString() || '';
+          
+          return marca.includes(searchValue) || 
+                 tipo.includes(searchValue) || 
+                 tela.includes(searchValue) || 
+                 entalle.includes(searchValue) ||
+                 id.includes(searchValue);
+        }}
       />
 
       {/* Dialog para ver imagen ampliada */}
