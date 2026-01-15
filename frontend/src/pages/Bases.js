@@ -152,6 +152,7 @@ const Bases = () => {
       setFormData({
         id_muestra_base: base.id_muestra_base.toString(),
         patron: base.patron || '',
+        imagen: base.imagen || '',
         aprobado: base.aprobado,
       });
       setFichas(base.fichas || []);
@@ -160,6 +161,7 @@ const Bases = () => {
       setFormData({
         id_muestra_base: '',
         patron: '',
+        imagen: '',
         aprobado: false,
       });
       setFichas([]);
