@@ -204,19 +204,26 @@ const Bases = () => {
     }
   };
 
-  const handleDeleteTizadoFromModal = async (tizado) => {
+  const handleDeleteTizadoFromModal = (tizado) => {
+    setTizadoToDelete(tizado);
+    setDeleteTizadoDialogOpen(true);
+  };
+
+  const confirmDeleteTizado = async () => {
+    if (!tizadoToDelete) return;
+    
     try {
       // Eliminar archivo de R2 si existe
-      if (tizado.archivo_tizado) {
+      if (tizadoToDelete.archivo_tizado) {
         try {
-          await axios.delete(`${API}/files/${tizado.archivo_tizado}`);
+          await axios.delete(`${API}/files/${tizadoToDelete.archivo_tizado}`);
         } catch (e) {
           console.log('Archivo no encontrado');
         }
       }
       
       // Eliminar el tizado
-      await axios.delete(`${API}/tizados/${tizado.id_tizado}`);
+      await axios.delete(`${API}/tizados/${tizadoToDelete.id_tizado}`);
       toast.success('Tizado eliminado');
       
       // Recargar tizados
@@ -229,6 +236,9 @@ const Bases = () => {
     } catch (error) {
       toast.error('Error al eliminar tizado');
       console.error(error);
+    } finally {
+      setDeleteTizadoDialogOpen(false);
+      setTizadoToDelete(null);
     }
   };
 
