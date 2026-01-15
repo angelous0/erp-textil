@@ -814,7 +814,7 @@ const Bases = () => {
       <ExcelGrid
         data={basesFiltradas}
         columns={columns}
-        onAdd={() => handleOpenDialog()}
+        onAdd={canCreate('bases') ? () => handleOpenDialog() : null}
         searchPlaceholder="Buscar por marca, tipo, entalle, tela..."
         globalFilterFn={(row, columnId, filterValue) => {
           // Búsqueda personalizada en múltiples campos de la muestra base
