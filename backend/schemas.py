@@ -9,6 +9,8 @@ class TelaBase(BaseModel):
     proveedor: Optional[str] = None
     ancho_estandar: Optional[Decimal] = None
     color: Optional[str] = None
+    clasificacion: Optional[str] = None
+    precio: Optional[Decimal] = None
 
 class TelaCreate(TelaBase):
     pass
@@ -20,10 +22,25 @@ class TelaUpdate(BaseModel):
     proveedor: Optional[str] = None
     ancho_estandar: Optional[Decimal] = None
     color: Optional[str] = None
+    clasificacion: Optional[str] = None
+    precio: Optional[Decimal] = None
 
 class Tela(TelaBase):
     model_config = ConfigDict(from_attributes=True)
     id_tela: int
+
+class MarcaBase(BaseModel):
+    nombre_marca: str
+
+class MarcaCreate(MarcaBase):
+    pass
+
+class MarcaUpdate(BaseModel):
+    nombre_marca: Optional[str] = None
+
+class Marca(MarcaBase):
+    model_config = ConfigDict(from_attributes=True)
+    id_marca: int
 
 class EntalleBase(BaseModel):
     nombre_entalle: str
@@ -52,6 +69,7 @@ class TipoProducto(TipoProductoBase):
     id_tipo: int
 
 class TizadoBase(BaseModel):
+    ancho: Optional[Decimal] = None
     archivo_tizado: Optional[str] = None
     curva: Optional[str] = None
 
@@ -59,6 +77,7 @@ class TizadoCreate(TizadoBase):
     id_base: int
 
 class TizadoUpdate(BaseModel):
+    ancho: Optional[Decimal] = None
     archivo_tizado: Optional[str] = None
     curva: Optional[str] = None
 
@@ -105,8 +124,10 @@ class MuestraBaseBase(BaseModel):
     id_tipo: int
     id_entalle: int
     id_tela: int
+    id_marca: Optional[int] = None
     consumo_estimado: Optional[Decimal] = None
     costo_estimado: Optional[Decimal] = None
+    precio_estimado: Optional[Decimal] = None
     archivo_costo: Optional[str] = None
     aprobado: Optional[bool] = False
 
@@ -117,8 +138,10 @@ class MuestraBaseUpdate(BaseModel):
     id_tipo: Optional[int] = None
     id_entalle: Optional[int] = None
     id_tela: Optional[int] = None
+    id_marca: Optional[int] = None
     consumo_estimado: Optional[Decimal] = None
     costo_estimado: Optional[Decimal] = None
+    precio_estimado: Optional[Decimal] = None
     archivo_costo: Optional[str] = None
     aprobado: Optional[bool] = None
 
@@ -128,4 +151,5 @@ class MuestraBase(MuestraBaseBase):
     tipo_producto: Optional[TipoProducto] = None
     entalle: Optional[Entalle] = None
     tela: Optional[Tela] = None
+    marca: Optional[Marca] = None
     bases: List[BaseSchema] = []
