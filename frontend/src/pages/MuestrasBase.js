@@ -180,14 +180,64 @@ const MuestrasBase = () => {
   };
 
   const handleDelete = async (id) => {
+    // Encontrar la muestra y mostrar confirmación
+    const muestra = muestras.find(m => m.id_muestra_base === id);
+    setItemToDelete(muestra);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+    
     try {
-      await axios.delete(`${API}/muestras-base/${id}`);
-      toast.success('Muestra base eliminada');
+      // Eliminar archivo de costo de R2 si existe
+      if (itemToDelete.archivo_costo) {
+        try {
+          await axios.delete(`${API}/files/${itemToDelete.archivo_costo}`);
+        } catch (e) {
+          console.log(`Archivo ${itemToDelete.archivo_costo} no encontrado o ya eliminado`);
+        }
+      }
+      
+      // Eliminar archivos de bases asociadas
+      if (itemToDelete.bases) {
+        for (const base of itemToDelete.bases) {
+          if (base.patron) {
+            try { await axios.delete(`${API}/files/${base.patron}`); } catch (e) {}
+          }
+          if (base.imagen) {
+            try { await axios.delete(`${API}/files/${base.imagen}`); } catch (e) {}
+          }
+          // Fichas
+          if (base.fichas) {
+            for (const ficha of base.fichas) {
+              if (ficha.archivo) {
+                try { await axios.delete(`${API}/files/${ficha.archivo}`); } catch (e) {}
+              }
+            }
+          }
+          // Tizados
+          if (base.tizados) {
+            for (const tizado of base.tizados) {
+              if (tizado.archivo_tizado) {
+                try { await axios.delete(`${API}/files/${tizado.archivo_tizado}`); } catch (e) {}
+              }
+            }
+          }
+        }
+      }
+      
+      // Eliminar la muestra base
+      await axios.delete(`${API}/muestras-base/${itemToDelete.id_muestra_base}`);
+      toast.success('Muestra base y archivos eliminados');
       fetchMuestras();
     } catch (error) {
       const errorMsg = error.response?.data?.detail || 'Error al eliminar muestra base';
       toast.error(errorMsg);
       console.error('Error completo:', error);
+    } finally {
+      setDeleteDialogOpen(false);
+      setItemToDelete(null);
     }
   };
 
