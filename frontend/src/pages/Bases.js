@@ -698,19 +698,32 @@ const Bases = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog para ver fichas */}
+      {/* Dialog para ver y crear Fichas */}
       <Dialog open={fichasDialogOpen} onOpenChange={setFichasDialogOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-heading text-2xl">
-              Fichas Técnicas
+              Fichas de Base #{currentBaseForFichas?.id_base}
             </DialogTitle>
           </DialogHeader>
-          <div className="py-4">
-            {fichasViewing.length > 0 ? (
-              <div className="border border-slate-200 rounded-lg overflow-hidden">
+          
+          <div className="py-4 space-y-4">
+            {/* Buscador */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={16} />
+              <Input
+                placeholder="Buscar por nombre..."
+                value={fichasSearchModal}
+                onChange={(e) => setFichasSearchModal(e.target.value)}
+                className="pl-9 bg-white border-slate-300"
+              />
+            </div>
+
+            {/* Tabla de Fichas */}
+            {getFichasForModal().length > 0 ? (
+              <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
                 <table className="w-full">
-                  <thead className="bg-slate-50 border-b border-slate-200">
+                  <thead className="bg-slate-100 border-b border-slate-200">
                     <tr>
                       <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase tracking-wider">
                         #
@@ -721,10 +734,13 @@ const Bases = () => {
                       <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase tracking-wider">
                         Archivo
                       </th>
+                      <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase tracking-wider w-20">
+                        Acciones
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-slate-100">
-                    {fichasViewing.map((ficha, index) => (
+                    {getFichasForModal().map((ficha, index) => (
                       <tr key={ficha.id_ficha} className="hover:bg-slate-50 transition-colors">
                         <td className="py-3 px-4 text-sm font-mono text-slate-600">
                           {index + 1}
@@ -744,19 +760,97 @@ const Bases = () => {
                             <span className="text-slate-400 text-xs">Sin archivo</span>
                           )}
                         </td>
+                        <td className="py-3 px-4">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteFichaFromModal(ficha)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 size={14} />
+                          </Button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             ) : (
-              <p className="text-center text-slate-500 py-8">No hay fichas disponibles</p>
+              <div className="text-center py-8 text-slate-500 bg-slate-50 border border-slate-200 rounded-lg">
+                {fichasSearchModal ? 'No se encontraron fichas con esa búsqueda' : 'No hay fichas para esta base'}
+              </div>
+            )}
+
+            <Separator />
+
+            {/* Formulario para crear nueva ficha */}
+            {!isCreatingFicha ? (
+              <Button
+                onClick={() => setIsCreatingFicha(true)}
+                className="w-full bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Plus size={18} className="mr-2" />
+                Crear Nueva Ficha
+              </Button>
+            ) : (
+              <div className="border border-slate-200 rounded-lg p-4 bg-slate-50 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-slate-900">Nueva Ficha</h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setIsCreatingFicha(false);
+                      setNewFicha({ nombre_ficha: '', archivo: '' });
+                    }}
+                  >
+                    <X size={16} />
+                  </Button>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="new-nombre-ficha">Nombre de Ficha</Label>
+                  <Input
+                    id="new-nombre-ficha"
+                    value={newFicha.nombre_ficha}
+                    onChange={(e) => setNewFicha({ ...newFicha, nombre_ficha: e.target.value })}
+                    placeholder="Ej: Ficha de Medidas, Ficha Técnica"
+                    className="border-slate-300"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Archivo</Label>
+                  <FileUpload
+                    value={newFicha.archivo}
+                    onChange={(file) => setNewFicha({ ...newFicha, archivo: file })}
+                    accept=".pdf,.xlsx,.doc,.docx"
+                  />
+                </div>
+
+                <div className="flex space-x-2">
+                  <Button
+                    onClick={handleCreateFicha}
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Guardar Ficha
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsCreatingFicha(false);
+                      setNewFicha({ nombre_ficha: '', archivo: '' });
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
             )}
           </div>
+
           <DialogFooter>
-            <Button onClick={() => setFichasDialogOpen(false)}>
-              Cerrar
-            </Button>
+            <Button onClick={() => setFichasDialogOpen(false)}>Cerrar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
