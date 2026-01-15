@@ -17,7 +17,10 @@ const API = `${BACKEND_URL}/api`;
 
 const Bases = () => {
   const [bases, setBases] = useState([]);
+  const [basesFiltradas, setBasesFiltradas] = useState([]);
+  const [filtroAprobacion, setFiltroAprobacion] = useState('aprobados'); // 'todos', 'aprobados', 'pendientes'
   const [muestras, setMuestras] = useState([]);
+  const [tizados, setTizados] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBase, setEditingBase] = useState(null);
   const [formData, setFormData] = useState({
@@ -314,8 +317,39 @@ const Bases = () => {
 
   return (
     <div>
+      {/* Filtros de Aprobación */}
+      <div className="mb-4 flex items-center space-x-2">
+        <span className="text-sm font-medium text-slate-700">Filtrar por estado:</span>
+        <Button
+          variant={filtroAprobacion === 'aprobados' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setFiltroAprobacion('aprobados')}
+          className={filtroAprobacion === 'aprobados' ? 'bg-green-600 hover:bg-green-700' : ''}
+        >
+          <CheckCircle size={14} className="mr-1" />
+          Aprobados ({bases.filter(b => b.aprobado).length})
+        </Button>
+        <Button
+          variant={filtroAprobacion === 'pendientes' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setFiltroAprobacion('pendientes')}
+          className={filtroAprobacion === 'pendientes' ? 'bg-slate-600 hover:bg-slate-700' : ''}
+        >
+          <XCircle size={14} className="mr-1" />
+          Pendientes ({bases.filter(b => !b.aprobado).length})
+        </Button>
+        <Button
+          variant={filtroAprobacion === 'todos' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setFiltroAprobacion('todos')}
+          className={filtroAprobacion === 'todos' ? 'bg-blue-600 hover:bg-blue-700' : ''}
+        >
+          Todos ({bases.length})
+        </Button>
+      </div>
+
       <ExcelGrid
-        data={bases}
+        data={basesFiltradas}
         columns={columns}
         onAdd={() => handleOpenDialog()}
         searchPlaceholder="Buscar bases..."
