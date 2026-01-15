@@ -951,6 +951,7 @@ const Bases = () => {
                           </div>
                         </th>
                         <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">Archivo</th>
+                        <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase w-20">Acciones</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -988,6 +989,16 @@ const Bases = () => {
                             ) : (
                               <span className="text-slate-400 text-sm">Sin archivo</span>
                             )}
+                          </td>
+                          <td className="py-3 px-4">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteTizadoFromModal(tizado)}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 size={14} />
+                            </Button>
                           </td>
                         </tr>
                       ))}
