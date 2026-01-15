@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import ExcelGrid from '../components/ExcelGrid';
+import { useAuth } from '../context/AuthContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -13,10 +15,12 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const Telas = () => {
+  const { canCreate, canEdit, canDelete } = useAuth();
   const [telas, setTelas] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTela, setEditingTela] = useState(null);
   const [clasificacionesHistorial, setClasificacionesHistorial] = useState([]);
+  const [deleteConfirm, setDeleteConfirm] = useState({ open: false, tela: null });
   const [formData, setFormData] = useState({
     nombre_tela: '',
     gramaje: '',
@@ -37,7 +41,6 @@ const Telas = () => {
       const response = await axios.get(`${API}/telas`);
       setTelas(response.data);
       
-      // Extraer clasificaciones únicas para el historial
       const clasificaciones = [...new Set(response.data
         .map(t => t.clasificacion)
         .filter(c => c && c.trim() !== '')
@@ -65,13 +68,16 @@ const Telas = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
+    if (!deleteConfirm.tela) return;
     try {
-      await axios.delete(`${API}/telas/${id}`);
+      await axios.delete(`${API}/telas/${deleteConfirm.tela.id_tela}`);
       toast.success('Tela eliminada');
       fetchTelas();
     } catch (error) {
       toast.error('Error al eliminar tela');
+    } finally {
+      setDeleteConfirm({ open: false, tela: null });
     }
   };
 
@@ -168,24 +174,28 @@ const Telas = () => {
       header: 'Acciones',
       cell: ({ row }) => (
         <div className="flex space-x-2">
-          <Button
-            data-testid={`edit-tela-${row.original.id_tela}`}
-            variant="ghost"
-            size="sm"
-            onClick={() => handleOpenDialog(row.original)}
-            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-          >
-            <Edit size={16} />
-          </Button>
-          <Button
-            data-testid={`delete-tela-${row.original.id_tela}`}
-            variant="ghost"
-            size="sm"
-            onClick={() => handleDelete(row.original.id_tela)}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <Trash2 size={16} />
-          </Button>
+          {canEdit('telas') && (
+            <Button
+              data-testid={`edit-tela-${row.original.id_tela}`}
+              variant="ghost"
+              size="sm"
+              onClick={() => handleOpenDialog(row.original)}
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            >
+              <Edit size={16} />
+            </Button>
+          )}
+          {canDelete('telas') && (
+            <Button
+              data-testid={`delete-tela-${row.original.id_tela}`}
+              variant="ghost"
+              size="sm"
+              onClick={() => setDeleteConfirm({ open: true, tela: row.original })}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <Trash2 size={16} />
+            </Button>
+          )}
         </div>
       ),
     },
@@ -196,7 +206,7 @@ const Telas = () => {
       <ExcelGrid
         data={telas}
         columns={columns}
-        onAdd={() => handleOpenDialog()}
+        onAdd={canCreate('telas') ? () => handleOpenDialog() : null}
         searchPlaceholder="Buscar telas..."
       />
 
@@ -324,6 +334,24 @@ const Telas = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={deleteConfirm.open} onOpenChange={(open) => setDeleteConfirm({ ...deleteConfirm, open })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar tela?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Se eliminará permanentemente la tela 
+              <strong> "{deleteConfirm.tela?.nombre_tela}"</strong>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

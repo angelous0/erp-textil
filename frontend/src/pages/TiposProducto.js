@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import ExcelGrid from '../components/ExcelGrid';
+import { useAuth } from '../context/AuthContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -12,10 +14,12 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const TiposProducto = () => {
+  const { canCreate, canEdit, canDelete } = useAuth();
   const [tipos, setTipos] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTipo, setEditingTipo] = useState(null);
   const [formData, setFormData] = useState({ nombre_tipo: '' });
+  const [deleteConfirm, setDeleteConfirm] = useState({ open: false, tipo: null });
 
   useEffect(() => {
     fetchTipos();
@@ -47,13 +51,16 @@ const TiposProducto = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
+    if (!deleteConfirm.tipo) return;
     try {
-      await axios.delete(`${API}/tipos-producto/${id}`);
+      await axios.delete(`${API}/tipos-producto/${deleteConfirm.tipo.id_tipo}`);
       toast.success('Tipo de producto eliminado');
       fetchTipos();
     } catch (error) {
       toast.error('Error al eliminar tipo de producto');
+    } finally {
+      setDeleteConfirm({ open: false, tipo: null });
     }
   };
 
@@ -89,24 +96,28 @@ const TiposProducto = () => {
       header: 'Acciones',
       cell: ({ row }) => (
         <div className="flex space-x-2">
-          <Button
-            data-testid={`edit-tipo-${row.original.id_tipo}`}
-            variant="ghost"
-            size="sm"
-            onClick={() => handleOpenDialog(row.original)}
-            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-          >
-            <Edit size={16} />
-          </Button>
-          <Button
-            data-testid={`delete-tipo-${row.original.id_tipo}`}
-            variant="ghost"
-            size="sm"
-            onClick={() => handleDelete(row.original.id_tipo)}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <Trash2 size={16} />
-          </Button>
+          {canEdit('tipos') && (
+            <Button
+              data-testid={`edit-tipo-${row.original.id_tipo}`}
+              variant="ghost"
+              size="sm"
+              onClick={() => handleOpenDialog(row.original)}
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            >
+              <Edit size={16} />
+            </Button>
+          )}
+          {canDelete('tipos') && (
+            <Button
+              data-testid={`delete-tipo-${row.original.id_tipo}`}
+              variant="ghost"
+              size="sm"
+              onClick={() => setDeleteConfirm({ open: true, tipo: row.original })}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <Trash2 size={16} />
+            </Button>
+          )}
         </div>
       ),
     },
@@ -117,7 +128,7 @@ const TiposProducto = () => {
       <ExcelGrid
         data={tipos}
         columns={columns}
-        onAdd={() => handleOpenDialog()}
+        onAdd={canCreate('tipos') ? () => handleOpenDialog() : null}
         searchPlaceholder="Buscar tipos de producto..."
       />
 
@@ -158,6 +169,24 @@ const TiposProducto = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={deleteConfirm.open} onOpenChange={(open) => setDeleteConfirm({ ...deleteConfirm, open })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar tipo de producto?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Se eliminará permanentemente el tipo 
+              <strong> "{deleteConfirm.tipo?.nombre_tipo}"</strong>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

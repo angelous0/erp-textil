@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import ExcelGrid from '../components/ExcelGrid';
+import { useAuth } from '../context/AuthContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -12,10 +14,12 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const Entalles = () => {
+  const { canCreate, canEdit, canDelete } = useAuth();
   const [entalles, setEntalles] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingEntalle, setEditingEntalle] = useState(null);
   const [formData, setFormData] = useState({ nombre_entalle: '' });
+  const [deleteConfirm, setDeleteConfirm] = useState({ open: false, entalle: null });
 
   useEffect(() => {
     fetchEntalles();
@@ -47,13 +51,16 @@ const Entalles = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
+    if (!deleteConfirm.entalle) return;
     try {
-      await axios.delete(`${API}/entalles/${id}`);
+      await axios.delete(`${API}/entalles/${deleteConfirm.entalle.id_entalle}`);
       toast.success('Entalle eliminado');
       fetchEntalles();
     } catch (error) {
       toast.error('Error al eliminar entalle');
+    } finally {
+      setDeleteConfirm({ open: false, entalle: null });
     }
   };
 
@@ -89,24 +96,28 @@ const Entalles = () => {
       header: 'Acciones',
       cell: ({ row }) => (
         <div className="flex space-x-2">
-          <Button
-            data-testid={`edit-entalle-${row.original.id_entalle}`}
-            variant="ghost"
-            size="sm"
-            onClick={() => handleOpenDialog(row.original)}
-            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-          >
-            <Edit size={16} />
-          </Button>
-          <Button
-            data-testid={`delete-entalle-${row.original.id_entalle}`}
-            variant="ghost"
-            size="sm"
-            onClick={() => handleDelete(row.original.id_entalle)}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <Trash2 size={16} />
-          </Button>
+          {canEdit('entalles') && (
+            <Button
+              data-testid={`edit-entalle-${row.original.id_entalle}`}
+              variant="ghost"
+              size="sm"
+              onClick={() => handleOpenDialog(row.original)}
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            >
+              <Edit size={16} />
+            </Button>
+          )}
+          {canDelete('entalles') && (
+            <Button
+              data-testid={`delete-entalle-${row.original.id_entalle}`}
+              variant="ghost"
+              size="sm"
+              onClick={() => setDeleteConfirm({ open: true, entalle: row.original })}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <Trash2 size={16} />
+            </Button>
+          )}
         </div>
       ),
     },
@@ -117,7 +128,7 @@ const Entalles = () => {
       <ExcelGrid
         data={entalles}
         columns={columns}
-        onAdd={() => handleOpenDialog()}
+        onAdd={canCreate('entalles') ? () => handleOpenDialog() : null}
         searchPlaceholder="Buscar entalles..."
       />
 
@@ -158,6 +169,24 @@ const Entalles = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={deleteConfirm.open} onOpenChange={(open) => setDeleteConfirm({ ...deleteConfirm, open })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar entalle?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Se eliminará permanentemente el entalle 
+              <strong> "{deleteConfirm.entalle?.nombre_entalle}"</strong>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
