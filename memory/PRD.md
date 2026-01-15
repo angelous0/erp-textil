@@ -61,9 +61,11 @@ Sistema ERP textil full-stack (FastAPI + React + MariaDB) para gestión de desar
 ## Estado Actual
 ✅ **Completado hoy (15 Enero 2026)**:
 - Migración de 18 archivos existentes a Cloudflare R2
-- Implementación de descarga de archivos desde R2 usando boto3
+- Implementación de descarga de archivos desde R2 (usando StreamingResponse)
 - Implementación de eliminación de archivos en R2
 - Modal de confirmación de eliminación en: Bases, Tizados, Muestras Base
+
+**Nota técnica**: La descarga usa StreamingResponse en lugar de RedirectResponse porque fetch() del frontend no puede seguir redirects cross-origin (CORS).
 
 ## Tareas Pendientes
 
