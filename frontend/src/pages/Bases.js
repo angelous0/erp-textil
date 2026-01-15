@@ -35,6 +35,62 @@ const Bases = () => {
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
   const [viewingImage, setViewingImage] = useState(null);
   const [tizadosBusqueda, setTizadosBusqueda] = useState('');
+  
+  // Estados para modal de tizados
+  const [tizadosDialogOpen, setTizadosDialogOpen] = useState(false);
+  const [currentBaseForTizados, setCurrentBaseForTizados] = useState(null);
+  const [tizadosSearchModal, setTizadosSearchModal] = useState('');
+  const [newTizado, setNewTizado] = useState({ ancho: '', curva: '', archivo_tizado: '' });
+  const [isCreatingTizado, setIsCreatingTizado] = useState(false);
+
+  const handleViewTizados = (base) => {
+    setCurrentBaseForTizados(base);
+    setTizadosDialogOpen(true);
+    setTizadosSearchModal('');
+    setNewTizado({ ancho: '', curva: '', archivo_tizado: '' });
+    setIsCreatingTizado(false);
+  };
+
+  const getTizadosForModal = () => {
+    if (!currentBaseForTizados) return [];
+    const tizadosDeBase = tizados.filter(t => t.id_base === currentBaseForTizados.id_base);
+    if (!tizadosSearchModal) return tizadosDeBase;
+    
+    const busqueda = tizadosSearchModal.toLowerCase();
+    return tizadosDeBase.filter(t => 
+      (t.ancho?.toString().includes(busqueda)) ||
+      (t.curva?.toLowerCase().includes(busqueda))
+    );
+  };
+
+  const handleCreateTizado = async () => {
+    if (!newTizado.ancho && !newTizado.curva) {
+      toast.error('Por favor ingresa al menos el ancho o la curva');
+      return;
+    }
+
+    try {
+      const submitData = {
+        id_base: currentBaseForTizados.id_base,
+        ancho: newTizado.ancho ? parseFloat(newTizado.ancho) : null,
+        curva: newTizado.curva || null,
+        archivo_tizado: newTizado.archivo_tizado || null,
+      };
+
+      await axios.post(`${API}/tizados`, submitData);
+      toast.success('Tizado creado');
+      
+      // Recargar tizados
+      await fetchTizados();
+      
+      // Limpiar formulario
+      setNewTizado({ ancho: '', curva: '', archivo_tizado: '' });
+      setIsCreatingTizado(false);
+    } catch (error) {
+      toast.error('Error al crear tizado');
+      console.error(error);
+    }
+  };
 
   const getTizadosFiltrados = () => {
     if (!editingBase) return [];
