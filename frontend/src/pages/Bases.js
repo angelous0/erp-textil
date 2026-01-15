@@ -372,6 +372,22 @@ const Bases = () => {
       },
     },
     {
+      id: 'tizados',
+      header: 'Tizados',
+      cell: ({ row }) => {
+        const tizadosCount = tizados.filter(t => t.id_base === row.original.id_base).length;
+        return (
+          <button
+            onClick={() => handleViewTizados(row.original)}
+            className="text-purple-600 hover:text-purple-800 underline font-mono text-xs hover:font-semibold transition-all cursor-pointer"
+          >
+            📐 Ver {tizadosCount}
+          </button>
+        );
+      },
+    },
+
+    {
       accessorKey: 'aprobado',
       header: 'Estado',
       cell: ({ row }) => {
