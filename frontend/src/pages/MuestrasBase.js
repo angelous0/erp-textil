@@ -789,16 +789,16 @@ const MuestrasBase = () => {
                         Bases Relacionadas ({editingMuestra.bases.length})
                       </Label>
                     </div>
-                    <div className="border border-slate-200 rounded-lg overflow-hidden">
-                      <table className="w-full text-sm excel-grid">
+                    <div className="border border-slate-200 rounded-lg overflow-x-auto">
+                      <table className="w-full text-sm excel-grid min-w-[600px]">
                         <thead className="bg-slate-50 border-b border-slate-200">
                           <tr>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">ID Base</th>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">Patrón</th>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">Fichas</th>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">Tizados</th>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">Estado</th>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase">Acciones</th>
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase whitespace-nowrap">ID Base</th>
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase whitespace-nowrap">Patrón</th>
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase whitespace-nowrap">Fichas</th>
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase whitespace-nowrap">Tizados</th>
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase whitespace-nowrap">Estado</th>
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-slate-700 uppercase whitespace-nowrap">Acciones</th>
                           </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-slate-100">
