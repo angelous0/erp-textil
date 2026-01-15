@@ -296,6 +296,29 @@ const Bases = () => {
     }
   };
 
+  // Subir imagen directamente desde la tabla
+  const handleUploadImageFromTable = async (baseId, file) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const uploadResponse = await axios.post(`${API}/upload`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      const filename = uploadResponse.data.filename;
+      
+      // Actualizar la base con la nueva imagen
+      await axios.put(`${API}/bases/${baseId}`, { imagen: filename });
+      
+      toast.success('Imagen subida');
+      fetchBases();
+    } catch (error) {
+      console.error('Error al subir imagen:', error);
+      toast.error('Error al subir imagen');
+    }
+  };
+
   useEffect(() => {
     fetchBases();
     fetchMuestras();
