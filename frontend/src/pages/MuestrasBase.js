@@ -4,13 +4,14 @@ import { toast } from 'sonner';
 import ExcelGrid from '../components/ExcelGrid';
 import FileUpload from '../components/FileUpload';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Switch } from '../components/ui/switch';
 import { Separator } from '../components/ui/separator';
-import { Edit, Trash2, CheckCircle, XCircle, Eye, Plus } from 'lucide-react';
+import { Edit, Trash2, CheckCircle, XCircle, Eye, Plus, AlertTriangle } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -39,6 +40,10 @@ const MuestrasBase = () => {
 
   const [baseViewDialogOpen, setBaseViewDialogOpen] = useState(false);
   const [viewingBase, setViewingBase] = useState(null);
+  
+  // Estados para confirmación de eliminación
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   const handleDownloadFile = async (filename) => {
     try {
