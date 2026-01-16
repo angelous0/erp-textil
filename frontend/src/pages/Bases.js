@@ -1369,7 +1369,7 @@ const Bases = () => {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="modelo">Modelo</Label>
+                  <Label htmlFor="modelo">Modelo (texto)</Label>
                   <Input
                     id="modelo"
                     data-testid="input-modelo"
@@ -1380,6 +1380,91 @@ const Bases = () => {
                   />
                 </div>
               </div>
+
+              {/* Conexión con Mini-ERP */}
+              {miniERPConnected && (
+                <div className="border border-blue-200 bg-blue-50 rounded-lg p-4 space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-medium text-blue-800">Conectado a Mini-ERP</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="id_modelo">Modelo (Mini-ERP)</Label>
+                      <Select
+                        value={formData.id_modelo?.toString() || ''}
+                        onValueChange={(value) => {
+                          const modelo = modelosMiniERP.find(m => m.id.toString() === value);
+                          setFormData({ 
+                            ...formData, 
+                            id_modelo: value ? parseInt(value) : null,
+                            modelo: modelo ? modelo.detalle : formData.modelo
+                          });
+                        }}
+                      >
+                        <SelectTrigger data-testid="select-modelo-erp">
+                          <SelectValue placeholder="Seleccionar modelo..." />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-60">
+                          <div className="p-2">
+                            <Input
+                              placeholder="Buscar modelo..."
+                              value={searchModelo}
+                              onChange={(e) => {
+                                setSearchModelo(e.target.value);
+                                fetchModelosMiniERP(e.target.value);
+                              }}
+                              className="mb-2"
+                            />
+                          </div>
+                          {modelosMiniERP.map((modelo) => (
+                            <SelectItem key={modelo.id} value={modelo.id.toString()}>
+                              {modelo.detalle}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="id_registro">Registro (Mini-ERP)</Label>
+                      {formData.id_registro ? (
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium bg-green-100 text-green-800 border border-green-200">
+                            Vinculado: #{formData.id_registro}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setFormData({ ...formData, id_registro: null })}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <X size={14} />
+                          </Button>
+                        </div>
+                      ) : (
+                        <Select
+                          value={formData.id_registro?.toString() || ''}
+                          onValueChange={(value) => setFormData({ ...formData, id_registro: value ? parseInt(value) : null })}
+                        >
+                          <SelectTrigger data-testid="select-registro-erp">
+                            <SelectValue placeholder="Vincular registro..." />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-60">
+                            {registrosMiniERP.map((registro) => (
+                              <SelectItem key={registro.id} value={registro.id.toString()}>
+                                #{registro.id} - {registro.modelo_nombre || 'Sin modelo'} ({registro.n_corte || 'Sin corte'})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="flex items-center space-x-2">
                 <Switch
