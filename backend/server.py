@@ -509,12 +509,20 @@ def delete_muestra_base(
     if not db_muestra:
         raise HTTPException(status_code=404, detail="Muestra base no encontrada")
     
+    # Guardar archivo para eliminar
+    archivo_to_delete = db_muestra.archivo
+    
     audit_delete(db, current_user, "muestras_base", db_muestra, id_muestra_base,
                  f"Eliminó muestra base ID: {id_muestra_base}",
                  get_client_ip(request), get_user_agent(request))
     
     db.delete(db_muestra)
     db.commit()
+    
+    # Eliminar archivo de R2
+    if archivo_to_delete:
+        delete_file_from_r2(archivo_to_delete)
+    
     return {"message": "Muestra base eliminada"}
 
 # BASE Endpoints
