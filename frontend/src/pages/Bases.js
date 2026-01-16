@@ -70,6 +70,87 @@ const ImageCell = ({ base, onViewImage, onUploadImage, canUpload }) => {
   );
 };
 
+// Componente para celda de archivo (patrón) con subida directa
+const PatronCell = ({ base, onUploadPatron, onDownload, onRemovePatron, canUpload, canDownload }) => {
+  const inputRef = useRef(null);
+  const archivo = base.patron;
+  
+  const handleFileSelect = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      await onUploadPatron(base.id_base, file);
+    }
+    e.target.value = '';
+  };
+  
+  const extension = archivo ? archivo.split('.').pop()?.toUpperCase() : '';
+  const getFileColor = (ext) => {
+    const colors = {
+      'PDF': 'bg-red-100 text-red-700 border-red-200',
+      'XLSX': 'bg-green-100 text-green-700 border-green-200',
+      'XLS': 'bg-green-100 text-green-700 border-green-200',
+      'DOC': 'bg-blue-100 text-blue-700 border-blue-200',
+      'DOCX': 'bg-blue-100 text-blue-700 border-blue-200',
+      'DXF': 'bg-purple-100 text-purple-700 border-purple-200',
+      'AI': 'bg-orange-100 text-orange-700 border-orange-200',
+    };
+    return colors[ext] || 'bg-slate-100 text-slate-700 border-slate-200';
+  };
+  
+  if (archivo) {
+    return (
+      <div className="flex items-center gap-1">
+        {canDownload && (
+          <button
+            onClick={() => onDownload(archivo)}
+            className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium border transition-all hover:shadow-md cursor-pointer ${getFileColor(extension)}`}
+            title="Descargar archivo"
+          >
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            {extension}
+          </button>
+        )}
+        {canUpload && (
+          <button
+            onClick={() => onRemovePatron(base.id_base)}
+            className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors"
+            title="Quitar archivo"
+          >
+            <X size={14} />
+          </button>
+        )}
+      </div>
+    );
+  }
+  
+  return (
+    <div>
+      {canUpload ? (
+        <>
+          <input
+            type="file"
+            ref={inputRef}
+            onChange={handleFileSelect}
+            accept=".pdf,.xlsx,.xls,.doc,.docx,.dxf,.ai"
+            className="hidden"
+          />
+          <button
+            onClick={() => inputRef.current?.click()}
+            className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-slate-100 text-slate-600 hover:bg-blue-100 hover:text-blue-700 transition-colors cursor-pointer border border-dashed border-slate-300 hover:border-blue-400"
+          >
+            <Upload size={12} className="mr-1" />
+            Subir
+          </button>
+        </>
+      ) : (
+        <span className="text-slate-400 text-xs">-</span>
+      )}
+    </div>
+  );
+};
+
 const Bases = () => {
   const { canCreate, canEdit, canDelete, canDownload, canUpload } = useAuth();
   const [bases, setBases] = useState([]);
