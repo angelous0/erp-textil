@@ -182,9 +182,10 @@ def get_registros_sin_vincular(limit: int = 50, search: str = None) -> List[Dict
                     r.n_corte,
                     r.id_modelo,
                     m.detalle as modelo_nombre,
-                    r.aprobado
+                    e.detalle as estado_nombre
                 FROM registro r
                 LEFT JOIN modelo m ON r.id_modelo = m.id
+                LEFT JOIN estado e ON r.id_estado = e.id
                 WHERE r.x_id_base IS NULL
                 AND (m.detalle LIKE :search OR r.n_corte LIKE :search OR CAST(r.id AS CHAR) LIKE :search)
                 ORDER BY r.id DESC
@@ -198,15 +199,16 @@ def get_registros_sin_vincular(limit: int = 50, search: str = None) -> List[Dict
                     r.n_corte,
                     r.id_modelo,
                     m.detalle as modelo_nombre,
-                    r.aprobado
+                    e.detalle as estado_nombre
                 FROM registro r
                 LEFT JOIN modelo m ON r.id_modelo = m.id
+                LEFT JOIN estado e ON r.id_estado = e.id
                 WHERE r.x_id_base IS NULL
                 ORDER BY r.id DESC
                 LIMIT :limit
             """)
             result = conn.execute(query, {"limit": limit})
-        return [{"id": row[0], "n_corte": row[1], "id_modelo": row[2], "modelo_nombre": row[3], "aprobado": row[4]} for row in result]
+        return [{"id": row[0], "n_corte": row[1], "id_modelo": row[2], "modelo_nombre": row[3], "estado_nombre": row[4]} for row in result]
 
 def get_registros_vinculados_a_base(id_base: int) -> List[Dict]:
     """Obtiene todos los registros vinculados a una base específica"""
