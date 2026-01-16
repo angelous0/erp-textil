@@ -719,6 +719,23 @@ def delete_ficha(
     return {"message": "Ficha eliminada"}
 
 # FILE UPLOAD Endpoint
+import re
+import urllib.parse
+
+def sanitize_filename(filename: str) -> str:
+    """Limpia el nombre de archivo para evitar problemas"""
+    # Remover caracteres problemáticos pero mantener el nombre legible
+    filename = re.sub(r'[<>:"/\\|?*]', '_', filename)
+    return filename
+
+def extract_original_name(stored_filename: str) -> str:
+    """Extrae el nombre original de un archivo almacenado con formato uuid_nombre.ext"""
+    # Formato: uuid_nombreoriginal.ext
+    parts = stored_filename.split('_', 1)
+    if len(parts) == 2:
+        return parts[1]  # Retorna nombreoriginal.ext
+    return stored_filename  # Si no tiene el formato esperado, retorna el nombre tal cual
+
 @api_router.post("/upload")
 async def upload_file(
     request: Request,
@@ -727,8 +744,10 @@ async def upload_file(
     current_user: UsuarioModel = Depends(get_current_user)
 ):
     try:
-        file_extension = Path(file.filename).suffix
-        unique_filename = f"{uuid.uuid4()}{file_extension}"
+        # Limpiar y preservar el nombre original
+        original_name = sanitize_filename(file.filename)
+        unique_id = str(uuid.uuid4())[:8]  # Solo 8 caracteres del UUID
+        unique_filename = f"{unique_id}_{original_name}"
         
         # Leer contenido del archivo
         file_content = await file.read()
@@ -757,13 +776,15 @@ async def upload_file(
     except Exception as e:
         print(f"❌ Error en upload: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-    except Exception as e:
-        print(f"❌ Error en upload: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
 
 # FILE DOWNLOAD Endpoint
-@api_router.get("/files/{filename}")
+@api_router.get("/files/{filename:path}")
 async def get_file(filename: str):
+    # Extraer nombre original para la descarga
+    original_name = extract_original_name(filename)
+    # Codificar para el header (soporta caracteres especiales)
+    encoded_name = urllib.parse.quote(original_name)
+    
     if USE_R2:
         try:
             # Obtener el archivo directamente de R2 y servirlo
@@ -787,7 +808,7 @@ async def get_file(filename: str):
                 io.BytesIO(file_content),
                 media_type=content_type,
                 headers={
-                    'Content-Disposition': f'{disposition}; filename="{filename}"',
+                    'Content-Disposition': f"{disposition}; filename=\"{original_name}\"; filename*=UTF-8''{encoded_name}",
                     'Content-Length': str(len(file_content))
                 }
             )
@@ -796,7 +817,7 @@ async def get_file(filename: str):
             # Fallback a archivo local
             file_path = UPLOAD_DIR / filename
             if file_path.exists():
-                return FileResponse(file_path)
+                return FileResponse(file_path, filename=original_name)
             raise HTTPException(status_code=404, detail="Archivo no encontrado")
         except Exception as e:
             print(f"⚠️ Error obteniendo de R2: {e}")
@@ -804,14 +825,14 @@ async def get_file(filename: str):
             file_path = UPLOAD_DIR / filename
             if file_path.exists():
                 print(f"⚠️ R2 falló, sirviendo archivo local: {filename}")
-                return FileResponse(file_path)
+                return FileResponse(file_path, filename=original_name)
             raise HTTPException(status_code=404, detail="Archivo no encontrado")
     else:
         # Servir archivo local
         file_path = UPLOAD_DIR / filename
         if not file_path.exists():
             raise HTTPException(status_code=404, detail="Archivo no encontrado")
-        return FileResponse(file_path)
+        return FileResponse(file_path, filename=original_name)
 
 # FILE DELETE Endpoint
 @api_router.delete("/files/{filename}")
