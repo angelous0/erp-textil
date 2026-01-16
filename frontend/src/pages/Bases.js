@@ -608,52 +608,7 @@ const Bases = () => {
     }
   };
 
-  // Ref para evitar múltiples cargas simultáneas
-  const loadingCountsRef = useRef(false);
-  
-  // Efecto para cargar conteos cuando se conecta al mini-ERP
-  useEffect(() => {
-    let isCancelled = false;
-    
-    const loadCounts = async () => {
-      // Evitar múltiples cargas simultáneas
-      if (loadingCountsRef.current || !miniERPConnected || bases.length === 0) {
-        return;
-      }
-      
-      loadingCountsRef.current = true;
-      console.log('Iniciando carga de conteos para', bases.length, 'bases');
-      
-      const counts = {};
-      try {
-        for (const base of bases) {
-          if (isCancelled) {
-            console.log('Carga cancelada');
-            return;
-          }
-          try {
-            const res = await axios.get(`${API}/mini-erp/registros/vinculados/${base.id_base}`);
-            counts[base.id_base] = res.data.length;
-          } catch (e) {
-            counts[base.id_base] = 0;
-          }
-        }
-        
-        if (!isCancelled) {
-          console.log('Conteos cargados:', counts);
-          setRegistrosCount(counts);
-        }
-      } finally {
-        loadingCountsRef.current = false;
-      }
-    };
-    
-    loadCounts();
-    
-    return () => {
-      isCancelled = true;
-    };
-  }, [miniERPConnected, bases.length]); // Solo depende de la longitud, no de la referencia completa
+  // Nota: Los conteos de registros ERP se cargan dinámicamente al abrir el modal
 
   const aplicarFiltro = (data, filtro) => {
     let filtradas = data;
