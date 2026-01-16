@@ -642,6 +642,40 @@ const Bases = () => {
     }
   };
 
+  // Función para subir patrón desde la tabla
+  const handleUploadPatronFromTable = async (baseId, file) => {
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append('file', file);
+      
+      const uploadResponse = await axios.post(`${API}/upload`, formDataUpload, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      const filename = uploadResponse.data.filename;
+      
+      await axios.put(`${API}/bases/${baseId}`, { patron: filename });
+      
+      toast.success('Patrón subido correctamente');
+      fetchBases();
+    } catch (error) {
+      console.error('Error al subir patrón:', error);
+      toast.error('Error al subir el patrón');
+    }
+  };
+
+  // Función para quitar patrón desde la tabla  
+  const handleRemovePatronFromTable = async (baseId) => {
+    try {
+      await axios.put(`${API}/bases/${baseId}`, { patron: null });
+      toast.success('Patrón eliminado');
+      fetchBases();
+    } catch (error) {
+      console.error('Error al eliminar patrón:', error);
+      toast.error('Error al eliminar el patrón');
+    }
+  };
+
   useEffect(() => {
     fetchBases();
     fetchMuestras();
