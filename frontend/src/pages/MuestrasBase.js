@@ -470,34 +470,16 @@ const MuestrasBase = () => {
     {
       accessorKey: 'archivo_costo',
       header: 'Archivo',
-      cell: ({ row }) => {
-        const archivo = row.original.archivo_costo;
-        if (!archivo) return <span className="text-slate-400 text-xs">Sin archivo</span>;
-        
-        const extension = archivo.split('.').pop()?.toUpperCase() || 'FILE';
-        const getFileColor = (ext) => {
-          const colors = {
-            'PDF': 'bg-red-100 text-red-700 border-red-200',
-            'XLSX': 'bg-green-100 text-green-700 border-green-200',
-            'XLS': 'bg-green-100 text-green-700 border-green-200',
-            'DOC': 'bg-blue-100 text-blue-700 border-blue-200',
-            'DOCX': 'bg-blue-100 text-blue-700 border-blue-200',
-          };
-          return colors[ext] || 'bg-slate-100 text-slate-700 border-slate-200';
-        };
-        
-        return (
-          <button
-            onClick={() => handleDownloadFile(archivo)}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-all hover:shadow-md hover:scale-105 cursor-pointer ${getFileColor(extension)}`}
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            {extension}
-          </button>
-        );
-      },
+      cell: ({ row }) => (
+        <FileCell
+          muestra={row.original}
+          onUploadFile={handleUploadFileFromTable}
+          onDownload={handleDownloadFile}
+          onRemoveFile={handleRemoveFileFromTable}
+          canUpload={canUpload('archivos')}
+          canDownload={canDownload('archivos')}
+        />
+      ),
     },
     {
       accessorKey: 'aprobado',
