@@ -1481,15 +1481,9 @@ const Bases = () => {
                                 </td>
                                 <td className="py-3 px-4 text-slate-700">{registro.n_corte || '-'}</td>
                                 <td className="py-3 px-4">
-                                  {registro.aprobado ? (
-                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                                      Aprobado
-                                    </span>
-                                  ) : (
-                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
-                                      Pendiente
-                                    </span>
-                                  )}
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                                    {registro.estado_nombre || 'Sin estado'}
+                                  </span>
                                 </td>
                                 <td className="py-3 px-4">
                                   <Button
