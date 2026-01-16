@@ -694,12 +694,17 @@ def update_tizado(
         raise HTTPException(status_code=404, detail="Tizado no encontrado")
     
     datos_anteriores = model_to_dict(db_tizado)
+    old_archivo = db_tizado.archivo
     
     for key, value in tizado.model_dump(exclude_unset=True).items():
         setattr(db_tizado, key, value)
     
     db.commit()
     db.refresh(db_tizado)
+    
+    # Si el archivo cambió y había uno anterior, eliminar de R2
+    if old_archivo and old_archivo != db_tizado.archivo:
+        delete_file_from_r2(old_archivo)
     
     audit_update(db, current_user, "tizados", datos_anteriores, db_tizado, id_tizado,
                  f"Editó tizado ID: {id_tizado}",
