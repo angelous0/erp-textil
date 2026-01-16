@@ -267,23 +267,7 @@ const Bases = () => {
     }
   };
 
-  // Cargar conteo inicial de registros vinculados para todas las bases
-  const fetchRegistrosCountForBases = async (basesData) => {
-    console.log('Iniciando fetchRegistrosCountForBases con', basesData.length, 'bases');
-    const counts = {};
-    for (const base of basesData) {
-      try {
-        const res = await axios.get(`${API}/mini-erp/registros/vinculados/${base.id_base}`);
-        counts[base.id_base] = res.data.length;
-        console.log(`Base ${base.id_base}: ${res.data.length} registros`);
-      } catch (e) {
-        console.error(`Error cargando conteo para base ${base.id_base}:`, e);
-        counts[base.id_base] = 0;
-      }
-    }
-    console.log('Conteos finales:', counts);
-    setRegistrosCount(counts);
-  };
+  // Cargar conteo de registros se hace al abrir el modal
 
   const handleVincularRegistro = async (id_base, id_registro) => {
     try {
