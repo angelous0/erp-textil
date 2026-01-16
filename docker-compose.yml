@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: erp-textil-backend
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      # Base de datos principal (sistema_bd)
+      - PG_HOST=72.60.241.216
+      - PG_PORT=3030
+      - PG_USER=admin
+      - PG_PASSWORD=admin
+      - PG_DB=sistema_bd
+      # Mini-ERP (proyecto_moda)
+      - MINI_ERP_URL=mysql+pymysql://admin:Proyectomoda%4004072001@72.60.241.216:8000/proyecto_moda
+      # Cloudflare R2
+      - R2_ACCOUNT_ID=250ad6553555f2b70048aff3d363c852
+      - R2_ACCESS_KEY_ID=56bc9416e2b56513a03f8d1703914843
+      - R2_SECRET_ACCESS_KEY=a24f4aded40d1f02466e6ca784607cdea8283698191e72004c4eda07696e87fb
+      - R2_BUCKET_NAME=erp-textil-archivos
+      - R2_PUBLIC_URL=https://erp-textil-achivos.250ad6553555f2b70048aff3d363c852.r2.cloudflarestorage.com
+      # CORS
+      - CORS_ORIGINS=https://bases.ambissionindustries.cloud
+    volumes:
+      - backend_uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - REACT_APP_BACKEND_URL=https://bases.ambissionindustries.cloud
+    container_name: erp-textil-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  backend_uploads:
