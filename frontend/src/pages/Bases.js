@@ -227,12 +227,6 @@ const Bases = () => {
       const vinculadosRes = await axios.get(`${API}/mini-erp/registros/vinculados/${currentBaseForRegistros.id_base}`);
       setRegistrosVinculados(vinculadosRes.data);
       
-      // Actualizar contador en cache
-      setRegistrosCount(prev => ({
-        ...prev,
-        [currentBaseForRegistros.id_base]: vinculadosRes.data.length
-      }));
-      
       // Recargar disponibles
       await fetchRegistrosDisponibles(registrosSearchModal);
     } catch (error) {
@@ -252,12 +246,6 @@ const Bases = () => {
       if (currentBaseForRegistros) {
         const vinculadosRes = await axios.get(`${API}/mini-erp/registros/vinculados/${currentBaseForRegistros.id_base}`);
         setRegistrosVinculados(vinculadosRes.data);
-        
-        // Actualizar contador en cache
-        setRegistrosCount(prev => ({
-          ...prev,
-          [currentBaseForRegistros.id_base]: vinculadosRes.data.length
-        }));
       }
       
       // Recargar disponibles
