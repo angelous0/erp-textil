@@ -539,6 +539,8 @@ const Bases = () => {
         patron: formData.patron || null,
         imagen: formData.imagen || null,
         aprobado: formData.aprobado,
+        id_modelo: formData.id_modelo || null,
+        id_registro: formData.id_registro || null,
       };
 
       let baseId;
