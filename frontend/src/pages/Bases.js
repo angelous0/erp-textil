@@ -604,14 +604,16 @@ const Bases = () => {
     }
   };
 
-  // Efecto para cargar conteos cuando se conecta al mini-ERP o cambian las bases
+  // Efecto para cargar conteos cuando se conecta al mini-ERP
   useEffect(() => {
-    // Solo cargar si hay conexión y bases
-    if (miniERPConnected && bases.length > 0) {
-      console.log('Cargando conteos para', bases.length, 'bases');
-      fetchRegistrosCountForBases(bases);
-    }
-  }, [miniERPConnected, bases.length]);
+    const loadCounts = async () => {
+      if (miniERPConnected && bases.length > 0) {
+        console.log('Cargando conteos para', bases.length, 'bases, conexión:', miniERPConnected);
+        await fetchRegistrosCountForBases(bases);
+      }
+    };
+    loadCounts();
+  }, [miniERPConnected, bases]);
 
   const aplicarFiltro = (data, filtro) => {
     let filtradas = data;
