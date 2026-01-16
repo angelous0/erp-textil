@@ -72,6 +72,36 @@ if USE_R2:
 else:
     print("⚠️  Almacenamiento configurado: LOCAL (uploads/)")
 
+# Función para eliminar archivos de R2
+def delete_file_from_r2(file_url: str) -> bool:
+    """Elimina un archivo de Cloudflare R2 basado en su URL"""
+    if not file_url or not USE_R2 or not s3_client:
+        return False
+    
+    try:
+        # Extraer el nombre del archivo de la URL
+        # URL formato: https://bucket.account.r2.cloudflarestorage.com/filename
+        # o puede ser solo el filename guardado
+        if file_url.startswith('http'):
+            file_key = file_url.split('/')[-1]
+        else:
+            file_key = file_url
+        
+        s3_client.delete_object(Bucket=R2_BUCKET_NAME, Key=file_key)
+        print(f"✅ Archivo eliminado de R2: {file_key}")
+        return True
+    except Exception as e:
+        print(f"⚠️ Error eliminando archivo de R2: {e}")
+        return False
+
+def delete_multiple_files_from_r2(file_urls: list) -> int:
+    """Elimina múltiples archivos de R2"""
+    deleted_count = 0
+    for url in file_urls:
+        if url and delete_file_from_r2(url):
+            deleted_count += 1
+    return deleted_count
+
 @api_router.get("/")
 def root():
     return {"message": "ERP Textil API"}
