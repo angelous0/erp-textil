@@ -831,7 +831,7 @@ const Bases = () => {
     setFichas(newFichas);
   };
 
-  const columns = [
+  const columns = useMemo(() => [
     {
       accessorKey: 'id_muestra_base',
       header: 'Muestra Base',
