@@ -171,12 +171,115 @@ const Bases = () => {
   const fetchRegistrosMiniERP = async (search = '') => {
     try {
       const response = await axios.get(`${API}/mini-erp/registros/sin-vincular`, {
-        params: { limit: 50 }
+        params: { search, limit: 50 }
       });
       setRegistrosMiniERP(response.data);
     } catch (error) {
       console.error('Error cargando registros mini-ERP:', error);
     }
+  };
+
+  // Funciones para modal de Registros ERP
+  const handleViewRegistrosERP = async (base) => {
+    setCurrentBaseForRegistros(base);
+    setRegistrosERPDialogOpen(true);
+    setRegistrosSearchModal('');
+    setLoadingRegistros(true);
+    
+    try {
+      // Cargar registros vinculados a esta base
+      const vinculadosRes = await axios.get(`${API}/mini-erp/registros/vinculados/${base.id_base}`);
+      setRegistrosVinculados(vinculadosRes.data);
+      
+      // Cargar registros disponibles (sin vincular)
+      const disponiblesRes = await axios.get(`${API}/mini-erp/registros/sin-vincular`, {
+        params: { limit: 100 }
+      });
+      setRegistrosDisponibles(disponiblesRes.data);
+    } catch (error) {
+      console.error('Error cargando registros:', error);
+      toast.error('Error al cargar registros del mini-ERP');
+    } finally {
+      setLoadingRegistros(false);
+    }
+  };
+
+  const fetchRegistrosDisponibles = async (search = '') => {
+    try {
+      const response = await axios.get(`${API}/mini-erp/registros/sin-vincular`, {
+        params: { search, limit: 100 }
+      });
+      setRegistrosDisponibles(response.data);
+    } catch (error) {
+      console.error('Error buscando registros:', error);
+    }
+  };
+
+  const handleVincularRegistroModal = async (id_registro) => {
+    if (!currentBaseForRegistros) return;
+    
+    try {
+      await axios.post(`${API}/mini-erp/sync/vincular`, null, {
+        params: { id_base: currentBaseForRegistros.id_base, id_registro }
+      });
+      toast.success('Registro vinculado exitosamente');
+      
+      // Recargar listas
+      const vinculadosRes = await axios.get(`${API}/mini-erp/registros/vinculados/${currentBaseForRegistros.id_base}`);
+      setRegistrosVinculados(vinculadosRes.data);
+      
+      // Actualizar contador en cache
+      setRegistrosCount(prev => ({
+        ...prev,
+        [currentBaseForRegistros.id_base]: vinculadosRes.data.length
+      }));
+      
+      // Recargar disponibles
+      await fetchRegistrosDisponibles(registrosSearchModal);
+    } catch (error) {
+      const msg = error.response?.data?.detail || 'Error al vincular registro';
+      toast.error(msg);
+    }
+  };
+
+  const handleDesvincularRegistroModal = async (id_registro) => {
+    try {
+      await axios.post(`${API}/mini-erp/sync/desvincular`, null, {
+        params: { id_registro }
+      });
+      toast.success('Registro desvinculado');
+      
+      // Recargar listas
+      if (currentBaseForRegistros) {
+        const vinculadosRes = await axios.get(`${API}/mini-erp/registros/vinculados/${currentBaseForRegistros.id_base}`);
+        setRegistrosVinculados(vinculadosRes.data);
+        
+        // Actualizar contador en cache
+        setRegistrosCount(prev => ({
+          ...prev,
+          [currentBaseForRegistros.id_base]: vinculadosRes.data.length
+        }));
+      }
+      
+      // Recargar disponibles
+      await fetchRegistrosDisponibles(registrosSearchModal);
+    } catch (error) {
+      toast.error('Error al desvincular registro');
+    }
+  };
+
+  // Cargar conteo inicial de registros vinculados para todas las bases
+  const fetchRegistrosCountForBases = async (basesData) => {
+    const counts = {};
+    for (const base of basesData) {
+      try {
+        const res = await axios.get(`${API}/mini-erp/registros/vinculados/${base.id_base}`);
+        counts[base.id_base] = res.data.length;
+      } catch {
+        counts[base.id_base] = 0;
+      }
+    }
+    setRegistrosCount(counts);
   };
 
   const handleVincularRegistro = async (id_base, id_registro) => {
