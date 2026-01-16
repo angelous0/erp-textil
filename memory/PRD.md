@@ -9,8 +9,15 @@ Sistema ERP textil full-stack (FastAPI + React + MariaDB) para gestión de desar
 - **Almacenamiento**: Cloudflare R2 (AWS S3 compatible via boto3)
 - **Autenticación**: JWT (python-jose), bcrypt (passlib)
 - **Base de Datos Externa**: Mini-ERP (proyecto_moda)
+- **Despliegue**: EasyPanel + Docker
 
 ## Características Implementadas ✅
+
+### Eliminación de Archivos en Cascada (16 Enero 2026)
+- [x] Función `delete_file_from_r2()` para eliminar archivos de Cloudflare R2
+- [x] Eliminación cascada: Al eliminar Base, se eliminan archivos de imagen, fichas y tizados
+- [x] Eliminación individual: Al eliminar ficha/tizado, se elimina su archivo de R2
+- [x] Actualización: Al cambiar/quitar archivo de un registro, se elimina el anterior de R2
 
 ### Sincronización con Mini-ERP (16 Enero 2026)
 - [x] Conexión bidireccional con base de datos `proyecto_moda`
@@ -18,6 +25,7 @@ Sistema ERP textil full-stack (FastAPI + React + MariaDB) para gestión de desar
 - [x] Modal de gestión de registros ERP por cada base
 - [x] Vinculación múltiple: una base puede tener varios registros
 - [x] Búsqueda y filtrado por modelo y N° corte
+- [x] Columna Estado mostrando estado real del registro (Corte, Costura, etc.)
 - [x] Vinculación/desvinculación desde la interfaz
 - [x] Campo `x_id_base` en tabla `registro` del mini-ERP
 
@@ -43,6 +51,11 @@ Sistema ERP textil full-stack (FastAPI + React + MariaDB) para gestión de desar
 
 ### Credenciales
 - **Super Admin**: `eduard` / `cardenas007`
+
+## Despliegue en EasyPanel
+- **Backend**: `api.bases.ambissionindustries.cloud`
+- **Frontend**: `bases.ambissionindustries.cloud`
+- **Base de datos**: MariaDB externa (72.60.241.216:3030)
 
 ## Arquitectura de Sincronización
 
