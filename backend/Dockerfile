@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Instalar dependencias del sistema
+# Instalar dependencias del sistema necesarias para MySQL/MariaDB
 RUN apt-get update && apt-get install -y \
     gcc \
     default-libmysqlclient-dev \
