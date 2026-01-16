@@ -653,6 +653,8 @@ const Bases = () => {
         patron: base.patron || '',
         imagen: base.imagen || '',
         aprobado: base.aprobado,
+        id_modelo: base.id_modelo || null,
+        id_registro: base.id_registro || null,
       });
       setFichas(base.fichas || []);
     } else {
@@ -663,9 +665,12 @@ const Bases = () => {
         patron: '',
         imagen: '',
         aprobado: false,
+        id_modelo: null,
+        id_registro: null,
       });
       setFichas([]);
     }
+    fetchRegistrosMiniERP();
     setIsDialogOpen(true);
   };
 
