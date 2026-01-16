@@ -1285,7 +1285,7 @@ def vincular_base_registro(
     db: Session = Depends(get_db),
     current_user: UsuarioModel = Depends(get_current_user)
 ):
-    """Vincula una base del ERP Muestras con un registro del mini-ERP"""
+    """Vincula un registro del mini-ERP con una base del ERP Muestras (una base puede tener múltiples registros)"""
     # Verificar que la base existe
     base = db.query(BaseDBModel).filter(BaseDBModel.id_base == id_base).first()
     if not base:
@@ -1296,56 +1296,56 @@ def vincular_base_registro(
     if not registro:
         raise HTTPException(status_code=404, detail="Registro no encontrado en mini-ERP")
     
-    # Actualizar x_base con id_registro e id_modelo
-    datos_anteriores = model_to_dict(base)
-    base.id_registro = id_registro
-    base.id_modelo = registro.get('id_modelo')
+    # Verificar que el registro no esté ya vinculado a otra base
+    if registro.get('x_id_base') and registro.get('x_id_base') != id_base:
+        raise HTTPException(status_code=400, detail=f"El registro ya está vinculado a la base {registro.get('x_id_base')}")
     
     # Sincronizar al mini-ERP (actualizar x_id_base en registro)
     sync_base_to_registro(id_base, id_registro, aprobado=base.aprobado)
     
-    db.commit()
-    db.refresh(base)
+    # Contar registros vinculados después de la operación
+    total_vinculados = count_registros_vinculados(id_base)
     
     # Auditar la vinculación
-    audit_update(db, current_user, "bases", datos_anteriores, base, id_base,
-                 f"Vinculó base {id_base} con registro {id_registro} del mini-ERP",
+    audit_create(db, current_user, "mini_erp_vinculacion", 
+                 {"id_base": id_base, "id_registro": id_registro}, id_registro,
+                 f"Vinculó registro {id_registro} del mini-ERP con base {id_base}",
                  get_client_ip(request), get_user_agent(request))
     
-    return {"message": "Vinculación exitosa", "id_base": id_base, "id_registro": id_registro}
+    return {
+        "message": "Vinculación exitosa", 
+        "id_base": id_base, 
+        "id_registro": id_registro,
+        "total_vinculados": total_vinculados
+    }
 
-@api_router.post("/mini-erp/sync/desvincular/{id_base}")
-def desvincular_base(
-    id_base: int,
+@api_router.post("/mini-erp/sync/desvincular")
+def desvincular_registro(
+    id_registro: int,
     request: Request,
     db: Session = Depends(get_db),
     current_user: UsuarioModel = Depends(get_current_user)
 ):
-    """Desvincula una base del mini-ERP"""
-    base = db.query(BaseDBModel).filter(BaseDBModel.id_base == id_base).first()
-    if not base:
-        raise HTTPException(status_code=404, detail="Base no encontrada")
+    """Desvincula un registro específico del mini-ERP"""
+    # Verificar que el registro existe y está vinculado
+    registro = get_registro_by_id(id_registro)
+    if not registro:
+        raise HTTPException(status_code=404, detail="Registro no encontrado en mini-ERP")
     
-    if not base.id_registro:
-        raise HTTPException(status_code=400, detail="Esta base no está vinculada a ningún registro")
+    id_base = registro.get('x_id_base')
+    if not id_base:
+        raise HTTPException(status_code=400, detail="Este registro no está vinculado a ninguna base")
     
     # Desvincular en mini-ERP
-    id_registro_anterior = base.id_registro
-    unlink_base_from_registro(base.id_registro)
-    
-    # Actualizar base
-    datos_anteriores = model_to_dict(base)
-    base.id_registro = None
-    base.id_modelo = None
-    
-    db.commit()
+    unlink_base_from_registro(id_registro)
     
     # Auditar
-    audit_update(db, current_user, "bases", datos_anteriores, base, id_base,
-                 f"Desvinculó base {id_base} del registro {id_registro_anterior}",
+    audit_delete(db, current_user, "mini_erp_vinculacion", 
+                 {"id_base": id_base, "id_registro": id_registro}, id_registro,
+                 f"Desvinculó registro {id_registro} de base {id_base}",
                  get_client_ip(request), get_user_agent(request))
     
-    return {"message": "Desvinculación exitosa"}
+    return {"message": "Desvinculación exitosa", "id_registro": id_registro}
 
 app.include_router(api_router)
 
