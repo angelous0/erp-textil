@@ -774,6 +774,21 @@ const Bases = () => {
       ),
     },
     {
+      accessorKey: 'id_registro',
+      header: 'Registro ERP',
+      cell: ({ row }) => {
+        const idRegistro = row.original.id_registro;
+        if (!idRegistro) {
+          return <span className="text-slate-400 text-xs">Sin vincular</span>;
+        }
+        return (
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200">
+            #{idRegistro}
+          </span>
+        );
+      },
+    },
+    {
       accessorKey: 'fichas',
       header: 'Fichas',
       cell: ({ row }) => {
