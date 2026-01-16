@@ -138,6 +138,60 @@ const Bases = () => {
     setOrdenColumna({ columna: null, direccion: 'asc' });
   };
 
+  // Funciones para Mini-ERP
+  const fetchMiniERPStatus = async () => {
+    try {
+      const response = await axios.get(`${API}/mini-erp/status`);
+      setMiniERPConnected(response.data.connected);
+    } catch (error) {
+      setMiniERPConnected(false);
+    }
+  };
+
+  const fetchModelosMiniERP = async (search = '') => {
+    try {
+      const response = await axios.get(`${API}/mini-erp/modelos`, {
+        params: { search, limit: 50 }
+      });
+      setModelosMiniERP(response.data);
+    } catch (error) {
+      console.error('Error cargando modelos mini-ERP:', error);
+    }
+  };
+
+  const fetchRegistrosMiniERP = async (search = '') => {
+    try {
+      const response = await axios.get(`${API}/mini-erp/registros/sin-vincular`, {
+        params: { limit: 50 }
+      });
+      setRegistrosMiniERP(response.data);
+    } catch (error) {
+      console.error('Error cargando registros mini-ERP:', error);
+    }
+  };
+
+  const handleVincularRegistro = async (id_base, id_registro) => {
+    try {
+      await axios.post(`${API}/mini-erp/sync/vincular`, null, {
+        params: { id_base, id_registro }
+      });
+      toast.success('Base vinculada con registro del mini-ERP');
+      fetchBases();
+    } catch (error) {
+      toast.error('Error al vincular con mini-ERP');
+    }
+  };
+
+  const handleDesvincularRegistro = async (id_base) => {
+    try {
+      await axios.post(`${API}/mini-erp/sync/desvincular/${id_base}`);
+      toast.success('Base desvinculada del mini-ERP');
+      fetchBases();
+    } catch (error) {
+      toast.error('Error al desvincular');
+    }
+  };
+
   const handleOrdenarColumna = (columna) => {
     let direccion = 'asc';
     if (ordenColumna.columna === columna && ordenColumna.direccion === 'asc') {
