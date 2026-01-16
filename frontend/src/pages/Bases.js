@@ -940,8 +940,8 @@ const Bases = () => {
       id: 'registros_erp',
       header: 'Registros ERP',
       cell: ({ row }) => {
-        const count = registrosCount[row.original.id_base] || 0;
-        
+        // El conteo se calcula dinámicamente cuando se abre el modal
+        // Por ahora mostramos un botón genérico que indica si hay conexión
         if (!miniERPConnected) {
           return <span className="text-slate-400 text-xs">No conectado</span>;
         }
@@ -950,13 +950,9 @@ const Bases = () => {
           <button
             onClick={() => handleViewRegistrosERP(row.original)}
             data-testid={`registros-erp-${row.original.id_base}`}
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${
-              count > 0 
-                ? 'bg-green-100 text-green-800 hover:bg-green-200' 
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
+            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors bg-blue-100 text-blue-800 hover:bg-blue-200"
           >
-            {count > 0 ? `${count} registro${count > 1 ? 's' : ''}` : '+ Vincular'}
+            Ver registros
           </button>
         );
       },
