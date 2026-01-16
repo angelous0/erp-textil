@@ -172,23 +172,67 @@ def unlink_base_from_registro(id_registro: int):
         conn.commit()
         return True
 
-def get_registros_sin_vincular(limit: int = 50) -> List[Dict]:
+def get_registros_sin_vincular(limit: int = 50, search: str = None) -> List[Dict]:
     """Obtiene registros que no están vinculados a ninguna base"""
+    with mini_erp_engine.connect() as conn:
+        if search:
+            query = text("""
+                SELECT 
+                    r.id,
+                    r.n_corte,
+                    r.id_modelo,
+                    m.detalle as modelo_nombre,
+                    r.aprobado
+                FROM registro r
+                LEFT JOIN modelo m ON r.id_modelo = m.id
+                WHERE r.x_id_base IS NULL
+                AND (m.detalle LIKE :search OR r.n_corte LIKE :search OR CAST(r.id AS CHAR) LIKE :search)
+                ORDER BY r.id DESC
+                LIMIT :limit
+            """)
+            result = conn.execute(query, {"limit": limit, "search": f"%{search}%"})
+        else:
+            query = text("""
+                SELECT 
+                    r.id,
+                    r.n_corte,
+                    r.id_modelo,
+                    m.detalle as modelo_nombre,
+                    r.aprobado
+                FROM registro r
+                LEFT JOIN modelo m ON r.id_modelo = m.id
+                WHERE r.x_id_base IS NULL
+                ORDER BY r.id DESC
+                LIMIT :limit
+            """)
+            result = conn.execute(query, {"limit": limit})
+        return [{"id": row[0], "n_corte": row[1], "id_modelo": row[2], "modelo_nombre": row[3], "aprobado": row[4]} for row in result]
+
+def get_registros_vinculados_a_base(id_base: int) -> List[Dict]:
+    """Obtiene todos los registros vinculados a una base específica"""
     with mini_erp_engine.connect() as conn:
         query = text("""
             SELECT 
                 r.id,
                 r.n_corte,
+                r.id_modelo,
                 m.detalle as modelo_nombre,
-                r.aprobado
+                r.aprobado,
+                r.imagen
             FROM registro r
             LEFT JOIN modelo m ON r.id_modelo = m.id
-            WHERE r.x_id_base IS NULL
+            WHERE r.x_id_base = :id_base
             ORDER BY r.id DESC
-            LIMIT :limit
         """)
-        result = conn.execute(query, {"limit": limit})
-        return [{"id": row[0], "n_corte": row[1], "modelo_nombre": row[2], "aprobado": row[3]} for row in result]
+        result = conn.execute(query, {"id_base": id_base})
+        return [{"id": row[0], "n_corte": row[1], "id_modelo": row[2], "modelo_nombre": row[3], "aprobado": row[4], "imagen": row[5]} for row in result]
+
+def count_registros_vinculados(id_base: int) -> int:
+    """Cuenta cuántos registros están vinculados a una base"""
+    with mini_erp_engine.connect() as conn:
+        query = text("SELECT COUNT(*) FROM registro WHERE x_id_base = :id_base")
+        result = conn.execute(query, {"id_base": id_base})
+        return result.scalar() or 0
 
 def test_connection() -> bool:
     """Prueba la conexión al mini-ERP"""
