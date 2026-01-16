@@ -598,14 +598,41 @@ def delete_base(
     if not db_base:
         raise HTTPException(status_code=404, detail="Base no encontrada")
     
+    # Recopilar archivos para eliminar de R2 (cascada)
+    files_to_delete = []
+    
+    # Imagen de la base
+    if db_base.imagen:
+        files_to_delete.append(db_base.imagen)
+    
+    # Archivos de fichas relacionadas
+    fichas = db.query(FichaModel).filter(FichaModel.id_base == id_base).all()
+    for ficha in fichas:
+        if ficha.archivo:
+            files_to_delete.append(ficha.archivo)
+    
+    # Archivos de tizados relacionados
+    tizados = db.query(TizadoModel).filter(TizadoModel.id_base == id_base).all()
+    for tizado in tizados:
+        if tizado.archivo:
+            files_to_delete.append(tizado.archivo)
+    
     modelo = db_base.modelo or 'Sin modelo'
     audit_delete(db, current_user, "bases", db_base, id_base,
                  f"Eliminó base modelo: {modelo}",
                  get_client_ip(request), get_user_agent(request))
     
+    # Eliminar fichas y tizados primero (cascada manual)
+    db.query(FichaModel).filter(FichaModel.id_base == id_base).delete()
+    db.query(TizadoModel).filter(TizadoModel.id_base == id_base).delete()
+    
     db.delete(db_base)
     db.commit()
-    return {"message": "Base eliminada"}
+    
+    # Eliminar archivos de R2 después del commit
+    deleted_files = delete_multiple_files_from_r2(files_to_delete)
+    
+    return {"message": "Base eliminada", "archivos_eliminados": deleted_files}
 
 # TIZADO Endpoints
 @api_router.get("/tizados", response_model=List[Tizado])
