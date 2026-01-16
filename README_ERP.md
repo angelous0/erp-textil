@@ -82,7 +82,7 @@ Si las tablas `entalle` y `tipo_producto` ya tienen la estructura correcta, solo
    sudo supervisorctl restart backend
    ```
 
-4. **Accede a la aplicación** en: https://textilauthplus.preview.emergentagent.com
+4. **Accede a la aplicación** en: https://garment-sync.preview.emergentagent.com
 
 ## Estructura del Sistema
 

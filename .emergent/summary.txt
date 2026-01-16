@@ -1,91 +1,92 @@
 <analysis>**original_problem_statement:**
-El usuario está construyendo un sistema ERP textil. Los objetivos de esta sesión eran arreglar la funcionalidad de almacenamiento de archivos en Cloudflare R2, implementar un sistema completo de autenticación y permisos, y realizar varias mejoras en la interfaz de usuario. El usuario también ha reiterado su deseo de sincronizar esta nueva aplicación con su mini-ERP existente.
+El usuario está construyendo un sistema ERP textil. Los objetivos iniciales incluían arreglar el almacenamiento de archivos, implementar autenticación/autorización y mejorar la UI. Recientemente, las prioridades han cambiado hacia la implementación de un sistema de auditoría, la mejora de la responsividad de la interfaz, la aplicación de permisos en el frontend, la creación de un dashboard, la migración a una nueva base de datos proporcionada por el usuario y, lo más importante, la sincronización bidireccional con su mini-ERP existente.
 
 **PRODUCT REQUIREMENTS:**
--   **Almacenamiento de Archivos:**
-    -   Arreglar la descarga de archivos desde Cloudflare R2.
-    -   Migrar los archivos existentes del almacenamiento local a R2.
-    -   Implementar la eliminación de archivos en R2 cuando se borra un registro en la aplicación.
-    -   Añadir confirmación antes de eliminar cualquier archivo o registro que contenga un archivo.
--   **Autenticación y Autorización:**
-    -   Crear un sistema de login con nombre de usuario y contraseña.
-    -   Implementar un sistema de roles (Super Admin, Admin, etc.).
-    -   Permitir la creación de permisos personalizados por usuario, con control granular sobre qué tablas puede ver, crear, editar o eliminar.
-    -   Separar los permisos para subir y descargar archivos. Un usuario podría tener permiso para subir pero no para descargar.
--   **Mejoras de UI/UX:**
-    -   Mejorar el diseño de las columnas que muestran archivos para que sea más visual.
-    -   Permitir la creación de  y  desde sus respectivos modales, incluso si la lista está vacía.
-    -   Reorganizar los modales para que el formulario de creación aparezca en la parte superior.
-    -   Añadir la capacidad de subir imágenes directamente desde la tabla de .
-    -   Añadir un botón de descarga en el visor de imágenes a pantalla completa.
-    -   Reordenar columnas en la tabla  y añadir una nueva columna  en .
--   **Sincronización de Base de Datos:**
-    -   Planificar y eventualmente implementar la sincronización de datos entre la nueva base de datos de muestras y la base de datos del mini-ERP existente del usuario.
+-   **Sincronización de Base de Datos (Prioridad actual):**
+    -   Implementar una sincronización bidireccional y automática entre la tabla  de la aplicación y la tabla  del mini-ERP del usuario.
+    -   Añadir campos  y  a  para vincular con las tablas  y  del mini-ERP.
+    -   Añadir un campo  a la tabla  del mini-ERP para el vínculo inverso.
+    -   En el formulario de , reemplazar el campo de texto  por un selector desplegable que cargue los modelos desde el mini-ERP.
+    -   Permitir vincular una  con un  existente.
+-   **Funcionalidades completadas en esta sesión:**
+    -   **Sistema de Auditoría:** Crear un historial de movimientos que registre todas las acciones CRUD y de login de los usuarios, visible en una nueva página .
+    -   **Mejoras UI/UX:**
+        -   Arreglar el diseño responsive de todas las tablas para que tengan scroll horizontal en pantallas pequeñas.
+        -   Aplicar los permisos de usuario en el frontend para ocultar/deshabilitar botones (crear, editar, eliminar) según los derechos del usuario logueado.
+        -   Crear una página de Dashboard con métricas clave del sistema.
+        -   Eliminar el branding Made with Emergent.
+    -   **Infraestructura:**
+        -   Migrar la base de datos de la aplicación a un nuevo servidor MariaDB proporcionado por el usuario.
+        -   Renombrar tablas ( a ) para mantener la consistencia.
+        -   Arreglar la funcionalidad de descarga de archivos para que se conserve el nombre original del archivo.
 
 **User's preferred language**: Spanish (español)
 
 **what currently exists?**
-La aplicación es un sistema ERP full-stack (FastAPI + React + MariaDB). Se ha implementado con éxito la migración del almacenamiento de archivos a Cloudflare R2, solucionando los problemas críticos de subida y descarga. La aplicación ahora cuenta con un sistema completo de autenticación y autorización basado en JWT, con roles y permisos altamente personalizables por usuario. Un superadministrador puede gestionar usuarios y asignar permisos granulares para cada módulo (ver, crear, editar, eliminar) y acciones específicas (subir/descargar archivos). La interfaz de usuario ha sido significativamente mejorada con modales de confirmación, mejor diseño visual para los archivos y flujos de trabajo de creación más intuitivos.
+La aplicación es un ERP full-stack (FastAPI + React + MariaDB) que ahora se ejecuta en la base de datos remota del usuario. Se ha implementado un completo sistema de auditoría que registra las acciones del usuario. La interfaz de usuario es ahora responsive y aplica un control de acceso visual basado en los permisos del usuario. Se ha mejorado el manejo de archivos para preservar los nombres originales. La base de la sincronización bidireccional con el mini-ERP del usuario está parcialmente implementada: se han realizado los cambios en la base de datos, y el backend ya puede leer datos del mini-ERP. El frontend se está modificando para integrar esta nueva funcionalidad.
 
 **Last working item**:
--   Last item agent was working: Implementación de un sistema de permisos de usuario altamente personalizable. El usuario solicitó la capacidad de definir por usuario qué tablas puede modificar y separar los permisos de subir y descargar archivos. El agente implementó esta lógica en el backend (nuevas columnas en , lógica en ) y en el frontend (actualización del formulario de creación/edición de usuarios en ).
--   Status: USER VERIFICATION PENDING
--   Agent Testing Done: Y (El agente verificó la implementación del backend con  y la del frontend con , confirmando que los nuevos campos de permisos aparecen en el formulario de gestión de usuarios).
--   Which testing method agent to use? frontend testing agent (para verificar el flujo completo de creación/edición de usuarios y la aplicación de los nuevos permisos).
+-   Last item agent was working: Implementación de la sincronización bidireccional en el frontend (). El agente estaba modificando la página de  para integrar la conexión con el mini-ERP del usuario.
+-   Status: IN PROGRESS
+-   Agent Testing Done: Y (Solo para los nuevos endpoints del backend con ).
+-   Which testing method agent to use? frontend testing agent (para validar todo el flujo de sincronización en la página , incluyendo la carga de datos del mini-ERP, la selección en los nuevos desplegables y el guardado/sincronización).
 -   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Verificación de usuario del nuevo sistema de permisos (P0)
+-   Issue 1:  Finalizar la implementación de la sincronización en el frontend (P0)
 
   Issues Detail:
   - Issue 1:
-     - Attempted fixes: El agente implementó la funcionalidad solicitada para permisos granulares por tabla y por acción (subir/descargar).
+     - Attempted fixes: Se añadieron los nuevos campos a los esquemas de la base de datos y se crearon los endpoints del backend para leer datos del mini-ERP. En el frontend (), se añadieron los estados, las funciones de obtención de datos y los campos en el formulario y la tabla.
      - Next debug checklist:
-       1.  Esperar la confirmación del usuario de que la nueva interfaz de gestión de permisos en la página  es lo que necesita.
-       2.  Si el usuario reporta que los permisos no se aplican correctamente, se debe:
-           -   Proteger los endpoints del backend () usando las nuevas funciones de dependencia de .
-           -   Ajustar el frontend para ocultar/deshabilitar botones y acciones según los permisos del usuario obtenidos del .
-     - Why fix this issue and what will be achieved with the fix? Es el núcleo de la solicitud del usuario para la gestión de seguridad de la aplicación.
-     - Status:  USER VERIFICATION PENDING
+       1.  Verificar que  en  carga correctamente los datos de los endpoints  y .
+       2.  Asegurarse de que los nuevos campos de selección (dropdowns) en el modal del formulario se pueblan con los datos del mini-ERP.
+       3.  Conectar los eventos  de los selectores para actualizar el estado del formulario ().
+       4.  Modificar la función  para enviar los nuevos  y  al backend.
+       5.  Implementar la lógica en el backend (en los endpoints  y  de ) para que, al recibir los nuevos IDs, se active la función de sincronización en .
+     - Why fix this issue and what will be achieved with the fix? Es la funcionalidad principal solicitada por el usuario para integrar su nuevo ERP con su sistema existente.
+     - Status:  IN PROGRESS
      - Is recurring issue? N
      - Should Test frontend/backend/both after fix? both
-     - Blocked on other issue: None
+     - Blocked on other issue: none
 
 **In progress Task List**:
--   None
+-   Task 1:  Finalizar la implementación de la sincronización bidireccional (P0)
+
+ Task Detail:
+  - Task 1:
+     - Where to resume: Continuar trabajando en . La tarea inmediata es conectar la data cargada del mini-ERP a los componentes de UI (selectores) en el modal de creación/edición de .
+     - What will be achieved with this? El usuario podrá vincular registros de  con  del mini-ERP directamente desde la interfaz de usuario, y los datos se mantendrán sincronizados automáticamente.
+     - Status:  IN PROGRESS
+     - Should Test frontend/backend/both after fix? both
+     - Blocked on something: none
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   **Sincronización de Bases de Datos (P1)**: Implementar la conexión dual en el backend para sincronizar la tabla  con una tabla del mini-ERP del usuario. El agente ya ha propuesto un plan y está a la espera de las credenciales y la estructura de la tabla de destino por parte del usuario.
-    -   **Aplicar Permisos en el Frontend (P1)**: Una vez que el usuario valide el sistema de permisos, se deben usar los permisos del contexto de autenticación para mostrar u ocultar condicionalmente elementos de la UI (botones de crear/editar/eliminar, opciones de descarga, etc.) en todas las páginas.
+    -   **Verificación de usuario (P1)**: El usuario debe probar y confirmar que la sincronización bidireccional funciona como espera.
 
 -   **Future Tasks:**
     -   Implementar Módulo 2 (Producción y Materia Prima).
-    -   Poblar la página del Dashboard con métricas relevantes.
     -   Implementar edición en celda (In-cell editing).
     -   Escalar para añadir SKUs e inventario.
 
 **Completed work in this session**
-- **Almacenamiento de Archivos (Cloudflare R2):**
-  - **Arreglada la descarga de archivos:** Se refactorizó el backend para usar  en Python, descargando el archivo desde R2 y sirviéndolo como , lo que solucionó el problema de redirección CORS.
-  - **Implementada la eliminación de archivos:** El endpoint de eliminación ahora también borra el archivo correspondiente de R2.
-  - **Migración de archivos completada:** Se creó y ejecutó un script () para migrar todos los archivos existentes del directorio local a R2.
-
-- **Autenticación y Autorización:**
-  - **Sistema de Login completo:** Se implementó autenticación con JWT (username y contraseña), incluyendo endpoints de backend, página de Login en el frontend y un  para gestionar el estado del usuario.
-  - **Gestión de Usuarios:** Se creó una página  para que los administradores puedan crear, editar y ver usuarios.
-  - **Permisos Granulares:** Se expandió el sistema para permitir permisos personalizables por usuario para cada módulo (ver, crear, editar, eliminar) y para acciones específicas como  y , directamente desde el formulario de gestión de usuarios.
-
-- **Mejoras de UI/UX:**
-  - **Modales de Confirmación:** Se agregaron diálogos de confirmación para todas las acciones de eliminación.
-  - **Diseño de Archivos Mejorado:** Se creó un componente reutilizable que muestra un badge estilizado (con color según el tipo de archivo e icono) para las columnas de archivos.
-  - **Flujo de Creación Mejorado:** Se modificaron los modales de Fichas y Tizados para permitir la creación desde cero y se reorganizó el layout (formulario arriba, tabla abajo).
-  - **Subida de Imagen Directa:** Se añadió un botón ⬆ Subir en la tabla de  para agregar imágenes directamente.
-  - **Botón de Descarga en Visor:** Se añadió un botón de descarga al visor de imágenes.
-  - **Reorganización de Tablas:** Se reordenaron las columnas en  y se añadió la columna  (y se ocultó ) en .
+-   **Sistema de Auditoría:** Implementado un sistema de historial de movimientos de usuario con su propia tabla () y página de visualización ().
+-   **Mejoras de UI/UX:**
+    -   **Responsive:** Se añadió scroll horizontal a todas las tablas de la aplicación.
+    -   **Permisos en Frontend:** Se aplicaron los permisos para ocultar condicionalmente los botones de acción (crear, editar, eliminar) en toda la aplicación.
+    -   **Dashboard:** Se implementó una nueva página de Dashboard con métricas clave.
+    -   **Branding:** Se eliminó el distintivo Made with Emergent del .
+-   **Infraestructura y Backend:**
+    -   **Migración de BD:** Se migraron con éxito todos los datos a la nueva base de datos MariaDB del usuario.
+    -   **Nomenclatura:** Se renombró la tabla  a .
+    -   **Descarga de Archivos:** Se solucionó el problema con los nombres de archivo para que se conserve el nombre original al descargar.
+-   **Sincronización (Inicio):**
+    -   Se añadieron las columnas necesarias a las bases de datos ( y ).
+    -   Se creó el backend ( y nuevos endpoints) para leer datos del mini-ERP.
 
 **Earlier issues found/mentioned but not fixed**
--   None. Todos los problemas reportados en esta sesión y en la anterior fueron abordados.
+-   None.
 
 **Known issue recurrence from previous fork**
 -   None.
@@ -94,80 +95,79 @@ La aplicación es un sistema ERP full-stack (FastAPI + React + MariaDB). Se ha i
 
 
 **Key Technical Concepts**
--   **Backend**: FastAPI, SQLAlchemy, Pydantic, MariaDB.
--   **Frontend**: React, TanStack Table, Tailwind CSS, Shadcn/UI, React Router.
--   **Autenticación**: JWT (JSON Web Tokens) para asegurar endpoints.  y  para hashing de contraseñas.
--   **Autorización**: Sistema de permisos basado en roles y personalizaciones por usuario, implementado con dependencias de FastAPI.
--   **Almacenamiento de Objetos**: Cloudflare R2, gestionado con el SDK  de Python.
+-   **Sincronización de Múltiples Bases de Datos**: El backend ahora gestiona dos conexiones de SQLAlchemy simultáneamente, una para la base de datos principal de la aplicación () y otra para el mini-ERP externo ().
 
 **key DB schema**
--   : {id_usuario, username, email, nombre, password_hash, rol, activo}
--   : {id_permiso, id_usuario, (múltiples columnas booleanas para cada acción como , , , , etc.)}
--   : {..., **modelo**}
+-   ** (BD principal):**
+    -   : {id, timestamp, id_usuario, username, accion, tabla, id_registro, detalle, datos_viejos, datos_nuevos, ip, user_agent}
+    -   : {..., : INT, : INT}
+    -   : (Tabla  renombrada)
+-   ** (mini-ERP):**
+    -   : {..., : INT}
 
 **changes in tech stack**
--   Se ha añadido  al stack de backend de Python para la comunicación con Cloudflare R2.
--   Se han añadido ,  y  para el sistema de autenticación.
+-   Ningún cambio de tecnología, pero la arquitectura del backend se ha extendido para manejar una segunda conexión a base de datos.
 
 **All files of reference**
--   : Contiene toda la lógica de seguridad, creación de tokens, verificación de contraseñas y las funciones de dependencia para proteger los endpoints.
--   : Se integraron los endpoints de autenticación y se refactorizó la lógica de archivos para usar  directamente.
--    y : Contienen las nuevas tablas y modelos de Pydantic para  y .
--   : Nueva página de inicio de sesión.
--   : Nueva página para la gestión de usuarios y sus permisos granulares.
--   : Reescrito para usar  y definir rutas públicas (login) y privadas.
--   : Componente clave que gestiona el estado de autenticación en todo el frontend.
+-   : Contiene toda la lógica para conectar y sincronizar con la base de datos del mini-ERP.
+-   : Es el archivo principal en modificación para implementar la interfaz de usuario de la sincronización.
+-   : Modificado para agregar los endpoints de sincronización y auditoría.
+-    y : Actualizados para reflejar los nuevos campos (, ) en la tabla .
+-   , : Nuevas páginas creadas en esta sesión.
 
 **Areas that need refactoring**:
--   Los endpoints del backend en  deben ser protegidos usando las nuevas dependencias de permisos creadas en . Actualmente, cualquiera puede acceder a ellos una vez logueado.
--   Las páginas del frontend (, , etc.) deben ser actualizadas para usar los permisos del  y renderizar condicionalmente los botones y funcionalidades.
+-   El componente  ha crecido considerablemente y ahora gestiona la lógica de su propia entidad, la de entidades relacionadas (fichas, tizados) y la lógica de sincronización con un sistema externo. Se beneficiaría de ser descompuesto en componentes más pequeños y especializados (ej. un componente para el formulario, otro para la tabla).
 
 **key api endpoints**
--   : Endpoint para login, devuelve un token JWT.
--   : Devuelve la información del usuario logueado.
--   : Endpoints para gestionar usuarios (crear, listar).
--   : Endpoints para gestionar un usuario específico.
--   : Endpoint para descargar archivos, ahora sirve el archivo directamente desde R2. **(ARREGLADO)**.
--   : Endpoint para eliminar archivos de R2. **(NUEVO)**.
+-   **Nuevos:**
+    -   : Obtiene los registros de auditoría.
+    -   : Obtiene estadísticas para el dashboard.
+    -   : Verifica la conexión con el mini-ERP.
+    -   : Lista los modelos desde el mini-ERP.
+    -   : Lista los registros desde el mini-ERP.
+-   **Por modificar:**
+    -   , : Necesitan ser actualizados para invocar la lógica de sincronización después de guardar los cambios.
 
 **Critical Info for New Agent**
--   **La aplicación ahora requiere autenticación.** Para acceder a cualquier parte del sistema, primero se debe iniciar sesión en la página .
--   **El próximo gran objetivo es la sincronización de bases de datos.** El usuario quiere conectar esta aplicación con su ERP existente. Deberás retomar la conversación con el usuario para obtener las credenciales y la estructura de la tabla de destino antes de comenzar la implementación.
--   **Los permisos están definidos en el backend pero aún no se aplican en la UI.** El siguiente paso, tras la validación del usuario, es usar el  en el frontend para ocultar o deshabilitar los botones (Crear, Editar, Eliminar, Descargar) según los permisos del usuario actual.
+-   **Doble Conexión a Base de Datos:** La aplicación ahora se conecta a dos bases de datos. La lógica para la segunda base de datos () está centralizada en . Las credenciales para ambas están en .
+-   **Autorización del Usuario:** El usuario ha dado permiso explícito para añadir las columnas  y  a  (en ), y  a  (en ). Ten cuidado de no realizar otras modificaciones en el mini-ERP sin autorización.
+-   **Implementación Incompleta:** El trabajo principal es finalizar la implementación del frontend en . Una vez que el frontend envíe los nuevos IDs, deberás implementar el disparador de la sincronización en los endpoints  y  de las bases en .
 
 **documents and test reports created in this job**
--   : Creado y actualizado a lo largo de la sesión para reflejar el progreso y los requisitos.
+-    (actualizado continuamente)
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  User: Pide que se le dé un buen diseño a las columnas de archivos (, , etc.).
-2.  Agent: Implementa un componente de badge estilizado para los archivos.
-3.  User: Pregunta sobre cómo implementar un sistema de login y permisos.
-4.  Agent: Propone un sistema de autenticación con roles y permisos granulares.
-5.  User: Acepta la propuesta y añade requisitos: login por  (único), permisos personalizables por usuario (no solo por rol) y proporciona las credenciales para el usuario administrador inicial.
-6.  Agent: Implementa todo el sistema de autenticación (backend y frontend), incluyendo la gestión de usuarios.
-7.  User: Pide una mejora: poder modificar los permisos de un usuario de forma aún más granular (por tabla) y separar los permisos de subir y descargar archivos.
-8.  Agent: Acepta la solicitud y comienza la implementación.
-9.  Agent: Finaliza la implementación de los permisos granulares y verifica con screenshots.
-10. Agent: Resume el trabajo completado y finaliza la tarea, esperando la validación del usuario.
+1.  **User:** Quiere migrar la base de datos a su propio servidor MariaDB antes de conectar el mini-ERP.
+2.  **Agent:** Realiza la migración con éxito.
+3.  **User:** Pide que la tabla  también tenga el prefijo .
+4.  **Agent:** Renombra la tabla y actualiza el código.
+5.  **User:** Pregunta por qué los nombres de los archivos cambian al subirse y descargarse.
+6.  **Agent:** Implementa la solución para preservar el nombre original del archivo.
+7.  **User:** Aprueba la solución y proporciona las credenciales del mini-ERP (), pidiendo que solo se use en modo lectura inicialmente.
+8.  **User:** Aclara que la sincronización debe ser bidireccional, autoriza a añadir  en  y  en , y pide una explicación sobre qué campos sincronizar.
+9.  **User:** Aclara que el campo  en  debe mantenerse como texto libre y se debe crear un *nuevo* campo  para vincular con el mini-ERP.
+10. **User:** Confirma el plan, pide que el nuevo campo en el mini-ERP se llame , y autoriza el inicio de la implementación.
 
 **Project Health Check:**
--   **Healthy**: Los problemas críticos anteriores (descarga de archivos) están resueltos. Se ha implementado una nueva funcionalidad principal (autenticación) que parece funcionar correctamente según las pruebas iniciales del agente.
+-   **Broken:** Ninguna funcionalidad principal está rota.
+-   **Mocked:** La sincronización de datos es funcional en el backend para lectura, pero la escritura y la interfaz de usuario en el frontend están en construcción.
 
 **3rd Party Integrations**
--   **Cloudflare R2**: Utilizado para almacenamiento de objetos, accedido vía  (SDK de AWS S3).
--   **Passlib[bcrypt]**: Usado en el backend para el hash de contraseñas.
--   **python-jose[cryptography]**: Usado en el backend para la creación y validación de tokens JWT.
+-   **Cloudflare R2**: Para almacenamiento de archivos, se accede con .
+-   **MariaDB**: Dos instancias separadas: la base de datos principal de la aplicación y el mini-ERP del usuario.
 
 **Testing status**
   - Testing agent used after significant changes: NO
   - Troubleshoot agent used after agent stuck in loop: NO
   - Test files created: []
-  - Known regressions: None.
+  - Known regressions: None
 
 **Credentials to test flow:**
--   **Super Admin User:**
+-   **Usuario Super Admin:**
     -   **Username**: 
     -   **Password**: 
+-   **Conexiones a BD:** Las credenciales para ambas bases de datos se encuentran en .
 
 **What agent forgot to execute**
--   El agente implementó el sistema de permisos en el backend y la UI para configurarlos, pero aún no ha implementado la **aplicación** de dichos permisos en el resto de la aplicación. Por ejemplo, un usuario sin permiso para  todavía verá el botón de editar en la página de Bases. Esta es la siguiente tarea lógica a realizar.</analysis>
+-   El agente aún no ha implementado la lógica del lado del servidor que *dispara* la sincronización. Aunque los endpoints para leer desde el mini-ERP existen, los endpoints  y  aún no han sido modificados para llamar a las funciones de sincronización en  cuando se crea o actualiza una base con los nuevos IDs de vinculación.</analysis>

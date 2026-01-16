@@ -186,7 +186,7 @@ CORS_ORIGINS=*
 
 **Frontend .env:**
 ```
-REACT_APP_BACKEND_URL=https://textilauthplus.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://garment-sync.preview.emergentagent.com
 ```
 
 **Backend database.py:**
