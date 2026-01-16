@@ -606,8 +606,9 @@ const Bases = () => {
 
   // Efecto para cargar conteos cuando se conecta al mini-ERP o cambian las bases
   useEffect(() => {
-    // Solo cargar si hay conexión y bases, y evitar loop infinito
-    if (miniERPConnected && bases.length > 0 && Object.keys(registrosCount).length === 0) {
+    // Solo cargar si hay conexión y bases
+    if (miniERPConnected && bases.length > 0) {
+      console.log('Cargando conteos para', bases.length, 'bases');
       fetchRegistrosCountForBases(bases);
     }
   }, [miniERPConnected, bases.length]);
