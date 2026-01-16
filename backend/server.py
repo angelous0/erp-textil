@@ -700,12 +700,20 @@ def delete_tizado(
     if not db_tizado:
         raise HTTPException(status_code=404, detail="Tizado no encontrado")
     
+    # Guardar archivo para eliminar
+    archivo_to_delete = db_tizado.archivo
+    
     audit_delete(db, current_user, "tizados", db_tizado, id_tizado,
                  f"Eliminó tizado ID: {id_tizado}",
                  get_client_ip(request), get_user_agent(request))
     
     db.delete(db_tizado)
     db.commit()
+    
+    # Eliminar archivo de R2
+    if archivo_to_delete:
+        delete_file_from_r2(archivo_to_delete)
+    
     return {"message": "Tizado eliminado"}
 
 # FICHA Endpoints
