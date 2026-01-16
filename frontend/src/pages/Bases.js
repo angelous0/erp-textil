@@ -610,13 +610,38 @@ const Bases = () => {
 
   // Efecto para cargar conteos cuando se conecta al mini-ERP
   useEffect(() => {
+    let isCancelled = false;
+    
     const loadCounts = async () => {
       if (miniERPConnected && bases.length > 0) {
         console.log('Cargando conteos para', bases.length, 'bases, conexión:', miniERPConnected);
-        await fetchRegistrosCountForBases(bases);
+        const counts = {};
+        for (const base of bases) {
+          if (isCancelled) {
+            console.log('Carga cancelada');
+            return;
+          }
+          try {
+            const res = await axios.get(`${API}/mini-erp/registros/vinculados/${base.id_base}`);
+            counts[base.id_base] = res.data.length;
+            console.log(`Base ${base.id_base}: ${res.data.length} registros`);
+          } catch (e) {
+            console.error(`Error cargando conteo para base ${base.id_base}:`, e);
+            counts[base.id_base] = 0;
+          }
+        }
+        if (!isCancelled) {
+          console.log('Actualizando conteos:', counts);
+          setRegistrosCount(counts);
+        }
       }
     };
+    
     loadCounts();
+    
+    return () => {
+      isCancelled = true;
+    };
   }, [miniERPConnected, bases]);
 
   const aplicarFiltro = (data, filtro) => {
