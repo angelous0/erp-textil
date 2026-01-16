@@ -780,6 +780,9 @@ def delete_ficha(
     if not db_ficha:
         raise HTTPException(status_code=404, detail="Ficha no encontrada")
     
+    # Guardar archivo para eliminar
+    archivo_to_delete = db_ficha.archivo
+    
     nombre = db_ficha.nombre_ficha or 'Sin nombre'
     audit_delete(db, current_user, "fichas", db_ficha, id_ficha,
                  f"Eliminó ficha: {nombre}",
@@ -787,6 +790,11 @@ def delete_ficha(
     
     db.delete(db_ficha)
     db.commit()
+    
+    # Eliminar archivo de R2
+    if archivo_to_delete:
+        delete_file_from_r2(archivo_to_delete)
+    
     return {"message": "Ficha eliminada"}
 
 # FILE UPLOAD Endpoint
