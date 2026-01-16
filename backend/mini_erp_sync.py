@@ -7,8 +7,8 @@ from sqlalchemy.orm import sessionmaker
 from typing import List, Optional, Dict, Any
 import os
 
-# Conexión al Mini-ERP
-MINI_ERP_URL = "mysql+pymysql://admin:Proyectomoda%4004072001@72.60.241.216:8000/proyecto_moda"
+# Conexión al Mini-ERP desde variable de entorno
+MINI_ERP_URL = os.environ.get("MINI_ERP_URL", "mysql+pymysql://admin:Proyectomoda%4004072001@72.60.241.216:8000/proyecto_moda")
 mini_erp_engine = create_engine(MINI_ERP_URL, pool_pre_ping=True)
 MiniERPSession = sessionmaker(bind=mini_erp_engine)
 
