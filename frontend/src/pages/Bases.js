@@ -85,6 +85,8 @@ const Bases = () => {
     patron: '',
     imagen: '',
     aprobado: false,
+    id_modelo: null,
+    id_registro: null,
   });
   const [fichas, setFichas] = useState([]);
   const [fichasDialogOpen, setFichasDialogOpen] = useState(false);
@@ -92,6 +94,13 @@ const Bases = () => {
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
   const [viewingImage, setViewingImage] = useState(null);
   const [tizadosBusqueda, setTizadosBusqueda] = useState('');
+  
+  // Estados para mini-ERP sync
+  const [modelosMiniERP, setModelosMiniERP] = useState([]);
+  const [registrosMiniERP, setRegistrosMiniERP] = useState([]);
+  const [miniERPConnected, setMiniERPConnected] = useState(false);
+  const [searchModelo, setSearchModelo] = useState('');
+  const [searchRegistro, setSearchRegistro] = useState('');
   
   // Estados para modal de tizados
   const [tizadosDialogOpen, setTizadosDialogOpen] = useState(false);
