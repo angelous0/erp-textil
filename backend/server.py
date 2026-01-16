@@ -779,12 +779,17 @@ def update_ficha(
         raise HTTPException(status_code=404, detail="Ficha no encontrada")
     
     datos_anteriores = model_to_dict(db_ficha)
+    old_archivo = db_ficha.archivo
     
     for key, value in ficha.model_dump(exclude_unset=True).items():
         setattr(db_ficha, key, value)
     
     db.commit()
     db.refresh(db_ficha)
+    
+    # Si el archivo cambió y había uno anterior, eliminar de R2
+    if old_archivo and old_archivo != db_ficha.archivo:
+        delete_file_from_r2(old_archivo)
     
     audit_update(db, current_user, "fichas", datos_anteriores, db_ficha, id_ficha,
                  f"Editó ficha: {db_ficha.nombre_ficha or 'Sin nombre'}",
