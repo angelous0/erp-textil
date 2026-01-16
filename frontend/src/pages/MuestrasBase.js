@@ -47,6 +47,16 @@ const MuestrasBase = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
+  // Extrae el nombre original del archivo (formato: uuid_nombreoriginal.ext)
+  const extractOriginalName = (filename) => {
+    if (!filename) return filename;
+    const parts = filename.split('_');
+    if (parts.length > 1) {
+      return parts.slice(1).join('_');
+    }
+    return filename;
+  };
+
   const handleDownloadFile = async (filename) => {
     try {
       const response = await fetch(`${API}/files/${filename}`);
@@ -58,7 +68,7 @@ const MuestrasBase = () => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = filename;
+      a.download = extractOriginalName(filename);
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
