@@ -599,22 +599,17 @@ const Bases = () => {
       const response = await axios.get(`${API}/bases`);
       setBases(response.data);
       aplicarFiltro(response.data, filtroAprobacion);
-      
-      // Cargar conteo de registros ERP si está conectado
-      if (miniERPConnected) {
-        fetchRegistrosCountForBases(response.data);
-      }
     } catch (error) {
       toast.error('Error al cargar bases');
     }
   };
 
-  // Efecto para cargar conteos cuando se conecta al mini-ERP
+  // Efecto para cargar conteos cuando se conecta al mini-ERP o cambian las bases
   useEffect(() => {
     if (miniERPConnected && bases.length > 0) {
       fetchRegistrosCountForBases(bases);
     }
-  }, [miniERPConnected]);
+  }, [miniERPConnected, bases]);
 
   const aplicarFiltro = (data, filtro) => {
     let filtradas = data;
