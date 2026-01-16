@@ -182,6 +182,8 @@ class BaseModel(Base):
     patron = Column(String(500))
     imagen = Column(String(500))
     aprobado = Column(Boolean, default=False)
+    id_modelo = Column(Integer, nullable=True)  # Referencia a modelo del mini-ERP
+    id_registro = Column(Integer, nullable=True)  # Referencia a registro del mini-ERP
     
     muestra_base = relationship('MuestraBase', back_populates='bases')
     tizados = relationship('Tizado', back_populates='base', cascade='all, delete-orphan')
