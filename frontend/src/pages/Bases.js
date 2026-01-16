@@ -127,6 +127,15 @@ const Bases = () => {
   const [newFicha, setNewFicha] = useState({ nombre_ficha: '', archivo: '' });
   const [isCreatingFicha, setIsCreatingFicha] = useState(false);
 
+  // Estados para modal de registros ERP
+  const [registrosERPDialogOpen, setRegistrosERPDialogOpen] = useState(false);
+  const [currentBaseForRegistros, setCurrentBaseForRegistros] = useState(null);
+  const [registrosVinculados, setRegistrosVinculados] = useState([]);
+  const [registrosDisponibles, setRegistrosDisponibles] = useState([]);
+  const [registrosSearchModal, setRegistrosSearchModal] = useState('');
+  const [loadingRegistros, setLoadingRegistros] = useState(false);
+  const [registrosCount, setRegistrosCount] = useState({});  // Cache de conteo por base
+
   const handleViewTizados = (base) => {
     setCurrentBaseForTizados(base);
     const tizadosDeBase = tizados.filter(t => t.id_base === base.id_base);
