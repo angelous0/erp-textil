@@ -606,10 +606,11 @@ const Bases = () => {
 
   // Efecto para cargar conteos cuando se conecta al mini-ERP o cambian las bases
   useEffect(() => {
-    if (miniERPConnected && bases.length > 0) {
+    // Solo cargar si hay conexión y bases, y evitar loop infinito
+    if (miniERPConnected && bases.length > 0 && Object.keys(registrosCount).length === 0) {
       fetchRegistrosCountForBases(bases);
     }
-  }, [miniERPConnected, bases]);
+  }, [miniERPConnected, bases.length]);
 
   const aplicarFiltro = (data, filtro) => {
     let filtradas = data;
