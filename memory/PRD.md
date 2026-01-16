@@ -1,60 +1,82 @@
 # ERP Textil - Módulo de Muestras
 
 ## Descripción del Proyecto
-Sistema ERP textil full-stack (FastAPI + React + MariaDB) para gestión de desarrollo de muestras.
+Sistema ERP textil full-stack (FastAPI + React + MariaDB) para gestión de desarrollo de muestras, con sincronización bidireccional con mini-ERP existente.
 
 ## Stack Tecnológico
 - **Backend**: FastAPI, SQLAlchemy, Pydantic, MariaDB
 - **Frontend**: React, TanStack Table, Tailwind CSS, Shadcn/UI
 - **Almacenamiento**: Cloudflare R2 (AWS S3 compatible via boto3)
 - **Autenticación**: JWT (python-jose), bcrypt (passlib)
+- **Base de Datos Externa**: Mini-ERP (proyecto_moda)
 
 ## Características Implementadas ✅
 
+### Sincronización con Mini-ERP (16 Enero 2026)
+- [x] Conexión bidireccional con base de datos `proyecto_moda`
+- [x] Endpoints para leer modelos y registros del mini-ERP
+- [x] Modal de gestión de registros ERP por cada base
+- [x] Vinculación múltiple: una base puede tener varios registros
+- [x] Búsqueda y filtrado por modelo y N° corte
+- [x] Vinculación/desvinculación desde la interfaz
+- [x] Campo `x_id_base` en tabla `registro` del mini-ERP
+
 ### Dashboard con Métricas (15 Enero 2026)
 - [x] Saludo personalizado al usuario
-- [x] Estadísticas en tiempo real (muestras, bases, tizados, telas)
+- [x] Estadísticas en tiempo real
 - [x] Indicador de aprobados vs pendientes
-- [x] Barras de progreso de aprobación
-- [x] Accesos rápidos a todos los módulos con contadores
-- [x] Actividad reciente (solo admins) con historial de acciones
-- [x] Alertas de items pendientes de aprobar
+- [x] Accesos rápidos a todos los módulos
+- [x] Actividad reciente (solo admins)
 
 ### Sistema de Autenticación y Autorización
 - [x] Login con username y contraseña (JWT)
 - [x] Roles: Super Admin, Admin, Editor, Viewer
-- [x] Permisos personalizables por usuario
 - [x] Permisos CRUD por módulo
 - [x] Permisos de descarga/subida separados
-- [x] **Aplicación de permisos en Frontend** (botones condicionados)
+- [x] Aplicación de permisos en Frontend
 
 ### Sistema de Auditoría
-- [x] Registro automático de todas las acciones CRUD
+- [x] Registro automático de acciones CRUD
 - [x] Registro de logins y archivos
 - [x] Datos anteriores/nuevos en ediciones
-- [x] IP y User-Agent capturados
 - [x] Página `/historial` con filtros
-
-### UI/UX
-- [x] Scroll horizontal en todas las tablas
-- [x] Título personalizado "ERP Textil | Módulo Muestras"
-- [x] Badge "Made with Emergent" eliminado
 
 ### Credenciales
 - **Super Admin**: `eduard` / `cardenas007`
 
+## Arquitectura de Sincronización
+
+### Base de datos principal (sistema_bd)
+- `x_base`: Tiene campos `id_modelo`, `id_registro` (legacy, no se usan para múltiples)
+
+### Mini-ERP (proyecto_moda)
+- `registro.x_id_base`: Vincula cada registro a una base (relación N:1)
+- `modelo`: Tabla de modelos con `id`, `detalle`
+
+### Endpoints de Sincronización
+- `GET /api/mini-erp/status` - Estado de conexión
+- `GET /api/mini-erp/modelos` - Lista de modelos
+- `GET /api/mini-erp/registros/sin-vincular` - Registros disponibles
+- `GET /api/mini-erp/registros/vinculados/{id_base}` - Registros de una base
+- `POST /api/mini-erp/sync/vincular` - Vincular registro a base
+- `POST /api/mini-erp/sync/desvincular` - Desvincular registro
+
 ## Tareas Pendientes
 
-### P1 - Prioridad Alta
-- [ ] Sincronización con mini-ERP existente (pendiente credenciales)
+### P1 - Verificación de Usuario
+- [ ] Usuario debe probar la sincronización bidireccional
+- [ ] Confirmar que funciona según sus expectativas
 
 ### P2 - Backlog
 - [ ] Módulo 2: Producción y Materia Prima
-- [ ] Edición en celda
+- [ ] Edición en celda (in-cell editing)
 - [ ] SKUs e inventario
 
+### P3 - Refactorización
+- [ ] Descomponer `Bases.js` en componentes más pequeños
+
 ## Archivos Clave
-- `/app/frontend/src/pages/Dashboard.js` - Dashboard con métricas
-- `/app/frontend/public/index.html` - HTML personalizado
+- `/app/backend/mini_erp_sync.py` - Lógica de sincronización
+- `/app/frontend/src/pages/Bases.js` - UI con modal de registros ERP
 - `/app/backend/server.py` - API endpoints
-- `/app/frontend/src/context/AuthContext.js` - Permisos frontend
+- `/app/frontend/src/pages/Dashboard.js` - Dashboard
