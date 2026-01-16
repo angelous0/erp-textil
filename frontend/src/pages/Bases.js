@@ -478,6 +478,8 @@ const Bases = () => {
     fetchBases();
     fetchMuestras();
     fetchTizados();
+    fetchMiniERPStatus();
+    fetchModelosMiniERP();
   }, []);
 
   const fetchBases = async () => {
