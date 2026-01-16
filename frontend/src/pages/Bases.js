@@ -1472,6 +1472,166 @@ const Bases = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Dialog para gestionar Registros ERP vinculados */}
+      <Dialog open={registrosERPDialogOpen} onOpenChange={setRegistrosERPDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-2xl">
+              Registros ERP - Base #{currentBaseForRegistros?.id_base}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4 space-y-6">
+            {loadingRegistros ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                <p className="mt-2 text-slate-500">Cargando registros...</p>
+              </div>
+            ) : (
+              <>
+                {/* Sección: Registros Vinculados */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-slate-900 flex items-center gap-2">
+                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                      Registros Vinculados ({registrosVinculados.length})
+                    </h3>
+                  </div>
+                  
+                  {registrosVinculados.length > 0 ? (
+                    <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
+                      <div className="overflow-x-auto">
+                        <table className="w-full min-w-[500px]">
+                          <thead className="bg-green-50 border-b border-green-200">
+                            <tr>
+                              <th className="text-left py-3 px-4 text-xs font-semibold text-green-800 uppercase">ID</th>
+                              <th className="text-left py-3 px-4 text-xs font-semibold text-green-800 uppercase">Modelo</th>
+                              <th className="text-left py-3 px-4 text-xs font-semibold text-green-800 uppercase">N° Corte</th>
+                              <th className="text-left py-3 px-4 text-xs font-semibold text-green-800 uppercase">Estado</th>
+                              <th className="text-left py-3 px-4 text-xs font-semibold text-green-800 uppercase w-20">Acción</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100">
+                            {registrosVinculados.map((registro) => (
+                              <tr key={registro.id} className="hover:bg-green-50/50 transition-colors">
+                                <td className="py-3 px-4 font-mono text-slate-600">#{registro.id}</td>
+                                <td className="py-3 px-4 text-slate-900 font-medium">
+                                  {registro.modelo_nombre || <span className="text-slate-400 italic">Sin modelo</span>}
+                                </td>
+                                <td className="py-3 px-4 text-slate-700">{registro.n_corte || '-'}</td>
+                                <td className="py-3 px-4">
+                                  {registro.aprobado ? (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                      Aprobado
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+                                      Pendiente
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="py-3 px-4">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleDesvincularRegistroModal(registro.id)}
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    title="Desvincular registro"
+                                  >
+                                    <X size={14} />
+                                  </Button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-6 text-slate-500 bg-slate-50 border border-slate-200 rounded-lg">
+                      No hay registros vinculados a esta base
+                    </div>
+                  )}
+                </div>
+
+                <Separator />
+
+                {/* Sección: Agregar Nuevos Registros */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-slate-900 flex items-center gap-2">
+                      <Plus size={16} className="text-blue-600" />
+                      Agregar Registros
+                    </h3>
+                  </div>
+                  
+                  {/* Buscador */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={16} />
+                    <Input
+                      placeholder="Buscar por modelo, N° corte o ID..."
+                      value={registrosSearchModal}
+                      onChange={(e) => {
+                        setRegistrosSearchModal(e.target.value);
+                        fetchRegistrosDisponibles(e.target.value);
+                      }}
+                      className="pl-9 bg-white border-slate-300"
+                    />
+                  </div>
+
+                  {/* Lista de registros disponibles */}
+                  {registrosDisponibles.length > 0 ? (
+                    <div className="border border-slate-200 rounded-lg overflow-hidden bg-white max-h-64 overflow-y-auto">
+                      <table className="w-full min-w-[500px]">
+                        <thead className="bg-slate-100 border-b border-slate-200 sticky top-0">
+                          <tr>
+                            <th className="text-left py-2 px-4 text-xs font-semibold text-slate-700 uppercase">ID</th>
+                            <th className="text-left py-2 px-4 text-xs font-semibold text-slate-700 uppercase">Modelo</th>
+                            <th className="text-left py-2 px-4 text-xs font-semibold text-slate-700 uppercase">N° Corte</th>
+                            <th className="text-left py-2 px-4 text-xs font-semibold text-slate-700 uppercase w-20">Acción</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {registrosDisponibles.map((registro) => (
+                            <tr key={registro.id} className="hover:bg-blue-50/50 transition-colors">
+                              <td className="py-2 px-4 font-mono text-slate-600 text-sm">#{registro.id}</td>
+                              <td className="py-2 px-4 text-slate-900 text-sm">
+                                {registro.modelo_nombre || <span className="text-slate-400 italic">Sin modelo</span>}
+                              </td>
+                              <td className="py-2 px-4 text-slate-700 text-sm">{registro.n_corte || '-'}</td>
+                              <td className="py-2 px-4">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleVincularRegistroModal(registro.id)}
+                                  className="text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200"
+                                >
+                                  <Plus size={14} />
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="text-center py-6 text-slate-500 bg-slate-50 border border-slate-200 rounded-lg">
+                      {registrosSearchModal 
+                        ? 'No se encontraron registros con esa búsqueda' 
+                        : 'No hay registros disponibles para vincular'}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button onClick={() => setRegistrosERPDialogOpen(false)}>Cerrar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Dialog principal para crear/editar base */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
