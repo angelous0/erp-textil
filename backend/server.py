@@ -480,11 +480,16 @@ def update_muestra_base(
         raise HTTPException(status_code=404, detail="Muestra base no encontrada")
     
     datos_anteriores = model_to_dict(db_muestra)
+    old_archivo = db_muestra.archivo
     
     for key, value in muestra.model_dump(exclude_unset=True).items():
         setattr(db_muestra, key, value)
     
     db.commit()
+    
+    # Si el archivo cambió y había uno anterior, eliminar de R2
+    if old_archivo and old_archivo != db_muestra.archivo:
+        delete_file_from_r2(old_archivo)
     
     audit_update(db, current_user, "muestras_base", datos_anteriores, db_muestra, id_muestra_base,
                  f"Editó muestra base ID: {id_muestra_base}",
