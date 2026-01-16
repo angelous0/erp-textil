@@ -1189,6 +1189,144 @@ def get_movimiento(
     
     return movimiento
 
+# ==================== MINI-ERP SYNC ENDPOINTS ====================
+
+@api_router.get("/mini-erp/status")
+def mini_erp_status(current_user: UsuarioModel = Depends(get_current_user)):
+    """Verifica el estado de conexión con el mini-ERP"""
+    connected = test_mini_erp_connection()
+    return {"connected": connected, "message": "Conexión exitosa" if connected else "No se puede conectar"}
+
+@api_router.get("/mini-erp/modelos")
+def get_modelos(
+    search: Optional[str] = Query(None, description="Buscar por nombre"),
+    limit: int = Query(100, le=500),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
+    """Obtiene la lista de modelos del mini-ERP"""
+    try:
+        modelos = get_modelos_mini_erp(search=search, limit=limit)
+        return modelos
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error conectando al mini-ERP: {str(e)}")
+
+@api_router.get("/mini-erp/modelos/{id_modelo}")
+def get_modelo(
+    id_modelo: int,
+    current_user: UsuarioModel = Depends(get_current_user)
+):
+    """Obtiene un modelo específico del mini-ERP"""
+    modelo = get_modelo_by_id(id_modelo)
+    if not modelo:
+        raise HTTPException(status_code=404, detail="Modelo no encontrado")
+    return modelo
+
+@api_router.get("/mini-erp/registros")
+def get_registros(
+    search: Optional[str] = Query(None, description="Buscar por modelo o n_corte"),
+    limit: int = Query(100, le=500),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
+    """Obtiene la lista de registros del mini-ERP"""
+    try:
+        registros = get_registros_mini_erp(search=search, limit=limit)
+        return registros
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error conectando al mini-ERP: {str(e)}")
+
+@api_router.get("/mini-erp/registros/sin-vincular")
+def get_registros_disponibles(
+    limit: int = Query(50, le=200),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
+    """Obtiene registros del mini-ERP que no están vinculados a ninguna base"""
+    try:
+        registros = get_registros_sin_vincular(limit=limit)
+        return registros
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error conectando al mini-ERP: {str(e)}")
+
+@api_router.get("/mini-erp/registros/{id_registro}")
+def get_registro(
+    id_registro: int,
+    current_user: UsuarioModel = Depends(get_current_user)
+):
+    """Obtiene un registro específico del mini-ERP"""
+    registro = get_registro_by_id(id_registro)
+    if not registro:
+        raise HTTPException(status_code=404, detail="Registro no encontrado")
+    return registro
+
+@api_router.post("/mini-erp/sync/vincular")
+def vincular_base_registro(
+    id_base: int,
+    id_registro: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
+    """Vincula una base del ERP Muestras con un registro del mini-ERP"""
+    # Verificar que la base existe
+    base = db.query(BaseDBModel).filter(BaseDBModel.id_base == id_base).first()
+    if not base:
+        raise HTTPException(status_code=404, detail="Base no encontrada")
+    
+    # Verificar que el registro existe en mini-ERP
+    registro = get_registro_by_id(id_registro)
+    if not registro:
+        raise HTTPException(status_code=404, detail="Registro no encontrado en mini-ERP")
+    
+    # Actualizar x_base con id_registro e id_modelo
+    datos_anteriores = model_to_dict(base)
+    base.id_registro = id_registro
+    base.id_modelo = registro.get('id_modelo')
+    
+    # Sincronizar al mini-ERP (actualizar x_id_base en registro)
+    sync_base_to_registro(id_base, id_registro, aprobado=base.aprobado)
+    
+    db.commit()
+    db.refresh(base)
+    
+    # Auditar la vinculación
+    audit_update(db, current_user, "bases", datos_anteriores, base, id_base,
+                 f"Vinculó base {id_base} con registro {id_registro} del mini-ERP",
+                 get_client_ip(request), get_user_agent(request))
+    
+    return {"message": "Vinculación exitosa", "id_base": id_base, "id_registro": id_registro}
+
+@api_router.post("/mini-erp/sync/desvincular/{id_base}")
+def desvincular_base(
+    id_base: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
+    """Desvincula una base del mini-ERP"""
+    base = db.query(BaseDBModel).filter(BaseDBModel.id_base == id_base).first()
+    if not base:
+        raise HTTPException(status_code=404, detail="Base no encontrada")
+    
+    if not base.id_registro:
+        raise HTTPException(status_code=400, detail="Esta base no está vinculada a ningún registro")
+    
+    # Desvincular en mini-ERP
+    id_registro_anterior = base.id_registro
+    unlink_base_from_registro(base.id_registro)
+    
+    # Actualizar base
+    datos_anteriores = model_to_dict(base)
+    base.id_registro = None
+    base.id_modelo = None
+    
+    db.commit()
+    
+    # Auditar
+    audit_update(db, current_user, "bases", datos_anteriores, base, id_base,
+                 f"Desvinculó base {id_base} del registro {id_registro_anterior}",
+                 get_client_ip(request), get_user_agent(request))
+    
+    return {"message": "Desvinculación exitosa"}
+
 app.include_router(api_router)
 
 app.add_middleware(
