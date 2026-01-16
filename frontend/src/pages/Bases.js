@@ -134,7 +134,6 @@ const Bases = () => {
   const [registrosDisponibles, setRegistrosDisponibles] = useState([]);
   const [registrosSearchModal, setRegistrosSearchModal] = useState('');
   const [loadingRegistros, setLoadingRegistros] = useState(false);
-  const [registrosCount, setRegistrosCount] = useState({});  // Cache de conteo por base
 
   const handleViewTizados = (base) => {
     setCurrentBaseForTizados(base);
