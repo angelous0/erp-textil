@@ -1012,7 +1012,7 @@ const Bases = () => {
         </div>
       ),
     },
-  ];
+  ], [muestras, tizados, registrosCount, miniERPConnected, canCreate, canEdit, canDelete, canUpload, canDownload]);
 
   return (
     <div>
