@@ -159,6 +159,42 @@ const MuestrasBase = () => {
     }
   };
 
+  // Función para subir archivo desde la tabla
+  const handleUploadFileFromTable = async (id_muestra_base, file) => {
+    try {
+      // Primero subir el archivo
+      const formDataUpload = new FormData();
+      formDataUpload.append('file', file);
+      const uploadResponse = await axios.post(`${API}/upload`, formDataUpload);
+      const filename = uploadResponse.data.filename;
+      
+      // Luego actualizar la muestra con el nuevo archivo
+      await axios.put(`${API}/muestras-base/${id_muestra_base}`, {
+        archivo_costo: filename
+      });
+      
+      toast.success('Archivo subido correctamente');
+      fetchMuestras();
+    } catch (error) {
+      console.error('Error al subir archivo:', error);
+      toast.error('Error al subir el archivo');
+    }
+  };
+
+  // Función para quitar archivo desde la tabla
+  const handleRemoveFileFromTable = async (id_muestra_base) => {
+    try {
+      await axios.put(`${API}/muestras-base/${id_muestra_base}`, {
+        archivo_costo: null
+      });
+      toast.success('Archivo eliminado');
+      fetchMuestras();
+    } catch (error) {
+      console.error('Error al eliminar archivo:', error);
+      toast.error('Error al eliminar el archivo');
+    }
+  };
+
   const handleViewBase = (base) => {
     setViewingBase(base);
     setBaseViewDialogOpen(true);
