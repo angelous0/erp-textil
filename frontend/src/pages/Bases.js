@@ -1537,12 +1537,13 @@ const Bases = () => {
                   {/* Lista de registros disponibles */}
                   {registrosDisponibles.length > 0 ? (
                     <div className="border border-slate-200 rounded-lg overflow-hidden bg-white max-h-64 overflow-y-auto">
-                      <table className="w-full min-w-[500px]">
+                      <table className="w-full min-w-[550px]">
                         <thead className="bg-slate-100 border-b border-slate-200 sticky top-0">
                           <tr>
                             <th className="text-left py-2 px-4 text-xs font-semibold text-slate-700 uppercase">ID</th>
                             <th className="text-left py-2 px-4 text-xs font-semibold text-slate-700 uppercase">Modelo</th>
                             <th className="text-left py-2 px-4 text-xs font-semibold text-slate-700 uppercase">N° Corte</th>
+                            <th className="text-left py-2 px-4 text-xs font-semibold text-slate-700 uppercase">Estado</th>
                             <th className="text-left py-2 px-4 text-xs font-semibold text-slate-700 uppercase w-20">Acción</th>
                           </tr>
                         </thead>
@@ -1554,6 +1555,11 @@ const Bases = () => {
                                 {registro.modelo_nombre || <span className="text-slate-400 italic">Sin modelo</span>}
                               </td>
                               <td className="py-2 px-4 text-slate-700 text-sm">{registro.n_corte || '-'}</td>
+                              <td className="py-2 px-4">
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
+                                  {registro.estado_nombre || 'Sin estado'}
+                                </span>
+                              </td>
                               <td className="py-2 px-4">
                                 <Button
                                   variant="outline"
