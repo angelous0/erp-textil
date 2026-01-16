@@ -246,6 +246,8 @@ class BaseBase(BaseModel):
     patron: Optional[str] = None
     imagen: Optional[str] = None
     aprobado: Optional[bool] = False
+    id_modelo: Optional[int] = None
+    id_registro: Optional[int] = None
 
 class BaseCreate(BaseBase):
     id_muestra_base: int
@@ -255,6 +257,8 @@ class BaseUpdate(BaseModel):
     patron: Optional[str] = None
     imagen: Optional[str] = None
     aprobado: Optional[bool] = None
+    id_modelo: Optional[int] = None
+    id_registro: Optional[int] = None
 
 class BaseSchema(BaseBase):
     model_config = ConfigDict(from_attributes=True)
