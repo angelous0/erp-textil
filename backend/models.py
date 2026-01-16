@@ -146,7 +146,7 @@ class Entalle(Base):
     muestras_base = relationship('MuestraBase', back_populates='entalle')
 
 class TipoProducto(Base):
-    __tablename__ = 'tipo_producto'
+    __tablename__ = 'x_tipo_producto'
     
     id_tipo = Column(Integer, primary_key=True, autoincrement=True)
     nombre_tipo = Column(String(255), nullable=False)
@@ -157,7 +157,7 @@ class MuestraBase(Base):
     __tablename__ = 'x_muestra_base'
     
     id_muestra_base = Column(Integer, primary_key=True, autoincrement=True)
-    id_tipo = Column(Integer, ForeignKey('tipo_producto.id_tipo'), nullable=False)
+    id_tipo = Column(Integer, ForeignKey('x_tipo_producto.id_tipo'), nullable=False)
     id_entalle = Column(Integer, ForeignKey('x_entalle_desarrollo.id_entalle'), nullable=False)
     id_tela = Column(Integer, ForeignKey('x_tela_desarrollo.id_tela'), nullable=False)
     id_marca = Column(Integer, ForeignKey('x_marca.id_marca'))
