@@ -39,7 +39,8 @@ from audit import audit_create, audit_update, audit_delete, audit_file_action, a
 from mini_erp_sync import (
     get_modelos_mini_erp, get_modelo_by_id, get_registros_mini_erp, 
     get_registro_by_id, sync_base_to_registro, unlink_base_from_registro,
-    get_registros_sin_vincular, test_connection as test_mini_erp_connection
+    get_registros_sin_vincular, get_registros_vinculados_a_base, count_registros_vinculados,
+    test_connection as test_mini_erp_connection
 )
 
 app = FastAPI()
