@@ -898,17 +898,27 @@ const Bases = () => {
       ),
     },
     {
-      accessorKey: 'id_registro',
-      header: 'Registro ERP',
+      id: 'registros_erp',
+      header: 'Registros ERP',
       cell: ({ row }) => {
-        const idRegistro = row.original.id_registro;
-        if (!idRegistro) {
-          return <span className="text-slate-400 text-xs">Sin vincular</span>;
+        const count = registrosCount[row.original.id_base] || 0;
+        
+        if (!miniERPConnected) {
+          return <span className="text-slate-400 text-xs">No conectado</span>;
         }
+        
         return (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200">
-            #{idRegistro}
-          </span>
+          <button
+            onClick={() => handleViewRegistrosERP(row.original)}
+            data-testid={`registros-erp-${row.original.id_base}`}
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${
+              count > 0 
+                ? 'bg-green-100 text-green-800 hover:bg-green-200' 
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            {count > 0 ? `${count} registro${count > 1 ? 's' : ''}` : '+ Vincular'}
+          </button>
         );
       },
     },
