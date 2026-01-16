@@ -1237,12 +1237,31 @@ def get_registros(
 
 @api_router.get("/mini-erp/registros/sin-vincular")
 def get_registros_disponibles(
+    search: Optional[str] = Query(None, description="Buscar por modelo, n_corte o ID"),
     limit: int = Query(50, le=200),
     current_user: UsuarioModel = Depends(get_current_user)
 ):
     """Obtiene registros del mini-ERP que no están vinculados a ninguna base"""
     try:
-        registros = get_registros_sin_vincular(limit=limit)
+        registros = get_registros_sin_vincular(limit=limit, search=search)
+        return registros
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error conectando al mini-ERP: {str(e)}")
+
+@api_router.get("/mini-erp/registros/vinculados/{id_base}")
+def get_registros_de_base(
+    id_base: int,
+    db: Session = Depends(get_db),
+    current_user: UsuarioModel = Depends(get_current_user)
+):
+    """Obtiene todos los registros del mini-ERP vinculados a una base específica"""
+    # Verificar que la base existe
+    base = db.query(BaseDBModel).filter(BaseDBModel.id_base == id_base).first()
+    if not base:
+        raise HTTPException(status_code=404, detail="Base no encontrada")
+    
+    try:
+        registros = get_registros_vinculados_a_base(id_base)
         return registros
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error conectando al mini-ERP: {str(e)}")
