@@ -585,7 +585,7 @@ def update_base(
     
     datos_anteriores = model_to_dict(db_base)
     
-    # Detectar si se está quitando la imagen
+    # Guardar imagen anterior para comparar
     old_imagen = db_base.imagen
     new_data = base.model_dump(exclude_unset=True)
     
@@ -594,10 +594,11 @@ def update_base(
     
     db.commit()
     
-    # Si la imagen anterior existía y ahora es None o vacía, eliminar de R2
-    if old_imagen and (db_base.imagen is None or db_base.imagen == '' or db_base.imagen != old_imagen):
-        if db_base.imagen != old_imagen:  # Solo si realmente cambió
-            delete_file_from_r2(old_imagen)
+    # Si había imagen anterior y ahora cambió (incluyendo a None/vacío), eliminar de R2
+    new_imagen = db_base.imagen
+    if old_imagen and old_imagen != new_imagen:
+        print(f"🗑️ Eliminando imagen anterior: {old_imagen} (nueva: {new_imagen})")
+        delete_file_from_r2(old_imagen)
     
     audit_update(db, current_user, "bases", datos_anteriores, db_base, id_base,
                  f"Editó base modelo: {db_base.modelo or 'Sin modelo'}",
